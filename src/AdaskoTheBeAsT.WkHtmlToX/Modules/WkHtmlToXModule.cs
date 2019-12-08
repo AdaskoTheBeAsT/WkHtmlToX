@@ -6,12 +6,14 @@ using System.Runtime.InteropServices;
 using System.Text;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
+using Microsoft.IO;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
     internal abstract class WkHtmlToXModule
         : IWkHtmlToXModule
     {
+        protected const int MaxCopyBufferSize = 81920;
         protected const int MaxBufferSize = 2048;
 
         // used to maintain a reference to delegates to prevent them being garbage collected...
@@ -21,6 +23,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         protected readonly List<object> _delegates = new List<object>();
 #pragma warning restore CA1051 // Do not declare visible instance fields
 #pragma warning restore SA1401 // Fields should be private
+
+        private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager =
+            new RecyclableMemoryStreamManager();
 
         public abstract int Initialize(
             int useGraphics);
@@ -123,11 +128,35 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         public Stream GetOutput(IntPtr converter)
         {
             var length = GetOutputImpl(converter, out IntPtr data);
-            unsafe
+            if (length == 0)
             {
-                var bytePtr = (byte*)data.ToPointer();
-                return new UnmanagedMemoryStream(bytePtr, length);
+                return Stream.Null;
             }
+
+            var stream = _recyclableMemoryStreamManager.GetStream(
+                Guid.NewGuid(),
+                "wkhtmltox",
+                length);
+
+            var copyLength = Math.Min(length, MaxCopyBufferSize);
+
+            var buffer = new byte[copyLength];
+            Marshal.Copy(data, buffer, 0, copyLength);
+            stream.Write(buffer, 0, copyLength);
+            length -= copyLength;
+
+            while (length > 0)
+            {
+                data = IntPtr.Add(data, copyLength);
+                copyLength = Math.Min(length, MaxCopyBufferSize);
+                buffer = new byte[copyLength];
+                Marshal.Copy(data, buffer, 0, copyLength);
+                stream.Write(buffer, 0, copyLength);
+                length -= copyLength;
+            }
+
+            stream.Position = 0;
+            return stream;
         }
 
         public void Dispose()
