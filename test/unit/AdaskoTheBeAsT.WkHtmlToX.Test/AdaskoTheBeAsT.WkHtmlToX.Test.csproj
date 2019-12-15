@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.native.win.x64" Version="0.12.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.WkHtmlToX\AdaskoTheBeAsT.WkHtmlToX.csproj" />
+  </ItemGroup>
+
+</Project>

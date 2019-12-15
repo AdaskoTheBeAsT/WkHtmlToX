@@ -13,7 +13,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.ConsoleApp
         private static void Main()
         {
             var libFactory = new LibraryLoaderFactory();
-            using (var libraryLoader = libFactory.Create())
+            using (var libraryLoader = libFactory.Create(null))
             {
                 libraryLoader.Load();
                 var doc = new HtmlToPdfDocument()
