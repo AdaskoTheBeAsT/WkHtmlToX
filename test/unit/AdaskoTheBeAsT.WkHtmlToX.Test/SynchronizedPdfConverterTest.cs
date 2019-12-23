@@ -20,8 +20,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
 
         public void Dispose() => _sut?.Dispose();
 
-        [Fact]
-        public void ConvertAsyncShouldWhen()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(10)]
+        [InlineData(100)]
+        public void ConvertAsyncShouldNotThrowWhenMultipleSequentialRun(int convertCount)
         {
             // Arrange
             var document = new HtmlToPdfDocument
@@ -50,7 +53,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 using (var loader = new LibraryLoaderFactory().Create(null))
                 {
                     loader.Load();
-                    for (int i = 0; i < 100; i++)
+                    for (int i = 0; i < convertCount; i++)
                     {
                         var stream = await _sut.ConvertAsync(
                             document);

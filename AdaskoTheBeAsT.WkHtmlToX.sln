@@ -34,16 +34,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".props", ".props", "{BF2E47
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "unit", "unit", "{1BB077DD-7B9F-4D9D-9780-85B12CE803D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaskoTheBeAsT.WkHtmlToX.Test", "test\unit\AdaskoTheBeAsT.WkHtmlToX.Test\AdaskoTheBeAsT.WkHtmlToX.Test.csproj", "{7B2B4407-61AB-4B9D-A3F1-31C95C9DFDE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.WkHtmlToX.Test", "test\unit\AdaskoTheBeAsT.WkHtmlToX.Test\AdaskoTheBeAsT.WkHtmlToX.Test.csproj", "{7B2B4407-61AB-4B9D-A3F1-31C95C9DFDE5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "integ", "integ", "{D2F5259C-126E-4436-AC52-174CA9C6471C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaskoTheBeAsT.WkHtmlToX.IntegrationTest", "test\integ\AdaskoTheBeAsT.WkHtmlToX.IntegrationTest\AdaskoTheBeAsT.WkHtmlToX.IntegrationTest.csproj", "{B4FD9911-A867-4491-AC3D-05E3C9FD60D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.WkHtmlToX.IntegrationTest", "test\integ\AdaskoTheBeAsT.WkHtmlToX.IntegrationTest\AdaskoTheBeAsT.WkHtmlToX.IntegrationTest.csproj", "{B4FD9911-A867-4491-AC3D-05E3C9FD60D3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".props", ".props", "{CE2A5F4B-4532-44CD-82C0-DFEE609D74B4}"
 	ProjectSection(SolutionItems) = preProject
 		test\integ\Directory.Build.props = test\integ\Directory.Build.props
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaskoTheBeAsT.WkHtmlToX.WebApiCore", "samples\AdaskoTheBeAsT.WkHtmlToX.WebApiCore\AdaskoTheBeAsT.WkHtmlToX.WebApiCore.csproj", "{BE9B251C-44C8-4A2D-B417-84C3E738BFF7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.WkHtmlToX.BusinessLogic", "samples\AdaskoTheBeAsT.WkHtmlToX.BusinessLogic\AdaskoTheBeAsT.WkHtmlToX.BusinessLogic.csproj", "{6A48AAD9-8D05-4276-85DD-18C0926E9DFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +71,14 @@ Global
 		{B4FD9911-A867-4491-AC3D-05E3C9FD60D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4FD9911-A867-4491-AC3D-05E3C9FD60D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4FD9911-A867-4491-AC3D-05E3C9FD60D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE9B251C-44C8-4A2D-B417-84C3E738BFF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE9B251C-44C8-4A2D-B417-84C3E738BFF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE9B251C-44C8-4A2D-B417-84C3E738BFF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE9B251C-44C8-4A2D-B417-84C3E738BFF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A48AAD9-8D05-4276-85DD-18C0926E9DFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A48AAD9-8D05-4276-85DD-18C0926E9DFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A48AAD9-8D05-4276-85DD-18C0926E9DFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A48AAD9-8D05-4276-85DD-18C0926E9DFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,6 +92,8 @@ Global
 		{D2F5259C-126E-4436-AC52-174CA9C6471C} = {E6481397-F2E4-42CF-AE65-C724080C3C40}
 		{B4FD9911-A867-4491-AC3D-05E3C9FD60D3} = {D2F5259C-126E-4436-AC52-174CA9C6471C}
 		{CE2A5F4B-4532-44CD-82C0-DFEE609D74B4} = {D2F5259C-126E-4436-AC52-174CA9C6471C}
+		{BE9B251C-44C8-4A2D-B417-84C3E738BFF7} = {D2F76B05-9FA3-4D2B-90E2-2C2440938154}
+		{6A48AAD9-8D05-4276-85DD-18C0926E9DFF} = {D2F76B05-9FA3-4D2B-90E2-2C2440938154}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {791BEBD5-7E04-4A1B-AF66-0101196CFFFE}

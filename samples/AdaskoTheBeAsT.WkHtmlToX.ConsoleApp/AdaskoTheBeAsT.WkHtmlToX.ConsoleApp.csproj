@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AdaskoTheBeAsT.WkHtmlToX\AdaskoTheBeAsT.WkHtmlToX.csproj" />
+    <ProjectReference Include="..\AdaskoTheBeAsT.WkHtmlToX.BusinessLogic\AdaskoTheBeAsT.WkHtmlToX.BusinessLogic.csproj" />
   </ItemGroup>
 
 </Project>

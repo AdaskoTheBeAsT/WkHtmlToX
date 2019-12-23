@@ -38,6 +38,9 @@ indent_size=2
 # config files
 [*.config]
 indent_size=2
+# json files
+[*.json]
+indent_size=2
 # Code files
 [*.{cs,csx,vb,vbx}]
 indent_size=4
