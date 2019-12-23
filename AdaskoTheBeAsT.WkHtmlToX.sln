@@ -21,9 +21,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{77493B06-203
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.WkHtmlToX", "src\AdaskoTheBeAsT.WkHtmlToX\AdaskoTheBeAsT.WkHtmlToX.csproj", "{4DC672BF-62DC-4C99-B44C-12DB2F0C7A3F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{D2F76B05-9FA3-4D2B-90E2-2C2440938154}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{D2F76B05-9FA3-4D2B-90E2-2C2440938154}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.WkHtmlToX.ConsoleApp", "sample\AdaskoTheBeAsT.WkHtmlToX.ConsoleApp\AdaskoTheBeAsT.WkHtmlToX.ConsoleApp.csproj", "{DC011AC5-859C-4253-BBAE-6DF5EFEA9002}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.WkHtmlToX.ConsoleApp", "samples\AdaskoTheBeAsT.WkHtmlToX.ConsoleApp\AdaskoTheBeAsT.WkHtmlToX.ConsoleApp.csproj", "{DC011AC5-859C-4253-BBAE-6DF5EFEA9002}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E6481397-F2E4-42CF-AE65-C724080C3C40}"
 EndProject
