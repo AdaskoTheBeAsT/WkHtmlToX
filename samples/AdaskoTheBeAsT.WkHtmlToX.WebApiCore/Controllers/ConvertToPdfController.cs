@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.BusinessLogic;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,13 +11,22 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiCore.Controllers
     public class ConvertToPdfController
         : ControllerBase
     {
-        [HttpPost]
-        public IActionResult Convert()
+        private readonly IHtmlToPdfDocumentGenerator _htmlToPdfDocumentGenerator;
+        private readonly IHtmlToPdfAsyncConverter _htmlToPdfAsyncConverter;
+
+        public ConvertToPdfController(
+            IHtmlToPdfDocumentGenerator htmlToPdfDocumentGenerator,
+            IHtmlToPdfAsyncConverter htmlToPdfAsyncConverter)
         {
-            var htmlToPdfGenerator = new HtmlToPdfDocumentGenerator(new SmallHtmlGenerator());
-            var doc = htmlToPdfGenerator.Generate();
-            using var converter = new BasicPdfConverter();
-            var stream = converter.Convert(doc);
+            _htmlToPdfDocumentGenerator = htmlToPdfDocumentGenerator;
+            _htmlToPdfAsyncConverter = htmlToPdfAsyncConverter;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Convert()
+        {
+            var doc = _htmlToPdfDocumentGenerator.Generate();
+            var stream = await _htmlToPdfAsyncConverter.ConvertAsync(doc);
             var result = new FileStreamResult(stream, "application/pdf")
             {
                 FileDownloadName = "sample.pdf",

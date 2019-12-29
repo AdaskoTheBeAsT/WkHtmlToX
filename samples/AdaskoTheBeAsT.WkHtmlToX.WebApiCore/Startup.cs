@@ -4,11 +4,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SimpleInjector;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.WebApiCore
 {
-    public partial class Startup
+    public sealed partial class Startup
+        : IDisposable
     {
+        private readonly Container _container = new Container();
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -21,6 +25,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiCore
         {
             services.AddControllers();
             ConfigureServicesSwagger(services);
+            ConfigureServicesIoC(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,6 +44,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiCore
                 throw new ArgumentNullException(nameof(appLifetime));
             }
 
+            ConfigureIoC(app);
             ConfigureAppStart(app);
             ConfigureAppDispose(app, appLifetime);
             if (env.IsDevelopment())
@@ -56,10 +62,21 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiCore
 
             ConfigureSwagger(app);
 
-            app.UseEndpoints(endpoints =>
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
+            _container.Verify();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                endpoints.MapControllers();
-            });
+                _container?.Dispose();
+            }
         }
     }
 }
