@@ -2,9 +2,9 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
   <ItemGroup>
     <PackageReference Include="Alba" Version="3.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.0" />
-    <PackageReference Include="SpecFlow" Version="3.1.74" />
-    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.1.74" />
-    <PackageReference Include="SpecFlow.xUnit" Version="3.1.74" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.1" />
+    <PackageReference Include="SpecFlow" Version="3.1.82" />
+    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.1.82" />
+    <PackageReference Include="SpecFlow.xUnit" Version="3.1.82" />
   </ItemGroup>
 </Project>
