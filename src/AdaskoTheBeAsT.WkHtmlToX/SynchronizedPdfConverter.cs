@@ -17,6 +17,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             IHtmlToPdfAsyncConverter
     {
         private readonly BlockingCollection<PdfConvertWorkItem> _blockingCollection = new BlockingCollection<PdfConvertWorkItem>();
+        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public SynchronizedPdfConverter()
         {
@@ -34,11 +35,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         protected override void Dispose(
             bool disposing)
         {
-            _blockingCollection.CompleteAdding();
             base.Dispose(disposing);
             if (disposing)
             {
+                _blockingCollection.CompleteAdding();
+                _cancellationTokenSource.Cancel();
                 _blockingCollection.Dispose();
+                _cancellationTokenSource.Dispose();
             }
         }
 
@@ -47,23 +50,30 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             var thread = new Thread(Process);
             thread.SetApartmentState(ApartmentState.STA);
             thread.IsBackground = true;
-            thread.Start();
+            thread.Start(_cancellationTokenSource.Token);
         }
 
 #pragma warning disable CA1031 // Do not catch general exception types
-        private void Process()
+        private void Process(object token)
         {
-            foreach (var pdfConvertWorkItem in _blockingCollection.GetConsumingEnumerable())
+            try
             {
-                try
+                foreach (var pdfConvertWorkItem in _blockingCollection.GetConsumingEnumerable((CancellationToken)token))
                 {
-                    var pdf = ConvertImpl(pdfConvertWorkItem.Document);
-                    pdfConvertWorkItem.TaskCompletionSource.SetResult(pdf);
+                    try
+                    {
+                        var pdf = ConvertImpl(pdfConvertWorkItem.Document);
+                        pdfConvertWorkItem.TaskCompletionSource.SetResult(pdf);
+                    }
+                    catch (Exception e)
+                    {
+                        pdfConvertWorkItem.TaskCompletionSource.SetException(e);
+                    }
                 }
-                catch (Exception e)
-                {
-                    pdfConvertWorkItem.TaskCompletionSource.SetException(e);
-                }
+            }
+            catch (OperationCanceledException)
+            {
+                // noop
             }
         }
 #pragma warning restore CA1031 // Do not catch general exception types
