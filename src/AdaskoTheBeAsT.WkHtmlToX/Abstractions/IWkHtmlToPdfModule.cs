@@ -11,7 +11,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
         int SetObjectSetting(
             IntPtr settings,
             string name,
-            string value);
+            string? value);
 
         string GetObjectSetting(
             IntPtr settings,

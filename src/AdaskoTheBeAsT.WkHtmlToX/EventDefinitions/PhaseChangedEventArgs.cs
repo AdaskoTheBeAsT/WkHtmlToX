@@ -1,16 +1,28 @@
-﻿using System;
+using System;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.EventDefinitions
 {
     public class PhaseChangedEventArgs : EventArgs
     {
-        public IDocument Document { get; set; }
+        public PhaseChangedEventArgs(
+            IDocument? document,
+            int phaseCount,
+            int currentPhase,
+            string description)
+        {
+            Document = document;
+            PhaseCount = phaseCount;
+            CurrentPhase = currentPhase;
+            Description = description;
+        }
 
-        public int PhaseCount { get; set; }
+        public IDocument? Document { get; }
 
-        public int CurrentPhase { get; set; }
+        public int PhaseCount { get; }
 
-        public string Description { get; set; }
+        public int CurrentPhase { get; }
+
+        public string Description { get; }
     }
 }

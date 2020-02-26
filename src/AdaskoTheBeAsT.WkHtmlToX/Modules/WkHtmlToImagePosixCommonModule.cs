@@ -24,7 +24,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         public override int SetGlobalSetting(
             IntPtr settings,
             string name,
-            string value) =>
+            string? value) =>
             NativeMethodsImagePosix.wkhtmltoimage_set_global_setting(
                 settings,
                 name,

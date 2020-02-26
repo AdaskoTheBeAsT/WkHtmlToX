@@ -21,17 +21,17 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             _module = moduleFactory.GetModule(moduleKind);
         }
 
-        public event EventHandler<PhaseChangedEventArgs> PhaseChanged;
+        public event EventHandler<PhaseChangedEventArgs>? PhaseChanged;
 
-        public event EventHandler<ProgressChangedEventArgs> ProgressChanged;
+        public event EventHandler<ProgressChangedEventArgs>? ProgressChanged;
 
-        public event EventHandler<FinishedEventArgs> Finished;
+        public event EventHandler<FinishedEventArgs>? Finished;
 
-        public event EventHandler<ErrorEventArgs> Error;
+        public event EventHandler<ErrorEventArgs>? Error;
 
-        public event EventHandler<WarningEventArgs> Warning;
+        public event EventHandler<WarningEventArgs>? Warning;
 
-        public IDocument ProcessingDocument { get; internal set; }
+        public IDocument? ProcessingDocument { get; internal set; }
 
         public void Dispose()
         {
@@ -85,13 +85,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
             var currentPhase = _module.GetCurrentPhase(converter);
 
-            var eventArgs = new PhaseChangedEventArgs
-            {
-                Document = ProcessingDocument,
-                PhaseCount = _module.GetPhaseCount(converter),
-                CurrentPhase = currentPhase,
-                Description = _module.GetPhaseDescription(converter, currentPhase),
-            };
+            var eventArgs = new PhaseChangedEventArgs(
+                ProcessingDocument,
+                _module.GetPhaseCount(converter),
+                currentPhase,
+                _module.GetPhaseDescription(converter, currentPhase));
 
             PhaseChanged.Invoke(this, eventArgs);
         }
@@ -103,11 +101,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 return;
             }
 
-            var eventArgs = new ProgressChangedEventArgs
-            {
-                Document = ProcessingDocument,
-                Description = _module.GetProgressString(converter),
-            };
+            var eventArgs = new ProgressChangedEventArgs(
+                ProcessingDocument,
+                _module.GetProgressString(converter));
 
             ProgressChanged?.Invoke(this, eventArgs);
         }
@@ -119,11 +115,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 return;
             }
 
-            var eventArgs = new FinishedEventArgs
-            {
-                Document = ProcessingDocument,
-                Success = success == 1,
-            };
+            var eventArgs = new FinishedEventArgs(
+                ProcessingDocument,
+                success == 1);
 
             Finished?.Invoke(this, eventArgs);
         }
@@ -135,11 +129,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 return;
             }
 
-            var eventArgs = new ErrorEventArgs
-            {
-                Document = ProcessingDocument,
-                Message = message,
-            };
+            var eventArgs = new ErrorEventArgs(
+                ProcessingDocument,
+                message);
 
             Error?.Invoke(this, eventArgs);
         }
@@ -151,11 +143,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 return;
             }
 
-            var eventArgs = new WarningEventArgs
-            {
-                Document = ProcessingDocument,
-                Message = message,
-            };
+            var eventArgs = new WarningEventArgs(
+                ProcessingDocument,
+                message);
 
             Warning?.Invoke(this, eventArgs);
         }

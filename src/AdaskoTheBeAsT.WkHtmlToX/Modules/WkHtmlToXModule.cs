@@ -48,7 +48,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         public abstract int SetGlobalSetting(
             IntPtr settings,
             string name,
-            string value);
+            string? value);
 
         public string GetGlobalSetting(
             IntPtr settings,

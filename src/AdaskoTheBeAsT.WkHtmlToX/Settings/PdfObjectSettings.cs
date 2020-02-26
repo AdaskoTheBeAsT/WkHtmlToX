@@ -17,7 +17,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         /// The caption to use when creating a table of content.
         /// </summary>
         [WkHtml("toc.captionText")]
-        public string CaptionText { get; set; }
+        public string? CaptionText { get; set; }
 
         /// <summary>
         /// Should we create links from the table of content into the actual content.
@@ -35,19 +35,19 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         /// The indentation used for every table of content level, e.g. "2em".
         /// </summary>
         [WkHtml("toc.indentation")]
-        public string Indentation { get; set; }
+        public string? Indentation { get; set; }
 
         /// <summary>
         /// How much should we scale down the font for every toc level? E.g. "0.8".
         /// </summary>
         [WkHtml("toc.fontScale")]
-        public string FontScale { get; set; }
+        public string? FontScale { get; set; }
 
         /// <summary>
         /// The URL or path of the web page to convert, if "-" input is read from stdin. Default = "".
         /// </summary>
         [WkHtml("page")]
-        public string Page { get; set; }
+        public string? Page { get; set; }
 
         /// <summary>
         /// Should external links in the HTML document be converted into external pdf links. Default = true.
@@ -85,11 +85,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         /// the outline XML into a table of content.
         /// </summary>
         [WkHtml("tocXsl")]
-        public string Xsl { get; set; }
+        public string? Xsl { get; set; }
 
-        public string HtmlContent { get; set; }
+        public string? HtmlContent { get; set; }
 
-        public Encoding Encoding { get; set; }
+        public Encoding? Encoding { get; set; }
 
         public WebSettings WebSettings { get; set; } = new WebSettings();
 
@@ -101,12 +101,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
 
         public byte[] GetContent()
         {
-            if (HtmlContent == null)
-            {
-                return Array.Empty<byte>();
-            }
-
-            return (Encoding ?? Encoding.UTF8).GetBytes(HtmlContent);
+            return HtmlContent == null ? Array.Empty<byte>() : (Encoding ?? Encoding.UTF8).GetBytes(HtmlContent);
         }
     }
 }

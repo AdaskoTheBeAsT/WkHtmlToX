@@ -1,12 +1,20 @@
-﻿using System;
+using System;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.EventDefinitions
 {
     public class FinishedEventArgs : EventArgs
     {
-        public IDocument Document { get; set; }
+        public FinishedEventArgs(
+            IDocument? document,
+            bool success)
+        {
+            Document = document;
+            Success = success;
+        }
 
-        public bool Success { get; set; }
+        public IDocument? Document { get; }
+
+        public bool Success { get; }
     }
 }

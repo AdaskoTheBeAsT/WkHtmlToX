@@ -10,7 +10,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
     {
         private const string LibraryName = "wkhtmltox.dll";
 
-        private SafeLibraryHandle _libraryHandle;
+        private SafeLibraryHandle? _libraryHandle;
 
         public override void Load()
         {

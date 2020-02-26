@@ -24,7 +24,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         public override int SetGlobalSetting(
             IntPtr settings,
             string name,
-            string value) => NativeMethodsPdfWindows.wkhtmltopdf_set_global_setting(settings, name, value);
+            string? value) => NativeMethodsPdfWindows.wkhtmltopdf_set_global_setting(settings, name, value);
 
         public override IntPtr CreateConverter(
             IntPtr globalSettings) =>

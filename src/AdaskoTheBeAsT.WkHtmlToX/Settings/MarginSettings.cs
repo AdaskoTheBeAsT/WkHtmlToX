@@ -31,32 +31,22 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
 
         public double? Right { get; set; }
 
-        public string GetMarginValue(double? value)
+        public string? GetMarginValue(double? value)
         {
             if (!value.HasValue)
             {
                 return null;
             }
 
-            string strUnit;
-
-            switch (Unit)
+            var strUnit = Unit switch
             {
-                case Unit.Inches:
-                    strUnit = "in";
-                    break;
-                case Unit.Millimeters:
-                    strUnit = "mm";
-                    break;
-                case Unit.Centimeters:
-                    strUnit = "cm";
-                    break;
-                default:
-                    strUnit = "in";
-                    break;
-            }
+                Unit.Inches => "in",
+                Unit.Millimeters => "mm",
+                Unit.Centimeters => "cm",
+                _ => "in",
+            };
 
-            return value.Value.ToString("0.##", CultureInfo.InvariantCulture) + strUnit;
+            return $"{value.Value.ToString("0.##", CultureInfo.InvariantCulture)}{strUnit}";
         }
     }
 }

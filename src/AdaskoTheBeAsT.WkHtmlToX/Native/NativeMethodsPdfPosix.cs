@@ -49,7 +49,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         internal static extern int wkhtmltopdf_set_global_setting(
             IntPtr settings,
             [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string name,
-            [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string value);
+            [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string? value);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
@@ -64,7 +64,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         internal static extern int wkhtmltopdf_set_object_setting(
             IntPtr settings,
             [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string name,
-            [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string value);
+            [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string? value);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset, CallingConvention = CallConvention)]

@@ -22,7 +22,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
         int SetGlobalSetting(
             IntPtr settings,
             string name,
-            string value);
+            string? value);
 
         string GetGlobalSetting(
             IntPtr settings,

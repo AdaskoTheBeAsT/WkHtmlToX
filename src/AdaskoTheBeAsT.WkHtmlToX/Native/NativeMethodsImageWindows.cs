@@ -41,7 +41,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         internal static extern int wkhtmltoimage_set_global_setting(
             IntPtr settings,
             [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string name,
-            [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string value);
+            [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string? value);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset, CallingConvention = CallConvention)]

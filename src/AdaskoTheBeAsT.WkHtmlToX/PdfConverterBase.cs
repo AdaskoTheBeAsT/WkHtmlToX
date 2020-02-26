@@ -27,7 +27,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
         protected Stream ConvertImpl(IHtmlToPdfDocument document)
         {
-            if (document?.ObjectSettings?.Count == 0)
+            if (document is null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            if (document.ObjectSettings?.Count == 0)
             {
                 throw new ArgumentException(
                     "No objects is defined in document that was passed. At least one object must be defined.");
@@ -129,7 +134,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         {
             var type = value.GetType();
 
-            Func<IntPtr, string, string, int> applySetting;
+            Func<IntPtr, string, string?, int> applySetting;
             if (isGlobal)
             {
                 applySetting = _module.SetGlobalSetting;

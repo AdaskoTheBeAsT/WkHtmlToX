@@ -18,7 +18,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         public abstract int SetObjectSetting(
             IntPtr settings,
             string name,
-            string value);
+            string? value);
 
         public string GetObjectSetting(
             IntPtr settings,

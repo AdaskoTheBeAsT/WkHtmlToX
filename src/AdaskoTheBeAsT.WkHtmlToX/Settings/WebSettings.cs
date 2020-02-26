@@ -45,13 +45,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         /// What encoding should we guess content is using if they do not specify it properly. Default = "".
         /// </summary>
         [WkHtml("web.defaultEncoding")]
-        public string DefaultEncoding { get; set; }
+        public string? DefaultEncoding { get; set; }
 
         /// <summary>
         /// Url or path to a user specified style sheet. Default = "".
         /// </summary>
         [WkHtml("web.userStyleSheet")]
-        public string UserStyleSheet { get; set; }
+        public string? UserStyleSheet { get; set; }
 
         /// <summary>
         /// Should we enable NS plugins. Enabling this will have limited success. Default = false.

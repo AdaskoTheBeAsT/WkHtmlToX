@@ -14,7 +14,8 @@
     <PropertyGroup>
         <!-- Common ruleset shared by all projects -->
         <CodeAnalysisRuleset>$(MSBuildThisFileDirectory)AdaskoTheBeAsT.wkhtmltox.ruleset</CodeAnalysisRuleset>
-        <LangVersion>7.3</LangVersion>
+        <LangVersion>8.0</LangVersion>
+        <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningsAsErrors />
         <NoWarn>$(NoWarn);1701;1702;1591</NoWarn>

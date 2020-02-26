@@ -15,7 +15,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         public override int SetObjectSetting(
             IntPtr settings,
             string name,
-            string value) => NativeMethodsPdfPosix.wkhtmltopdf_set_object_setting(settings, name, value);
+            string? value) => NativeMethodsPdfPosix.wkhtmltopdf_set_object_setting(settings, name, value);
 
         public override void AddObject(
             IntPtr converter,

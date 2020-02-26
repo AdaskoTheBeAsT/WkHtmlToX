@@ -15,25 +15,25 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         /// The name of the font to use for the header. Default = "Ariel".
         /// </summary>
         [WkHtml("header.fontName")]
-        public string FontName { get; set; }
+        public string? FontName { get; set; }
 
         /// <summary>
         /// The string to print in the left part of the header, note that some sequences are replaced in this string, see the wkhtmltopdf manual. Default = "".
         /// </summary>
         [WkHtml("header.left")]
-        public string Left { get; set; }
+        public string? Left { get; set; }
 
         /// <summary>
         /// The text to print in the right part of the header, note that some sequences are replaced in this string, see the wkhtmltopdf manual. Default = "".
         /// </summary>
         [WkHtml("header.center")]
-        public string Center { get; set; }
+        public string? Center { get; set; }
 
         /// <summary>
         /// The text to print in the right part of the header, note that some sequences are replaced in this string, see the wkhtmltopdf manual. Default = "".
         /// </summary>
         [WkHtml("header.right")]
-        public string Right { get; set; }
+        public string? Right { get; set; }
 
         /// <summary>
         /// Whether a line should be printed under the header. Default = false.
@@ -52,7 +52,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         /// </summary>
         [WkHtml("header.htmlUrl")]
 #pragma warning disable CA1056 // Uri properties should not be strings
-        public string HtmlUrl { get; set; }
+        public string? HtmlUrl { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
     }
 }

@@ -11,13 +11,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         /// The user name to use when loging into a website. Default = "".
         /// </summary>
         [WkHtml("load.username")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         /// <summary>
         /// The password to used when logging into a website. Default = "".
         /// </summary>
         [WkHtml("load.password")]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         /// <summary>
         /// The mount of time in milliseconds to wait after a page has done loading until it is actually printed. E.g. "1200". We will wait this amount of time or until, javascript calls window.print(). Default = 200.
@@ -59,13 +59,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         /// String describing what proxy to use when loading the object. Default = "".
         /// </summary>
         [WkHtml("load.proxy")]
-        public string Proxy { get; set; }
+        public string? Proxy { get; set; }
 
         /// <summary>
         /// Custom headers used when requesting page. Defaulty = empty.
         /// </summary>
         [WkHtml("load.customHeaders")]
-        public Dictionary<string, string> CustomHeaders { get; set; }
+        public Dictionary<string, string>? CustomHeaders { get; set; }
 
         /// <summary>
         /// Should the custom headers be sent all elements loaded instead of only the main page. Default = false.
@@ -77,7 +77,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         /// Cookies used when requesting page. Default = empty.
         /// </summary>
         [WkHtml("load.cookies")]
-        public Dictionary<string, string> Cookies { get; set; }
+        public Dictionary<string, string>? Cookies { get; set; }
     }
 #pragma warning restore CA2227
 }

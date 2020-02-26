@@ -8,7 +8,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiFull
     public class WebApiApplication : System.Web.HttpApplication
 #pragma warning restore SA1649 // File name should match first type name
     {
+#pragma warning disable CS8618
         private ILibraryLoader _libraryLoader;
+#pragma warning restore CS8618
 
 #pragma warning disable CA1707 // Identifiers should not contain underscores
         protected void Application_Start()
