@@ -1,10 +1,19 @@
 <Project>
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
   <ItemGroup>
-    <PackageReference Include="Alba" Version="3.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.2" />
+    
     <PackageReference Include="SpecFlow" Version="3.1.86" />
     <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.1.86" />
     <PackageReference Include="SpecFlow.xUnit" Version="3.1.86" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
+    <PackageReference Include="Alba" Version="3.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
+    <PackageReference Include="Alba" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.2.0" />
   </ItemGroup>
 </Project>

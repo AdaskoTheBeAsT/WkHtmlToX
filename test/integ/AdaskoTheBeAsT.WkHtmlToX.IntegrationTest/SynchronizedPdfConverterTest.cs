@@ -6,7 +6,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Settings;
 using FluentAssertions;
 using Xunit;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Test
+namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
 {
     public sealed class SynchronizedPdfConverterTest
         : IDisposable

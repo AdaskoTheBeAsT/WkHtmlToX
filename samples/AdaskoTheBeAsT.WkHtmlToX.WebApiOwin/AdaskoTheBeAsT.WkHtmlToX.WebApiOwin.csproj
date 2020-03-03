@@ -127,10 +127,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AdaskoTheBeAsT.WkHtmlToX\AdaskoTheBeAsT.WkHtmlToX.csproj">
-      <Project>{4dc672bf-62dc-4c99-b44c-12db2f0c7a3f}</Project>
-      <Name>AdaskoTheBeAsT.WkHtmlToX</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AdaskoTheBeAsT.WkHtmlToX.BusinessLogic\AdaskoTheBeAsT.WkHtmlToX.BusinessLogic.csproj">
       <Project>{6a48aad9-8d05-4276-85dd-18c0926e9dff}</Project>
       <Name>AdaskoTheBeAsT.WkHtmlToX.BusinessLogic</Name>
