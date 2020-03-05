@@ -2,11 +2,10 @@ using System;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.EventDefinitions;
 using AdaskoTheBeAsT.WkHtmlToX.Modules;
-using ErrorEventArgs = AdaskoTheBeAsT.WkHtmlToX.EventDefinitions.ErrorEventArgs;
 
 namespace AdaskoTheBeAsT.WkHtmlToX
 {
-    public class ConverterBase
+    public abstract class ConverterBase
         : IDisposable
     {
 #pragma warning disable CA1051 // Do not declare visible instance fields

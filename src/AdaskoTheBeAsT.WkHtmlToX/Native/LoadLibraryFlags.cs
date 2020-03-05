@@ -1,11 +1,11 @@
+// ReSharper disable InconsistentNaming
 using System;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Native
 {
-    [Flags]
 #pragma warning disable S2344
+    [Flags]
     internal enum LoadLibraryFlags : uint
-#pragma warning restore S2344
     {
         /// <summary>
         /// If this value is used, and the executable module is a DLL,
@@ -137,4 +137,5 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// </summary>
         LOAD_WITH_ALTERED_SEARCH_PATH = 0x00000008,
     }
+#pragma warning restore S2344
 }

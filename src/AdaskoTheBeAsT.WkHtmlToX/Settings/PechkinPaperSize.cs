@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
 
@@ -82,6 +83,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
             { PaperKind.A5Rotated, new PechkinPaperSize("210mm", "148mm") },
             { PaperKind.B4JisRotated, new PechkinPaperSize("364mm", "257mm") },
             { PaperKind.B5JisRotated, new PechkinPaperSize("257mm", "182mm") },
+            { PaperKind.JapaneseEnvelopeChouNumber3, new PechkinPaperSize("120mm", "235mm") },
+            { PaperKind.JapaneseEnvelopeChouNumber3Rotated, new PechkinPaperSize("235mm", "120mm") },
+            { PaperKind.JapaneseEnvelopeChouNumber4, new PechkinPaperSize("90mm", "205mm") },
+            { PaperKind.JapaneseEnvelopeChouNumber4Rotated, new PechkinPaperSize("205mm", "90mm") },
+            { PaperKind.JapaneseEnvelopeKakuNumber2, new PechkinPaperSize("240mm", "332mm") },
+            { PaperKind.JapaneseEnvelopeKakuNumber2Rotated, new PechkinPaperSize("332mm", "240mm") },
+            { PaperKind.JapaneseEnvelopeKakuNumber3, new PechkinPaperSize("216mm", "277mm") },
+            { PaperKind.JapaneseEnvelopeKakuNumber3Rotated, new PechkinPaperSize("277mm", "216mm") },
+            { PaperKind.JapaneseEnvelopeYouNumber4, new PechkinPaperSize("105mm", "235mm") },
+            { PaperKind.JapaneseEnvelopeYouNumber4Rotated, new PechkinPaperSize("235mm", "105mm") },
             { PaperKind.JapanesePostcardRotated, new PechkinPaperSize("148mm", "100mm") },
             { PaperKind.JapaneseDoublePostcardRotated, new PechkinPaperSize("148mm", "200mm") },
             { PaperKind.A6Rotated, new PechkinPaperSize("148mm", "105mm") },
@@ -126,8 +137,20 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
 
         public string Width { get; set; }
 
-        public static implicit operator PechkinPaperSize(PaperKind paperKind) => Dictionary[paperKind];
+        public static implicit operator PechkinPaperSize(PaperKind paperKind) => FromPaperKind(paperKind);
 
-        public static PechkinPaperSize FromPaperKind(PaperKind paperKind) => Dictionary[paperKind];
+        public static PechkinPaperSize FromPaperKind(
+            PaperKind paperKind)
+        {
+            var result = Dictionary.TryGetValue(paperKind, out PechkinPaperSize pechkinPaperSize);
+            if (!result)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(paperKind),
+                    $"Unknown paper kind {paperKind.ToString("G")} - cannot convert to pechkin paper size");
+            }
+
+            return pechkinPaperSize;
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
 #pragma warning disable CA1060 // Move pinvokes to native methods class
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
+#pragma warning disable IDE1006 // Naming Styles
     internal static class NativeMethodsPdfPosix
     {
         private const CallingConvention CallConvention = CallingConvention.Cdecl;
@@ -154,6 +155,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
         internal static extern int wkhtmltopdf_get_output(IntPtr converter, out IntPtr data);
     }
+#pragma warning restore IDE1006 // Naming Styles
 #pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
 #pragma warning restore SA1300 // Element should begin with upper-case letter
 #pragma warning restore CA1060 // Move pinvokes to native methods class

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Native
@@ -6,6 +6,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
 #pragma warning disable CA1060 // Move pinvokes to native methods class
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable SA1310 // Field names should not contain underscore
+#pragma warning disable IDE1006 // Naming Styles
     internal static class NativeMethodsSystemPosix
     {
         // ReSharper disable once InconsistentNaming
@@ -23,6 +24,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         [DllImport("libdl")]
         internal static extern IntPtr dlerror();
     }
+#pragma warning restore IDE1006 // Naming Styles
 #pragma warning restore SA1310 // Field names should not contain underscore
 #pragma warning restore SA1300 // Element should begin with upper-case letter
 #pragma warning restore CA1060 // Move pinvokes to native methods class

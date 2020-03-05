@@ -8,7 +8,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
     public class LoadSettings : ISettings
     {
         /// <summary>
-        /// The user name to use when loging into a website. Default = "".
+        /// The user name to use when logging into a website. Default = "".
         /// </summary>
         [WkHtml("load.username")]
         public string? Username { get; set; }

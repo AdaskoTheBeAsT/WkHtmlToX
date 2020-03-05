@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
@@ -9,7 +10,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WorkItems
         public PdfConvertWorkItem(
             IHtmlToPdfDocument document)
         {
-            Document = document;
+            Document = document ?? throw new ArgumentNullException(nameof(document));
             TaskCompletionSource = new TaskCompletionSource<Stream>();
         }
 
