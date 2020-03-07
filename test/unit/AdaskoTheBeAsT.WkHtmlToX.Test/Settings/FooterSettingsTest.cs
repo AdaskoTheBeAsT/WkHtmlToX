@@ -6,11 +6,11 @@ using Xunit;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
 {
-    public sealed class HeaderSettingsTest
+    public sealed class FooterSettingsTest
     {
         private readonly Fixture _fixture;
 
-        public HeaderSettingsTest()
+        public FooterSettingsTest()
         {
             _fixture = new Fixture();
         }
@@ -19,7 +19,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
         public void ShouldBeProperlyInitialized()
         {
             // Arrange
-            var sut = new HeaderSettings();
+            var sut = new FooterSettings();
 
             // Assert
             using (new AssertionScope())
@@ -49,7 +49,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
             var spacing = _fixture.Create<double>();
 
             // Act
-            var sut = new HeaderSettings
+            var sut = new FooterSettings
             {
                 Center = center,
                 FontName = fontName,
