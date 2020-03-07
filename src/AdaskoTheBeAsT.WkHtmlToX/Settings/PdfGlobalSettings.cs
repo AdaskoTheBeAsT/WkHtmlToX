@@ -106,36 +106,36 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         /// The height of the output document.
         /// </summary>
         [WkHtml("size.height")]
-        private string? PaperHeight => PaperSize?.Height;
+        internal string? PaperHeight => PaperSize?.Height;
 
         /// <summary>
         /// The width of the output document.
         /// </summary>
         [WkHtml("size.width")]
-        private string? PaperWidth => PaperSize?.Width;
+        internal string? PaperWidth => PaperSize?.Width;
 
         /// <summary>
         /// Size of the left margin.
         /// </summary>
         [WkHtml("margin.left")]
-        private string? MarginLeft => Margins.GetMarginValue(Margins.Left);
+        internal string? MarginLeft => Margins.GetMarginValue(Margins.Left);
 
         /// <summary>
         /// Size of the right margin.
         /// </summary>
         [WkHtml("margin.right")]
-        private string? MarginRight => Margins.GetMarginValue(Margins.Right);
+        internal string? MarginRight => Margins.GetMarginValue(Margins.Right);
 
         /// <summary>
         /// Size of the top margin.
         /// </summary>
         [WkHtml("margin.top")]
-        private string? MarginTop => Margins.GetMarginValue(Margins.Top);
+        internal string? MarginTop => Margins.GetMarginValue(Margins.Top);
 
         /// <summary>
         /// Size of the bottom margin.
         /// </summary>
         [WkHtml("margin.bottom")]
-        private string? MarginBottom => Margins.GetMarginValue(Margins.Bottom);
+        internal string? MarginBottom => Margins.GetMarginValue(Margins.Bottom);
     }
 }

@@ -49,7 +49,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
             Action action = () =>
             {
 #pragma warning disable S1481 // Unused local variables should be removed
+#pragma warning disable 219
                 PechkinPaperSize pps = PaperKind.Custom;
+#pragma warning restore 219
 #pragma warning restore S1481 // Unused local variables should be removed
             };
 
