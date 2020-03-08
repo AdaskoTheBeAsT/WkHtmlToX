@@ -14,10 +14,23 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 #pragma warning restore SA1401 // Fields should be private
 #pragma warning restore CA1051 // Do not declare visible instance fields
 
-        protected ConverterBase(ModuleKind moduleKind)
+#pragma warning disable S3442 // "abstract" classes should not have "public" constructors
+        internal ConverterBase(
+            IWkHtmlToXModuleFactory moduleFactory,
+            ModuleKind moduleKind)
         {
-            var moduleFactory = new WkHtmlToXModuleFactory();
+            if (moduleFactory is null)
+            {
+                throw new ArgumentNullException(nameof(moduleFactory));
+            }
+
             _module = moduleFactory.GetModule(moduleKind);
+        }
+#pragma warning restore S3442 // "abstract" classes should not have "public" constructors
+
+        protected ConverterBase(ModuleKind moduleKind)
+            : this(new WkHtmlToXModuleFactory(), moduleKind)
+        {
         }
 
         public event EventHandler<PhaseChangedEventArgs>? PhaseChanged;
@@ -38,17 +51,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(
-            bool disposing)
+        internal void RegisterEvents(IntPtr converter)
         {
-            if (disposing)
+            if (converter == IntPtr.Zero)
             {
-                _module?.Dispose();
+                throw new ArgumentException("converter pointer cannot be zero", nameof(converter));
             }
-        }
 
-        protected void RegisterEvents(IntPtr converter)
-        {
             if (PhaseChanged != null)
             {
                 _module.SetPhaseChangedCallback(converter, OnPhaseChanged);
@@ -75,7 +84,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             }
         }
 
-        private void OnPhaseChanged(IntPtr converter)
+        internal void OnPhaseChanged(IntPtr converter)
         {
             if (PhaseChanged == null)
             {
@@ -93,7 +102,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             PhaseChanged.Invoke(this, eventArgs);
         }
 
-        private void OnProgressChanged(IntPtr converter)
+        internal void OnProgressChanged(IntPtr converter)
         {
             if (ProgressChanged == null)
             {
@@ -107,7 +116,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             ProgressChanged?.Invoke(this, eventArgs);
         }
 
-        private void OnFinished(IntPtr converter, int success)
+        internal void OnFinished(IntPtr converter, int success)
         {
             if (Finished == null)
             {
@@ -121,7 +130,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             Finished?.Invoke(this, eventArgs);
         }
 
-        private void OnError(IntPtr converter, string message)
+        internal void OnError(IntPtr converter, string message)
         {
             if (Error == null)
             {
@@ -135,7 +144,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             Error?.Invoke(this, eventArgs);
         }
 
-        private void OnWarning(IntPtr converter, string message)
+        internal void OnWarning(IntPtr converter, string message)
         {
             if (Warning == null)
             {
@@ -147,6 +156,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 message);
 
             Warning?.Invoke(this, eventArgs);
+        }
+
+        protected virtual void Dispose(
+            bool disposing)
+        {
+            if (disposing)
+            {
+                _module?.Dispose();
+            }
         }
     }
 }

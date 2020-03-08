@@ -11,6 +11,17 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             IHtmlToPdfConverter,
             IHtmlToPdfAsyncConverter
     {
+        public BasicPdfConverter()
+        {
+        }
+
+        internal BasicPdfConverter(
+            IWkHtmlToXModuleFactory moduleFactory,
+            IWkHtmlToPdfModuleFactory pdfModuleFactory)
+            : base(moduleFactory, pdfModuleFactory)
+        {
+        }
+
         public Stream Convert(IHtmlToPdfDocument document)
         {
             var pdfStream = Stream.Null;

@@ -4,8 +4,8 @@ using System.Runtime.Serialization;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Exceptions
 {
-    [Serializable]
     [ExcludeFromCodeCoverage]
+    [Serializable]
     public class InvalidLinuxRuntimeIdentifierException : Exception
     {
         public InvalidLinuxRuntimeIdentifierException()

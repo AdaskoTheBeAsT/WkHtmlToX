@@ -18,11 +18,21 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 #pragma warning restore CA1051 // Do not declare visible instance fields
 #pragma warning restore SA1401 // Fields should be private
 
-        protected PdfConverterBase()
-            : base(ModuleKind.Pdf)
+#pragma warning disable S3442 // "abstract" classes should not have "public" constructors
+        internal PdfConverterBase(
+            IWkHtmlToXModuleFactory moduleFactory,
+            IWkHtmlToPdfModuleFactory pdfModuleFactory)
+            : base(moduleFactory, ModuleKind.Pdf)
         {
-            var pdfModuleFactory = new WkHtmlToPdfModuleFactory();
             _pdfModule = pdfModuleFactory.GetModule();
+        }
+#pragma warning restore S3442 // "abstract" classes should not have "public" constructors
+
+        protected PdfConverterBase()
+            : this(
+                new WkHtmlToXModuleFactory(),
+                new WkHtmlToPdfModuleFactory())
+        {
         }
 
         protected Stream ConvertImpl(IHtmlToPdfDocument document)

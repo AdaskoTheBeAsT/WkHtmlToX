@@ -18,6 +18,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         {
         }
 
+        internal BasicImageConverter(IWkHtmlToXModuleFactory moduleFactory)
+            : base(moduleFactory, ModuleKind.Image)
+        {
+        }
+
         public Stream Convert(IHtmlToImageDocument document)
         {
             var pdfStream = Stream.Null;
