@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.EventDefinitions;
 using AdaskoTheBeAsT.WkHtmlToX.Modules;
@@ -28,6 +29,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         }
 #pragma warning restore S3442 // "abstract" classes should not have "public" constructors
 
+        [ExcludeFromCodeCoverage]
         protected ConverterBase(ModuleKind moduleKind)
             : this(new WkHtmlToXModuleFactory(), moduleKind)
         {
@@ -91,13 +93,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 return;
             }
 
+            var phaseCount = _module.GetPhaseCount(converter);
             var currentPhase = _module.GetCurrentPhase(converter);
+            var phaseDescription = _module.GetPhaseDescription(converter, currentPhase);
 
             var eventArgs = new PhaseChangedEventArgs(
                 ProcessingDocument,
-                _module.GetPhaseCount(converter),
+                phaseCount,
                 currentPhase,
-                _module.GetPhaseDescription(converter, currentPhase));
+                phaseDescription);
 
             PhaseChanged.Invoke(this, eventArgs);
         }
@@ -109,9 +113,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 return;
             }
 
+            var progress = _module.GetProgressString(converter);
             var eventArgs = new ProgressChangedEventArgs(
                 ProcessingDocument,
-                _module.GetProgressString(converter));
+                progress);
 
             ProgressChanged?.Invoke(this, eventArgs);
         }

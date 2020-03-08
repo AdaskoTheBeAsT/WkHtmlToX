@@ -137,7 +137,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
         [Fact]
         public void ShouldReturnUtf8BytesFromGetContentWhenHtmlIsNonEmpty()
         {
-            // Assert
+            // Arrange
             var htmlContent = "ĄĘĆŁŃÓŚŻŹąęćłńóśżź";
             var expected = Encoding.UTF8.GetBytes(htmlContent);
 
@@ -156,7 +156,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
         [Fact]
         public void ShouldReturnUtf32FromGetContentWhenHtmlIsNonEmpty()
         {
-            // Assert
+            // Arrange
             var htmlContent = "ĄĘĆŁŃÓŚŻŹąęćłńóśżź";
             var expected = Encoding.UTF32.GetBytes(htmlContent);
 

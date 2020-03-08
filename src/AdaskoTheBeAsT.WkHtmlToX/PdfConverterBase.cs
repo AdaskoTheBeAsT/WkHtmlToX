@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -24,10 +25,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             IWkHtmlToPdfModuleFactory pdfModuleFactory)
             : base(moduleFactory, ModuleKind.Pdf)
         {
+            if (pdfModuleFactory is null)
+            {
+                throw new ArgumentNullException(nameof(pdfModuleFactory));
+            }
+
             _pdfModule = pdfModuleFactory.GetModule();
         }
 #pragma warning restore S3442 // "abstract" classes should not have "public" constructors
 
+        [ExcludeFromCodeCoverage]
         protected PdfConverterBase()
             : this(
                 new WkHtmlToXModuleFactory(),
@@ -35,7 +42,108 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         {
         }
 
-        protected Stream ConvertImpl(IHtmlToPdfDocument document)
+        internal (IntPtr converterPtr, IntPtr globalSettingsPtr, List<IntPtr> objectSettingsPtrs) CreateConverter(
+            IHtmlToPdfDocument document)
+        {
+            var globalSettings = _module.CreateGlobalSettings();
+            ApplyConfig(globalSettings, document.GlobalSettings, true);
+            var converter = _module.CreateConverter(globalSettings);
+            var objectSettingsPtr = new List<IntPtr>();
+            foreach (var obj in document.ObjectSettings)
+            {
+                if (obj == null)
+                {
+                    continue;
+                }
+
+                var objectSettings = _pdfModule.CreateObjectSettings();
+                objectSettingsPtr.Add(objectSettings);
+
+                ApplyConfig(objectSettings, obj, false);
+
+                _pdfModule.AddObject(converter, objectSettings, obj.GetContent());
+            }
+
+            return (converter, globalSettings, objectSettingsPtr);
+        }
+
+        internal void ApplyConfig(IntPtr config, ISettings settings, bool isGlobal)
+        {
+            if (settings == null)
+            {
+                return;
+            }
+
+            const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+            foreach (var prop in settings.GetType().GetProperties(bindingFlags))
+            {
+                var attrs = (Attribute[])prop.GetCustomAttributes();
+                var propValue = prop.GetValue(settings);
+                if (propValue == null)
+                {
+                    continue;
+                }
+
+                if (attrs.Length > 0 && attrs[0] is WkHtmlAttribute wkHtmlAttribute)
+                {
+                    Apply(config, wkHtmlAttribute.Name, propValue, isGlobal);
+                }
+                else if (propValue is ISettings propSettings)
+                {
+                    ApplyConfig(config, propSettings, isGlobal);
+                }
+            }
+        }
+
+        internal void Apply(IntPtr config, string name, object value, bool isGlobal)
+        {
+            var type = value.GetType();
+
+            Func<IntPtr, string, string?, int> applySetting;
+            if (isGlobal)
+            {
+                applySetting = _module.SetGlobalSetting;
+            }
+            else
+            {
+                applySetting = _pdfModule.SetObjectSetting;
+            }
+
+            if (typeof(bool) == type)
+            {
+                applySetting(config, name, (bool)value ? "true" : "false");
+            }
+            else if (typeof(double) == type)
+            {
+                applySetting(config, name, ((double)value).ToString("0.##", CultureInfo.InvariantCulture));
+            }
+            else if (typeof(Dictionary<string, string>).IsAssignableFrom(type))
+            {
+                var dictionary = (Dictionary<string, string>)value;
+                var index = 0;
+
+                foreach (var pair in dictionary)
+                {
+                    if (pair.Key == null || pair.Value == null)
+                    {
+                        continue;
+                    }
+
+                    // https://github.com/wkhtmltopdf/wkhtmltopdf/blob/c754e38b074a75a51327df36c4a53f8962020510/src/lib/reflect.hh#L192
+                    applySetting(config, $"{name}.append", null);
+                    applySetting(config, $"{name}[{index}]", $"{pair.Key}\n{pair.Value}");
+
+                    index++;
+                }
+            }
+            else
+            {
+                applySetting(config, name, value.ToString());
+            }
+        }
+
+        protected internal Stream ConvertImpl(IHtmlToPdfDocument document)
         {
             if (document is null)
             {
@@ -84,107 +192,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             }
 
             return result;
-        }
-
-        private (IntPtr converterPtr, IntPtr globalSettingsPtr, List<IntPtr> objectSettingsPtrs) CreateConverter(
-            IHtmlToPdfDocument document)
-        {
-            var globalSettings = _module.CreateGlobalSettings();
-            ApplyConfig(globalSettings, document.GlobalSettings, true);
-            var converter = _module.CreateConverter(globalSettings);
-            var objectSettingsPtr = new List<IntPtr>();
-            foreach (var obj in document.ObjectSettings)
-            {
-                if (obj == null)
-                {
-                    continue;
-                }
-
-                var objectSettings = _pdfModule.CreateObjectSettings();
-                objectSettingsPtr.Add(objectSettings);
-
-                ApplyConfig(objectSettings, obj, false);
-
-                _pdfModule.AddObject(converter, objectSettings, obj.GetContent());
-            }
-
-            return (converter, globalSettings, objectSettingsPtr);
-        }
-
-        private void ApplyConfig(IntPtr config, ISettings settings, bool isGlobal)
-        {
-            if (settings == null)
-            {
-                return;
-            }
-
-            const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-
-            foreach (var prop in settings.GetType().GetProperties(bindingFlags))
-            {
-                var attrs = (Attribute[])prop.GetCustomAttributes();
-                var propValue = prop.GetValue(settings);
-                if (propValue == null)
-                {
-                    continue;
-                }
-
-                if (attrs.Length > 0 && attrs[0] is WkHtmlAttribute wkHtmlAttribute)
-                {
-                    Apply(config, wkHtmlAttribute.Name, propValue, isGlobal);
-                }
-                else if (propValue is ISettings propSettings)
-                {
-                    ApplyConfig(config, propSettings, isGlobal);
-                }
-            }
-        }
-
-        private void Apply(IntPtr config, string name, object value, bool isGlobal)
-        {
-            var type = value.GetType();
-
-            Func<IntPtr, string, string?, int> applySetting;
-            if (isGlobal)
-            {
-                applySetting = _module.SetGlobalSetting;
-            }
-            else
-            {
-                applySetting = _pdfModule.SetObjectSetting;
-            }
-
-            if (typeof(bool) == type)
-            {
-                applySetting(config, name, (bool)value ? "true" : "false");
-            }
-            else if (typeof(double) == type)
-            {
-                applySetting(config, name, ((double)value).ToString("0.##", CultureInfo.InvariantCulture));
-            }
-            else if (typeof(Dictionary<string, string>).IsAssignableFrom(type))
-            {
-                var dictionary = (Dictionary<string, string>)value;
-                var index = 0;
-
-                foreach (var pair in dictionary)
-                {
-                    if (pair.Key == null || pair.Value == null)
-                    {
-                        continue;
-                    }
-
-                    // https://github.com/wkhtmltopdf/wkhtmltopdf/blob/c754e38b074a75a51327df36c4a53f8962020510/src/lib/reflect.hh#L192
-                    applySetting(config, $"{name}.append", null);
-                    applySetting(config, $"{name}[{index}]", $"{pair.Key}\n{pair.Value}");
-
-                    index++;
-                }
-            }
-            else
-            {
-                applySetting(config, name, value.ToString());
-            }
         }
     }
 }

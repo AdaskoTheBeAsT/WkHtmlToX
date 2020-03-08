@@ -1,7 +1,9 @@
 using System;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AutoFixture;
+using FluentAssertions;
 using Moq;
+using Xunit;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Test
 {
@@ -36,6 +38,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         public void Dispose()
         {
             _sut.Dispose();
+        }
+
+        [Fact]
+        public void ShouldNotThrowWhenUsingDefaultConstructor()
+        {
+            // Arrange
+            Action action = () => _ = new BasicPdfConverter();
+
+            // Act & Assert
+            action.Should().NotThrow();
         }
     }
 }
