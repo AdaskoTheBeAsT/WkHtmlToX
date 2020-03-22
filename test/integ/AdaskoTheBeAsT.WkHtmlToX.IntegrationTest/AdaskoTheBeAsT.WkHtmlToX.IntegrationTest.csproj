@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net48</TargetFrameworks>
@@ -16,5 +16,53 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.WkHtmlToX\AdaskoTheBeAsT.WkHtmlToX.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="HtmlSamples\Simple.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Results\.gitkeep">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="specflow.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FluentAssertions" Version="5.10.3" />
+  </ItemGroup>
+
+  <!--https://stackoverflow.com/questions/14267938/msbuild-how-to-set-environment-variables-->
+  <UsingTask TaskName="SetEnvironmentVariableTask" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+
+    <ParameterGroup>
+      <Name ParameterType="System.String" Required="true" />
+      <Value ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+
+    <Task>
+      <Using Namespace="System" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        Environment.SetEnvironmentVariable(Name, Value);
+      ]]>
+      </Code>
+    </Task>
+
+  </UsingTask>
+
+  <!--
+  .NET Core SDK 3.1.200 and specflow issue workaround
+  https://github.com/SpecFlowOSS/SpecFlow/issues/1912
+  -->
+  <Target Name="CustomBeforeBuild" BeforeTargets="CoreBuild">
+    <Message Text="Environment change applied 1" />
+    <!--<SetEnvironmentVariableTask Name="MSBUILDSINGLELOADCONTEXT" Value="1" />
+    <Message Text="Environment change applied 2" />-->
+  </Target>
 
 </Project>

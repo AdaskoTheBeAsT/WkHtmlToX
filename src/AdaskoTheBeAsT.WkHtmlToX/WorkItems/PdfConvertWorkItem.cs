@@ -11,7 +11,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WorkItems
             IHtmlToPdfDocument document)
         {
             Document = document ?? throw new ArgumentNullException(nameof(document));
-            TaskCompletionSource = new TaskCompletionSource<Stream>();
+            TaskCompletionSource = new TaskCompletionSource<Stream>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         public IHtmlToPdfDocument Document { get; }

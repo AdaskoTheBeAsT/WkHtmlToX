@@ -24,21 +24,23 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
         public Stream Convert(IHtmlToPdfDocument document)
         {
-            var pdfStream = Stream.Null;
+            var result = Stream.Null;
             var thread = new Thread(
-                () => pdfStream = ConvertImpl(document));
+                () => result = ConvertImpl(document))
+            {
+                IsBackground = true,
+            };
             thread.SetApartmentState(ApartmentState.STA);
-            thread.IsBackground = true;
             thread.Start();
             thread.Join();
-            return pdfStream;
+            return result;
         }
 
 #pragma warning disable CA1031 // Do not catch general exception types
         public Task<Stream> ConvertAsync(
             IHtmlToPdfDocument document)
         {
-            var tcs = new TaskCompletionSource<Stream>();
+            var tcs = new TaskCompletionSource<Stream>(TaskCreationOptions.RunContinuationsAsynchronously);
             var thread = new Thread(() =>
             {
                 try
@@ -50,9 +52,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 {
                     tcs.SetException(e);
                 }
-            });
+            })
+            {
+                IsBackground = true,
+            };
             thread.SetApartmentState(ApartmentState.STA);
-            thread.IsBackground = true;
             thread.Start();
             return tcs.Task;
         }

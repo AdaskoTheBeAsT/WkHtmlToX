@@ -8,11 +8,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
     /// See https://docs.microsoft.com/en-us/archive/msdn-magazine/2005/october/using-the-reliability-features-of-the-net-framework
     /// for more about safe handles.
     /// </summary>
-    // ReSharper disable ClassNeverInstantiated.Global
 #pragma warning disable S3453
+    // ReSharper disable ClassNeverInstantiated.Global
     [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
     internal sealed class SafeLibraryHandle : SafeHandleZeroOrMinusOneIsInvalid
-#pragma warning restore S3453
     {
         private SafeLibraryHandle()
             : base(true)
@@ -26,4 +25,5 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
     }
 
     // ReSharper restore ClassNeverInstantiated.Global
+#pragma warning restore S3453
 }

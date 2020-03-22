@@ -1,11 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
-using AdaskoTheBeAsT.WkHtmlToX.Utils;
 
 namespace AdaskoTheBeAsT.WkHtmlToX
 {
@@ -27,15 +23,17 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         {
             var pdfStream = Stream.Null;
             var thread = new Thread(
-                () => pdfStream = ConvertImpl(document));
+                () => pdfStream = ConvertImpl(document))
+            {
+                IsBackground = true,
+            };
             thread.SetApartmentState(ApartmentState.STA);
-            thread.IsBackground = true;
             thread.Start();
             thread.Join();
             return pdfStream;
         }
 
-        private Stream ConvertImpl(IHtmlToImageDocument document)
+        internal Stream ConvertImpl(IHtmlToImageDocument document)
         {
             if (document?.ImageSettings == null)
             {
@@ -76,80 +74,19 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             return result;
         }
 
-        private (IntPtr converterPtr, IntPtr globalSettingsPtr) CreateConverter(
+        internal (IntPtr converterPtr, IntPtr globalSettingsPtr) CreateConverter(
             IHtmlToImageDocument document)
         {
+            if (document is null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
             var globalSettings = _module.CreateGlobalSettings();
-            ApplyConfig(globalSettings, document.ImageSettings);
+            ApplyConfig(globalSettings, document.ImageSettings, true);
             var converter = _module.CreateConverter(globalSettings);
 
             return (converter, globalSettings);
-        }
-
-        private void ApplyConfig(IntPtr config, ISettings settings)
-        {
-            if (settings == null)
-            {
-                return;
-            }
-
-            const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-
-            foreach (var prop in settings.GetType().GetProperties(bindingFlags))
-            {
-                var attrs = (Attribute[])prop.GetCustomAttributes();
-                var propValue = prop.GetValue(settings);
-                if (propValue == null)
-                {
-                    continue;
-                }
-
-                if (attrs.Length > 0 && attrs[0] is WkHtmlAttribute wkHtmlAttribute)
-                {
-                    Apply(config, wkHtmlAttribute.Name, propValue);
-                }
-                else if (propValue is ISettings propSettings)
-                {
-                    ApplyConfig(config, propSettings);
-                }
-            }
-        }
-
-        private void Apply(IntPtr config, string name, object value)
-        {
-            var type = value.GetType();
-
-            if (typeof(bool) == type)
-            {
-                _module.SetGlobalSetting(config, name, (bool)value ? "true" : "false");
-            }
-            else if (typeof(double) == type)
-            {
-                _module.SetGlobalSetting(config, name, ((double)value).ToString("0.##", CultureInfo.InvariantCulture));
-            }
-            else if (typeof(Dictionary<string, string>).IsAssignableFrom(type))
-            {
-                var dictionary = (Dictionary<string, string>)value;
-                var index = 0;
-
-                foreach (var pair in dictionary)
-                {
-                    if (pair.Key == null || pair.Value == null)
-                    {
-                        continue;
-                    }
-
-                    // https://github.com/wkhtmltopdf/wkhtmltopdf/blob/c754e38b074a75a51327df36c4a53f8962020510/src/lib/reflect.hh#L192
-                    _module.SetGlobalSetting(config, $"{name}.append", null);
-                    _module.SetGlobalSetting(config, $"{name}[{index}]", $"{pair.Key}\n{pair.Value}");
-
-                    index++;
-                }
-            }
-            else
-            {
-                _module.SetGlobalSetting(config, name, value.ToString());
-            }
         }
     }
 }

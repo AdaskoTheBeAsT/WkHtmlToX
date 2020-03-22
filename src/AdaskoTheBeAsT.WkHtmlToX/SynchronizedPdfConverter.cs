@@ -47,9 +47,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
         private void Initialize()
         {
-            var thread = new Thread(Process);
+            var thread = new Thread(Process)
+            {
+                IsBackground = true,
+            };
             thread.SetApartmentState(ApartmentState.STA);
-            thread.IsBackground = true;
             thread.Start(_cancellationTokenSource.Token);
         }
 
