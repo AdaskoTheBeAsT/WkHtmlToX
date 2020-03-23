@@ -27,7 +27,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 throw new ArgumentNullException(nameof(pdfModuleFactory));
             }
 
-            _pdfModule = pdfModuleFactory.GetModule();
+            _pdfModule = pdfModuleFactory.GetModule((int)Environment.OSVersion.Platform);
         }
 #pragma warning restore S3442 // "abstract" classes should not have "public" constructors
 

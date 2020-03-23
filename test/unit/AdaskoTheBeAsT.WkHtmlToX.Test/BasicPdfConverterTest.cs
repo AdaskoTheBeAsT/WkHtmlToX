@@ -34,7 +34,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
 
             var pdfModuleFactoryMock = _mockRepository.Create<IWkHtmlToPdfModuleFactory>();
             _pdfModule = _mockRepository.Create<IWkHtmlToPdfModule>();
-            pdfModuleFactoryMock.Setup(mf => mf.GetModule())
+            pdfModuleFactoryMock.Setup(mf => mf.GetModule(It.IsAny<int>()))
                 .Returns(_pdfModule.Object);
 
             _sut = new BasicPdfConverter(moduleFactoryMock.Object, pdfModuleFactoryMock.Object);

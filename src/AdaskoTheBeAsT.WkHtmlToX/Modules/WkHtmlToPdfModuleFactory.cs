@@ -6,9 +6,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
     internal class WkHtmlToPdfModuleFactory
         : IWkHtmlToPdfModuleFactory
     {
-        public IWkHtmlToPdfModule GetModule()
+        public IWkHtmlToPdfModule GetModule(int platformId)
         {
-            switch ((int)Environment.OSVersion.Platform)
+            switch (platformId)
             {
                 case (int)PlatformID.MacOSX:
                 case (int)PlatformID.Unix:
