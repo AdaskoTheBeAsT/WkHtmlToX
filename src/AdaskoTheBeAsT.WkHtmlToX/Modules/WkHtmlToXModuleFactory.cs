@@ -1,14 +1,15 @@
 using System;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
+using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
     internal class WkHtmlToXModuleFactory
         : IWkHtmlToXModuleFactory
     {
-        public IWkHtmlToXModule GetModule(ModuleKind moduleKind)
+        public IWkHtmlToXModule GetModule(int platformId, ModuleKind moduleKind)
         {
-            switch ((int)Environment.OSVersion.Platform)
+            switch (platformId)
             {
                 case (int)PlatformID.MacOSX:
                 case (int)PlatformID.Unix:
@@ -20,13 +21,19 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
                     }
 
                     return new WkHtmlToImagePosixCommonModule();
-                default:
+                case (int)PlatformID.Win32NT:
+                case (int)PlatformID.Win32S:
+                case (int)PlatformID.Win32Windows:
+                case (int)PlatformID.WinCE:
+                case (int)PlatformID.Xbox:
                     if (moduleKind == ModuleKind.Pdf)
                     {
                         return new WkHtmlToPdfWindowsCommonModule();
                     }
 
                     return new WkHtmlToImageWindowsCommonModule();
+                default:
+                    throw new InvalidPlatformIdentifierException();
             }
         }
     }

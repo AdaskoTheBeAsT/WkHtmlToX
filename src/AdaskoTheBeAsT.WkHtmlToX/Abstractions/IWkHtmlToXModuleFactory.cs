@@ -2,6 +2,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
 {
     internal interface IWkHtmlToXModuleFactory
     {
-        IWkHtmlToXModule GetModule(ModuleKind moduleKind);
+        IWkHtmlToXModule GetModule(int platformId, ModuleKind moduleKind);
     }
 }

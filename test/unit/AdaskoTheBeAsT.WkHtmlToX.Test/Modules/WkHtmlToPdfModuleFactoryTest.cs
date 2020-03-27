@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 using AdaskoTheBeAsT.WkHtmlToX.Modules;
 using FluentAssertions;
 using Xunit;
@@ -57,11 +58,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Modules
                 PlatformID.Xbox,
                 typeof(WkHtmlToPdfWindowsAdditionalModule),
             };
-            yield return new object[]
-            {
-                12345,
-                typeof(WkHtmlToPdfWindowsAdditionalModule),
-            };
+        }
+
+        [Fact]
+        public void GetModuleShouldThrowWhenNotKnownPlatformIdPassed()
+        {
+            // Arrange
+            Action action = () => _ = _sut.GetModule(12345);
+
+            // Act & Assert
+            action.Should().Throw<InvalidPlatformIdentifierException>();
         }
 
         [Theory]

@@ -1,5 +1,6 @@
 using System;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
+using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
@@ -15,8 +16,14 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
                 // Legacy mono value. See https://www.mono-project.com/docs/faq/technical/
                 case 128:
                     return new WkHtmlToPdfPosixAdditionalModule();
-                default:
+                case (int)PlatformID.Win32NT:
+                case (int)PlatformID.Win32S:
+                case (int)PlatformID.Win32Windows:
+                case (int)PlatformID.WinCE:
+                case (int)PlatformID.Xbox:
                     return new WkHtmlToPdfWindowsAdditionalModule();
+                default:
+                    throw new InvalidPlatformIdentifierException();
             }
         }
     }

@@ -30,7 +30,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 throw new ArgumentNullException(nameof(moduleFactory));
             }
 
-            _module = moduleFactory.GetModule(moduleKind);
+            _module = moduleFactory.GetModule((int)Environment.OSVersion.Platform, moduleKind);
         }
 #pragma warning restore S3442 // "abstract" classes should not have "public" constructors
 
