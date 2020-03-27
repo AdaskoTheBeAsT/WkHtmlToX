@@ -140,19 +140,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 
             var copyLength = Math.Min(length, MaxCopyBufferSize);
 
-            var buffer = new byte[copyLength];
-            Marshal.Copy(data, buffer, 0, copyLength);
-            stream.Write(buffer, 0, copyLength);
-            length -= copyLength;
+            CopyBuffer(stream, data, ref copyLength, ref length);
 
             while (length > 0)
             {
                 data = IntPtr.Add(data, copyLength);
                 copyLength = Math.Min(length, MaxCopyBufferSize);
-                buffer = new byte[copyLength];
-                Marshal.Copy(data, buffer, 0, copyLength);
-                stream.Write(buffer, 0, copyLength);
-                length -= copyLength;
+                CopyBuffer(stream, data, ref copyLength, ref length);
             }
 
             stream.Position = 0;
@@ -191,5 +185,25 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 
         protected abstract IntPtr GetProgressStringImpl(
             IntPtr converter);
+
+        private void CopyBuffer(
+            MemoryStream stream,
+            IntPtr data,
+            ref int copyLength,
+            ref int leftLength)
+        {
+            var buffer = ArrayPool<byte>.Shared.Rent(copyLength);
+            try
+            {
+                Marshal.Copy(data, buffer, 0, copyLength);
+                stream.Write(buffer, 0, copyLength);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
+
+            leftLength -= copyLength;
+        }
     }
 }
