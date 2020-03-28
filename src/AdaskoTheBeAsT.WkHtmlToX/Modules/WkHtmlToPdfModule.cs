@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Text;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
+using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
@@ -27,10 +28,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             var buffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             try
             {
-                _ = GetObjectSettingImpl(
+                var retVal = GetObjectSettingImpl(
                     settings,
                     name,
                     buffer);
+
+                if (retVal != 1)
+                {
+                    throw new GetObjectSettingsFailedException($"GetObjectSettings failed for obtaining setting={name}");
+                }
 
                 var nullPos = Array.IndexOf(buffer, byte.MinValue);
 

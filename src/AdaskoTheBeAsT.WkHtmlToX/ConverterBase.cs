@@ -118,7 +118,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 return;
             }
 
-            var progress = _module.GetProgressString(converter);
+            var progress = _module.GetProgressDescription(converter);
             var eventArgs = new ProgressChangedEventArgs(
                 ProcessingDocument,
                 progress);

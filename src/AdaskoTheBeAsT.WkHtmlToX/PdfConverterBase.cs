@@ -1,9 +1,13 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
+using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 using AdaskoTheBeAsT.WkHtmlToX.Modules;
+using AdaskoTheBeAsT.WkHtmlToX.Settings;
 
 namespace AdaskoTheBeAsT.WkHtmlToX
 {
@@ -63,7 +67,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
                 ApplyConfig(objectSettings, obj, false);
 
-                _pdfModule.AddObject(converter, objectSettings, obj.GetContent());
+                AddContent(converter, objectSettings, obj);
             }
 
             return (converter, globalSettings, objectSettingsPtr);
@@ -86,7 +90,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 throw new ArgumentNullException(nameof(document));
             }
 
-            if (document.ObjectSettings?.Count == 0)
+            if (document.ObjectSettings.Count == 0)
             {
                 throw new ArgumentException(
                     "No objects is defined in document that was passed. At least one object must be defined.");
@@ -128,6 +132,103 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             }
 
             return result;
+        }
+
+        protected internal void AddContent(
+            IntPtr converter,
+            IntPtr objectSettings,
+            PdfObjectSettings pdfObjectSettings)
+        {
+            if (pdfObjectSettings is null)
+            {
+                throw new ArgumentNullException(nameof(pdfObjectSettings));
+            }
+
+            if (!string.IsNullOrEmpty(pdfObjectSettings.HtmlContent))
+            {
+                AddContentString(converter, objectSettings, pdfObjectSettings);
+            }
+            else if (pdfObjectSettings.HtmlContentByteArray != null)
+            {
+                AddContentByteArray(converter, objectSettings, pdfObjectSettings.HtmlContentByteArray);
+            }
+            else if (pdfObjectSettings.HtmlContentStream != null)
+            {
+                AddContentStream(converter, objectSettings, pdfObjectSettings.HtmlContentStream);
+            }
+            else
+            {
+                throw new HtmlContentEmptyException(
+                    $"pdfObjectSettings should have non-empty {nameof(PdfObjectSettings.HtmlContent)}"
+                    + $" or {nameof(PdfObjectSettings.HtmlContentByteArray)} or {nameof(PdfObjectSettings.HtmlContentStream)}");
+            }
+        }
+
+        protected internal void AddContentString(
+            IntPtr converter,
+            IntPtr objectSettings,
+            PdfObjectSettings pdfObjectSettings)
+        {
+            if (pdfObjectSettings is null)
+            {
+                throw new ArgumentNullException(nameof(pdfObjectSettings));
+            }
+
+            if (string.IsNullOrEmpty(pdfObjectSettings.HtmlContent))
+            {
+                throw new ArgumentException("Html content should not be empty");
+            }
+
+            var encoding = pdfObjectSettings.Encoding ?? Encoding.UTF8;
+            var length = encoding.GetByteCount(pdfObjectSettings.HtmlContent);
+            var buffer = ArrayPool<byte>.Shared.Rent(length);
+            try
+            {
+                encoding.GetBytes(pdfObjectSettings.HtmlContent, 0, pdfObjectSettings.HtmlContent!.Length, buffer, 0);
+                _pdfModule.AddObject(converter, objectSettings, buffer);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
+        }
+
+        protected internal void AddContentByteArray(
+            IntPtr converter,
+            IntPtr objectSettings,
+            byte[] htmlContentByteArray)
+        {
+            _pdfModule.AddObject(converter, objectSettings, htmlContentByteArray);
+        }
+
+        protected internal void AddContentStream(
+            IntPtr converter,
+            IntPtr objectSettings,
+            Stream htmlContentStream)
+        {
+            if (htmlContentStream is null)
+            {
+                throw new ArgumentNullException(nameof(htmlContentStream));
+            }
+
+            var length = htmlContentStream.Length;
+            if (length > int.MaxValue)
+            {
+                throw new HtmlContentStreamTooLargeException();
+            }
+
+            var len = (int)length;
+
+            var buffer = ArrayPool<byte>.Shared.Rent(len);
+            try
+            {
+                htmlContentStream.Read(buffer, 0, len);
+                _pdfModule.AddObject(converter, objectSettings, buffer);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
     }
 }

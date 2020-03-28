@@ -10,6 +10,10 @@
     <Description>AdaskoTheBeAsT.WkHtmlToX c# wrapper</Description>
     <PackageVersion>2.0.0</PackageVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Authors>Adam "AdaskoTheBeAsT" Pluciński</Authors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>

@@ -6,28 +6,28 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
     internal class WkHtmlToPdfWindowsAdditionalModule
         : WkHtmlToPdfModule
     {
-        public override IntPtr CreateObjectSettings() => NativeMethodsPdfWindows.wkhtmltopdf_create_object_settings();
+        public override IntPtr CreateObjectSettings() => NativeMethodsPdfWindows.CreateObjectSettings();
 
         public override int DestroyObjectSetting(
             IntPtr settings) =>
-            NativeMethodsPdfWindows.wkhtmltopdf_destroy_object_settings(settings);
+            NativeMethodsPdfWindows.DestroyObjectSettings(settings);
 
         public override int SetObjectSetting(
             IntPtr settings,
             string name,
-            string? value) => NativeMethodsPdfWindows.wkhtmltopdf_set_object_setting(settings, name, value);
+            string? value) => NativeMethodsPdfWindows.SetObjectSettings(settings, name, value);
 
         public override void AddObject(
             IntPtr converter,
             IntPtr objectSettings,
             byte[] data) =>
-            NativeMethodsPdfWindows.wkhtmltopdf_add_object(converter, objectSettings, data);
+            NativeMethodsPdfWindows.AddObject(converter, objectSettings, data);
 
         public override void AddObject(
             IntPtr converter,
             IntPtr objectSettings,
             string data) =>
-            NativeMethodsPdfWindows.wkhtmltopdf_add_object(converter, objectSettings, data);
+            NativeMethodsPdfWindows.AddObject(converter, objectSettings, data);
 
         protected override int GetObjectSettingImpl(
             IntPtr settings,
@@ -39,7 +39,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
                 throw new ArgumentNullException(nameof(buffer));
             }
 
-            return NativeMethodsPdfWindows.wkhtmltopdf_get_object_setting(
+            return NativeMethodsPdfWindows.GetObjectSettings(
                 settings,
                 name,
                 buffer,

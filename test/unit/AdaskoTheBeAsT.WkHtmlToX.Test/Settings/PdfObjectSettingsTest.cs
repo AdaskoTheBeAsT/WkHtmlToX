@@ -119,58 +119,5 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
                 sut.Xsl.Should().Be(xsl);
             }
         }
-
-        [Fact]
-        public void ShouldReturnNullForGetContentFromGetContentWhenHtmlIsNull()
-        {
-            // Act
-            var sut = new PdfObjectSettings();
-            var result = sut.GetContent();
-
-            // Assert
-            using (new AssertionScope())
-            {
-                result.Should().BeEmpty();
-            }
-        }
-
-        [Fact]
-        public void ShouldReturnUtf8BytesFromGetContentWhenHtmlIsNonEmpty()
-        {
-            // Arrange
-            var htmlContent = "ĄĘĆŁŃÓŚŻŹąęćłńóśżź";
-            var expected = Encoding.UTF8.GetBytes(htmlContent);
-
-            // Act
-            var sut = new PdfObjectSettings();
-            sut.HtmlContent = htmlContent;
-            var result = sut.GetContent();
-
-            // Assert
-            using (new AssertionScope())
-            {
-                result.Should().BeEquivalentTo(expected);
-            }
-        }
-
-        [Fact]
-        public void ShouldReturnUtf32FromGetContentWhenHtmlIsNonEmpty()
-        {
-            // Arrange
-            var htmlContent = "ĄĘĆŁŃÓŚŻŹąęćłńóśżź";
-            var expected = Encoding.UTF32.GetBytes(htmlContent);
-
-            // Act
-            var sut = new PdfObjectSettings();
-            sut.Encoding = Encoding.UTF32;
-            sut.HtmlContent = htmlContent;
-            var result = sut.GetContent();
-
-            // Assert
-            using (new AssertionScope())
-            {
-                result.Should().BeEquivalentTo(expected);
-            }
-        }
     }
 }

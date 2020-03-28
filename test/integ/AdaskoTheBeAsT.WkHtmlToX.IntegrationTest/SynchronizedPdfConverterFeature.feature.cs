@@ -84,8 +84,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
         [Xunit.TraitAttribute("FeatureTitle", "SynchronizedPdfConverterFeature")]
         [Xunit.TraitAttribute("Description", "Convert pdf")]
         [Xunit.InlineDataAttribute("Simple.html", "1", new string[0])]
+        [Xunit.InlineDataAttribute("Simple.html", "5", new string[0])]
         [Xunit.InlineDataAttribute("Simple.html", "10", new string[0])]
-        [Xunit.InlineDataAttribute("Simple.html", "100", new string[0])]
+        [Xunit.InlineDataAttribute("Large.html", "10", new string[0])]
         public virtual void ConvertPdf(string filename, string repetitions, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

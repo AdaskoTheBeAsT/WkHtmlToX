@@ -9,37 +9,37 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
     {
         public override int Initialize(
             int useGraphics) =>
-            NativeMethodsPdfPosix.wkhtmltopdf_init(useGraphics);
+            NativeMethodsPdfPosix.Initialize(useGraphics);
 
-        public override int Terminate() => NativeMethodsPdfPosix.wkhtmltopdf_deinit();
+        public override int Terminate() => NativeMethodsPdfPosix.Terminate();
 
-        public override int ExtendedQt() => NativeMethodsPdfPosix.wkhtmltopdf_extended_qt();
+        public override int ExtendedQt() => NativeMethodsPdfPosix.ExtendedQt();
 
-        public override IntPtr CreateGlobalSettings() => NativeMethodsPdfPosix.wkhtmltopdf_create_global_settings();
+        public override IntPtr CreateGlobalSettings() => NativeMethodsPdfPosix.CreateGlobalSettings();
 
         public override int DestroyGlobalSetting(
             IntPtr settings) =>
-            NativeMethodsPdfPosix.wkhtmltopdf_destroy_global_settings(settings);
+            NativeMethodsPdfPosix.DestroyGlobalSettings(settings);
 
         public override int SetGlobalSetting(
             IntPtr settings,
             string name,
-            string? value) => NativeMethodsPdfPosix.wkhtmltopdf_set_global_setting(settings, name, value);
+            string? value) => NativeMethodsPdfPosix.SetGlobalSettings(settings, name, value);
 
         public override IntPtr CreateConverter(
             IntPtr globalSettings) =>
-            NativeMethodsPdfPosix.wkhtmltopdf_create_converter(globalSettings);
+            NativeMethodsPdfPosix.CreateConverter(globalSettings);
 
         public override void DestroyConverter(
             IntPtr converter) =>
-            NativeMethodsPdfPosix.wkhtmltopdf_destroy_converter(converter);
+            NativeMethodsPdfPosix.DestroyConverter(converter);
 
         public override int SetWarningCallback(
             IntPtr converter,
             StringCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsPdfPosix.wkhtmltopdf_set_warning_callback(converter, callback);
+            return NativeMethodsPdfPosix.SetWarningCallback(converter, callback);
         }
 
         public override int SetErrorCallback(
@@ -47,7 +47,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             StringCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsPdfPosix.wkhtmltopdf_set_error_callback(converter, callback);
+            return NativeMethodsPdfPosix.SetErrorCallback(converter, callback);
         }
 
         public override int SetPhaseChangedCallback(
@@ -55,7 +55,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             VoidCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsPdfPosix.wkhtmltopdf_set_phase_changed_callback(converter, callback);
+            return NativeMethodsPdfPosix.SetPhaseChangedCallback(converter, callback);
         }
 
         public override int SetProgressChangedCallback(
@@ -63,7 +63,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             VoidCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsPdfPosix.wkhtmltopdf_set_progress_changed_callback(converter, callback);
+            return NativeMethodsPdfPosix.SetProgressChangedCallback(converter, callback);
         }
 
         public override int SetFinishedCallback(
@@ -71,24 +71,24 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             IntCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsPdfPosix.wkhtmltopdf_set_finished_callback(converter, callback);
+            return NativeMethodsPdfPosix.SetFinishedCallback(converter, callback);
         }
 
         public override bool Convert(
             IntPtr converter) =>
-            NativeMethodsPdfPosix.wkhtmltopdf_convert(converter);
+            NativeMethodsPdfPosix.Convert(converter);
 
         public override int GetCurrentPhase(
             IntPtr converter) =>
-            NativeMethodsPdfPosix.wkhtmltopdf_current_phase(converter);
+            NativeMethodsPdfPosix.GetCurrentPhase(converter);
 
         public override int GetPhaseCount(
             IntPtr converter) =>
-            NativeMethodsPdfPosix.wkhtmltopdf_phase_count(converter);
+            NativeMethodsPdfPosix.GetPhaseCount(converter);
 
         public override int GetHttpErrorCode(
             IntPtr converter) =>
-            NativeMethodsPdfPosix.wkhtmltopdf_http_error_code(converter);
+            NativeMethodsPdfPosix.GetHttpErrorCode(converter);
 
         protected override int GetGlobalSettingImpl(
             IntPtr settings,
@@ -100,7 +100,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
                 throw new ArgumentNullException(nameof(buffer));
             }
 
-            return NativeMethodsPdfPosix.wkhtmltopdf_get_global_setting(
+            return NativeMethodsPdfPosix.GetGlobalSettings(
                 settings,
                 name,
                 buffer,
@@ -110,17 +110,17 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         protected override int GetOutputImpl(
             IntPtr converter,
             out IntPtr data) =>
-            NativeMethodsPdfPosix.wkhtmltopdf_get_output(converter, out data);
+            NativeMethodsPdfPosix.GetOutput(converter, out data);
 
-        protected override IntPtr GetLibraryVersionImpl() => NativeMethodsPdfPosix.wkhtmltopdf_version();
+        protected override IntPtr GetLibraryVersionImpl() => NativeMethodsPdfPosix.GetVersion();
 
         protected override IntPtr GetPhaseDescriptionImpl(
             IntPtr converter,
             int phase) =>
-            NativeMethodsPdfPosix.wkhtmltopdf_phase_description(converter, phase);
+            NativeMethodsPdfPosix.GetPhaseDescription(converter, phase);
 
         protected override IntPtr GetProgressStringImpl(
             IntPtr converter) =>
-            NativeMethodsPdfPosix.wkhtmltopdf_progress_string(converter);
+            NativeMethodsPdfPosix.GetProgressDescription(converter);
     }
 }

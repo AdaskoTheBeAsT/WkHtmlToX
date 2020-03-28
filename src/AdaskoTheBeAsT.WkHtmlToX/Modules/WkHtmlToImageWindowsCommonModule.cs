@@ -9,41 +9,41 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
     {
         public override int Initialize(
             int useGraphics) =>
-            NativeMethodsImageWindows.wkhtmltoimage_init(useGraphics);
+            NativeMethodsImageWindows.Initialize(useGraphics);
 
-        public override int Terminate() => NativeMethodsImageWindows.wkhtmltoimage_deinit();
+        public override int Terminate() => NativeMethodsImageWindows.Terminate();
 
-        public override int ExtendedQt() => NativeMethodsImageWindows.wkhtmltoimage_extended_qt();
+        public override int ExtendedQt() => NativeMethodsImageWindows.ExtendedQt();
 
-        public override IntPtr CreateGlobalSettings() => NativeMethodsImageWindows.wkhtmltoimage_create_global_settings();
+        public override IntPtr CreateGlobalSettings() => NativeMethodsImageWindows.CreateGlobalSettings();
 
         public override int DestroyGlobalSetting(
             IntPtr settings) =>
-            NativeMethodsImageWindows.wkhtmltoimage_destroy_global_settings(settings);
+            NativeMethodsImageWindows.DestroyGlobalSettings(settings);
 
         public override int SetGlobalSetting(
             IntPtr settings,
             string name,
             string? value) =>
-            NativeMethodsImageWindows.wkhtmltoimage_set_global_setting(
+            NativeMethodsImageWindows.SetGlobalSettings(
                 settings,
                 name,
                 value);
 
         public override IntPtr CreateConverter(
             IntPtr globalSettings) =>
-            NativeMethodsImageWindows.wkhtmltoimage_create_converter(globalSettings);
+            NativeMethodsImageWindows.CreateConverter(globalSettings);
 
         public override void DestroyConverter(
             IntPtr converter) =>
-            NativeMethodsImageWindows.wkhtmltoimage_destroy_converter(converter);
+            NativeMethodsImageWindows.DestroyConverter(converter);
 
         public override int SetWarningCallback(
             IntPtr converter,
             StringCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsImageWindows.wkhtmltoimage_set_warning_callback(
+            return NativeMethodsImageWindows.SetWarningCallback(
                 converter,
                 callback);
         }
@@ -53,7 +53,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             StringCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsImageWindows.wkhtmltoimage_set_error_callback(
+            return NativeMethodsImageWindows.SetErrorCallback(
                 converter,
                 callback);
         }
@@ -63,7 +63,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             VoidCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsImageWindows.wkhtmltoimage_set_phase_changed_callback(
+            return NativeMethodsImageWindows.SetPhaseChangedCallback(
                 converter,
                 callback);
         }
@@ -73,7 +73,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             VoidCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsImageWindows.wkhtmltoimage_set_progress_changed_callback(
+            return NativeMethodsImageWindows.SetProgressChangedCallback(
                 converter,
                 callback);
         }
@@ -83,28 +83,28 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             IntCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsImageWindows.wkhtmltoimage_set_finished_callback(
+            return NativeMethodsImageWindows.SetFinishedCallback(
                 converter,
                 callback);
         }
 
         public override bool Convert(
             IntPtr converter) =>
-            NativeMethodsImageWindows.wkhtmltoimage_convert(converter);
+            NativeMethodsImageWindows.Convert(converter);
 
         public override int GetCurrentPhase(
             IntPtr converter) =>
-            NativeMethodsImageWindows.wkhtmltoimage_current_phase(
+            NativeMethodsImageWindows.GetCurrentPhase(
                 converter);
 
         public override int GetPhaseCount(
             IntPtr converter) =>
-            NativeMethodsImageWindows.wkhtmltoimage_phase_count(
+            NativeMethodsImageWindows.GetPhaseCount(
                 converter);
 
         public override int GetHttpErrorCode(
             IntPtr converter) =>
-            NativeMethodsImageWindows.wkhtmltoimage_http_error_code(
+            NativeMethodsImageWindows.GetHttpErrorCode(
                 converter);
 
         protected override int GetGlobalSettingImpl(
@@ -117,7 +117,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
                 throw new ArgumentNullException(nameof(buffer));
             }
 
-            return NativeMethodsImageWindows.wkhtmltoimage_get_global_setting(
+            return NativeMethodsImageWindows.GetGlobalSettings(
                 settings,
                 name,
                 buffer,
@@ -127,23 +127,23 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         protected override int GetOutputImpl(
             IntPtr converter,
             out IntPtr data) =>
-            NativeMethodsImageWindows.wkhtmltoimage_get_output(
+            NativeMethodsImageWindows.GetOutput(
                 converter,
                 out data);
 
         protected override IntPtr GetLibraryVersionImpl() =>
-            NativeMethodsImageWindows.wkhtmltoimage_version();
+            NativeMethodsImageWindows.GetVersion();
 
         protected override IntPtr GetPhaseDescriptionImpl(
             IntPtr converter,
             int phase) =>
-            NativeMethodsImageWindows.wkhtmltoimage_phase_description(
+            NativeMethodsImageWindows.GetPhaseDescription(
                 converter,
                 phase);
 
         protected override IntPtr GetProgressStringImpl(
             IntPtr converter) =>
-            NativeMethodsImageWindows.wkhtmltoimage_progress_string(
+            NativeMethodsImageWindows.GetProgressDescription(
                 converter);
     }
 }

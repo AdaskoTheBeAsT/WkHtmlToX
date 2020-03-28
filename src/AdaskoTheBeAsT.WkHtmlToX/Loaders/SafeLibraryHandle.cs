@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Permissions;
 using AdaskoTheBeAsT.WkHtmlToX.Native;
 using Microsoft.Win32.SafeHandles;
@@ -10,6 +11,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
     /// </summary>
 #pragma warning disable S3453
     // ReSharper disable ClassNeverInstantiated.Global
+    [ExcludeFromCodeCoverage]
     [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
     internal sealed class SafeLibraryHandle : SafeHandleZeroOrMinusOneIsInvalid
     {

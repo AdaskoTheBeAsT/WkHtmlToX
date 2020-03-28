@@ -53,7 +53,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
         [When(@"I convert html to pdf (.*) times")]
         public async Task WhenIConvertHtmlToPdfTimes(int count)
         {
-            using var loader = new LibraryLoaderFactory().Create(null);
+            using var loader = new LibraryLoaderFactory().Create((int)Environment.OSVersion.Platform, null);
             loader.Load();
             for (int i = 0; i < count; i++)
             {

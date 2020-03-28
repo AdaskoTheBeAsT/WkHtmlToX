@@ -48,7 +48,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
 
         string GetPhaseDescription(IntPtr converter, int phase);
 
-        string GetProgressString(IntPtr converter);
+        string GetProgressDescription(IntPtr converter);
 
         int GetPhaseCount(IntPtr converter);
 

@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Documents;
+using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 using AdaskoTheBeAsT.WkHtmlToX.Settings;
 using AutoFixture;
 using FluentAssertions;
@@ -13,6 +16,33 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
 {
     public sealed partial class BasicPdfConverterTest
     {
+        public static IEnumerable<object?[]> GetTestData()
+        {
+            var htmlContent = "<html><head><title>title</title></head><body></body></html>";
+            yield return new object?[]
+            {
+                htmlContent,
+                null,
+                null,
+            };
+
+            var htmlContentByteArray = Encoding.UTF8.GetBytes(htmlContent);
+            yield return new object?[]
+            {
+                null,
+                htmlContentByteArray,
+                null,
+            };
+
+            var stream = new MemoryStream(htmlContentByteArray);
+            yield return new object?[]
+            {
+                null,
+                null,
+                stream,
+            };
+        }
+
         [Fact]
         public void PdfModuleConstructorShouldThrowExceptionWhenNullPassed()
         {
@@ -371,8 +401,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             }
         }
 
-        [Fact]
-        public void ConvertImplShouldReturnStreamWhenConverted()
+        [Theory]
+        [MemberData(nameof(GetTestData))]
+        public void ConvertImplShouldReturnStreamWhenConverted(
+            string? htmlContent,
+            byte[]? htmlContentByteArray,
+            Stream? htmlContentStream)
         {
             // Arrange
             using var memoryStream = new MemoryStream();
@@ -412,7 +446,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 new PdfObjectSettings
                 {
                     CaptionText = captionText,
-                    HtmlContent = "<html><head><title>title</title></head><body></body></html>",
+                    HtmlContent = htmlContent,
+                    HtmlContentByteArray = htmlContentByteArray,
+                    HtmlContentStream = htmlContentStream,
                 });
 
             // Act
@@ -445,6 +481,104 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 _module.Verify(m => m.Terminate(), Times.Once);
                 result.Should().Be(memoryStream);
             }
+        }
+
+        [Fact]
+        public void AddContentShouldThrowExceptionWhenNullPdfObjectSettingsPassed()
+        {
+            // Arrange
+            var converterPtr = new IntPtr(_fixture.Create<int>());
+            var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            Action action = () => _sut.AddContent(converterPtr, objectSettingsPtr, null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+            // Act & Assert
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void AddContentShouldThrowExceptionWhenAllHtmlContentNullPassed()
+        {
+            // Arrange
+            var converterPtr = new IntPtr(_fixture.Create<int>());
+            var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
+            var pdfObjectSettings = _fixture.Build<PdfObjectSettings>()
+                .Without(s => s.HtmlContent)
+                .Without(s => s.HtmlContentByteArray)
+                .Without(s => s.HtmlContentStream)
+                .Create();
+
+            Action action = () => _sut.AddContent(converterPtr, objectSettingsPtr, pdfObjectSettings);
+
+            // Act & Assert
+            action.Should().Throw<HtmlContentEmptyException>();
+        }
+
+        [Fact]
+        public void AddContentStringShouldThrowExceptionWhenNullPassed()
+        {
+            // Arrange
+            var converterPtr = new IntPtr(_fixture.Create<int>());
+            var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            Action action = () => _sut.AddContentString(converterPtr, objectSettingsPtr, null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+            // Act & Assert
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void AddContentStringShouldThrowExceptionWhenHtmlContentNullPassed()
+        {
+            // Arrange
+            var converterPtr = new IntPtr(_fixture.Create<int>());
+            var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
+            var pdfObjectSettings = _fixture.Build<PdfObjectSettings>()
+                .Without(s => s.HtmlContent)
+                .Without(s => s.HtmlContentByteArray)
+                .Without(s => s.HtmlContentStream)
+                .Create();
+
+            Action action = () => _sut.AddContentString(converterPtr, objectSettingsPtr, pdfObjectSettings);
+
+            // Act & Assert
+            action.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void AddContentStreamShouldThrowExceptionWhenNullPassed()
+        {
+            // Arrange
+            var converterPtr = new IntPtr(_fixture.Create<int>());
+            var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+            // Act & Assert
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void AddContentStreamShouldThrowExceptionWhenTooLargeStreamPassed()
+        {
+            // Arrange
+            var converterPtr = new IntPtr(_fixture.Create<int>());
+            var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
+            var streamMock = new Mock<Stream>();
+            streamMock.SetupGet(s => s.Length)
+                .Returns(int.MaxValue + 1L);
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, streamMock.Object);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+            // Act & Assert
+            action.Should().Throw<HtmlContentStreamTooLargeException>();
         }
     }
 }

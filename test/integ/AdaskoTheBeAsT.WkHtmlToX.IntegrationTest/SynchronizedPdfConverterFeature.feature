@@ -10,5 +10,7 @@ Scenario Outline: Convert pdf
     Examples:
     | filename    | repetitions |
     | Simple.html | 1           |
+    | Simple.html | 5           |
     | Simple.html | 10          |
-    | Simple.html | 100         |
+    | Large.html  | 10          |
+

@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
+using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
 using Microsoft.IO;
 
@@ -57,10 +58,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             var buffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             try
             {
-                _ = GetGlobalSettingImpl(
+                var retVal = GetGlobalSettingImpl(
                     settings,
                     name,
                     buffer);
+
+                if (retVal != 1)
+                {
+                    throw new GetGlobalSettingsFailedException($"GetGlobalSettings failed for obtaining setting={name}");
+                }
 
                 var nullPos = Array.IndexOf(buffer, byte.MinValue);
 
@@ -112,7 +118,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             return Marshal.PtrToStringAnsi(ptr);
         }
 
-        public string GetProgressString(
+        public string GetProgressDescription(
             IntPtr converter)
         {
             var ptr = GetProgressStringImpl(converter);

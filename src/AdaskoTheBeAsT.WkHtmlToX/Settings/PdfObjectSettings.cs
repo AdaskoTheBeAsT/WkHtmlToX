@@ -1,11 +1,11 @@
-using System;
+using System.IO;
 using System.Text;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Settings
 {
-    public class PdfObjectSettings : IObject
+    public class PdfObjectSettings : ISettings
     {
         /// <summary>
         /// Should we use a dotted line when creating a table of content.
@@ -89,6 +89,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
 
         public string? HtmlContent { get; set; }
 
+#pragma warning disable CA1819 // Properties should not return arrays
+        public byte[]? HtmlContentByteArray { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
+
+        public Stream? HtmlContentStream { get; set; }
+
         public Encoding? Encoding { get; set; }
 
         public WebSettings WebSettings { get; set; } = new WebSettings();
@@ -98,10 +104,5 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         public FooterSettings FooterSettings { get; set; } = new FooterSettings();
 
         public LoadSettings LoadSettings { get; set; } = new LoadSettings();
-
-        public byte[] GetContent()
-        {
-            return HtmlContent == null ? Array.Empty<byte>() : (Encoding ?? Encoding.UTF8).GetBytes(HtmlContent);
-        }
     }
 }

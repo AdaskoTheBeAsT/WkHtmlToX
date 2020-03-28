@@ -376,7 +376,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
             var progressDescription = _fixture.Create<string>();
-            _module.Setup(m => m.GetProgressString(It.IsAny<IntPtr>()))
+            _module.Setup(m => m.GetProgressDescription(It.IsAny<IntPtr>()))
                 .Returns(progressDescription);
 
             ProgressChangedEventArgs? result = default;

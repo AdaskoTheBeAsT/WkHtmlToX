@@ -224,7 +224,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         }
 
         [Fact]
-        public void ConvertImplShouldReturnStreamWhenConverted()
+        public void ConvertImplShouldReturnStreamWhenHtmlContentPassedAndConverted()
         {
             // Arrange
             using var memoryStream = new MemoryStream();

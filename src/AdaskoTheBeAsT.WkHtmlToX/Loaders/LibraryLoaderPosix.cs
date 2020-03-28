@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
@@ -6,6 +7,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Native;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 {
+    [ExcludeFromCodeCoverage]
     public abstract class LibraryLoaderPosix
         : LibraryLoaderBase
     {
@@ -43,8 +45,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
                     var libPtr = NativeMethodsSystemPosix.dlopen(path, NativeMethodsSystemPosix.RTLD_NOW);
                     if (libPtr == IntPtr.Zero)
                     {
-                        var error = Marshal.PtrToStringAnsi(NativeMethodsSystemPosix.dlerror());
-                        throw new DllNotLoadedException($"dlopen failed: {path} : {error}");
+                        var errorPtr = NativeMethodsSystemPosix.dlerror();
+                        if (errorPtr != IntPtr.Zero)
+                        {
+                            var error = Marshal.PtrToStringAnsi(errorPtr);
+                            throw new DllNotLoadedException($"dlopen failed: {path} : {error}");
+                        }
                     }
 
                     _libraryHandle = libPtr;
@@ -57,7 +63,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 
         public override void Release()
         {
-            _ = NativeMethodsSystemPosix.dlclose(_libraryHandle);
+            var retVal = NativeMethodsSystemPosix.dlclose(_libraryHandle);
+            if (retVal != 0)
+            {
+                var errorPtr = NativeMethodsSystemPosix.dlerror();
+                if (errorPtr != IntPtr.Zero)
+                {
+                    var error = Marshal.PtrToStringAnsi(errorPtr);
+                    throw new DllUnloadFailedException($"dlclose failed: {error}");
+                }
+            }
         }
 
         protected override void Dispose(
@@ -65,7 +80,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
         {
             if (disposing)
             {
-                _ = NativeMethodsSystemPosix.dlclose(_libraryHandle);
+                Release();
             }
         }
 
