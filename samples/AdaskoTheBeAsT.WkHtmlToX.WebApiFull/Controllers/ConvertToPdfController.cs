@@ -32,7 +32,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiFull.Controllers
             {
                 FileName = "sample.pdf",
             };
-            httpResponseMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            httpResponseMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
             return httpResponseMessage;
         }
     }

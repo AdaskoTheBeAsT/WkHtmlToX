@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Loaders;
@@ -13,7 +14,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
         private void ConfigureAppStart(IAppBuilder app)
         {
             var libFactory = new LibraryLoaderFactory();
-            var libraryLoader = libFactory.Create(null);
+            var libraryLoader = libFactory.Create((int)Environment.OSVersion.Platform, null);
             libraryLoader.Load();
             app.Properties.Add(new KeyValuePair<string, object>(LibraryLoaderKey, libraryLoader));
         }

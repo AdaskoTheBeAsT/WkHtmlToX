@@ -13,9 +13,9 @@
 
   <ItemGroup>
     <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.native.win.x64" Version="0.12.5" />
-    <PackageReference Include="SimpleInjector.Integration.AspNetCore.Mvc.Core" Version="4.9.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" Version="5.0.0" />
+    <PackageReference Include="SimpleInjector.Integration.AspNetCore.Mvc.Core" Version="4.9.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.2.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" Version="5.2.1" />
   </ItemGroup>
 
   <ItemGroup>

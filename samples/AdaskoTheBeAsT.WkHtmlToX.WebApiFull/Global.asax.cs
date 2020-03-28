@@ -1,3 +1,4 @@
+using System;
 using System.Web.Http;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Loaders;
@@ -17,7 +18,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiFull
 #pragma warning restore CA1707 // Identifiers should not contain underscores
         {
             var libFactory = new LibraryLoaderFactory();
-            _libraryLoader = libFactory.Create(null);
+            _libraryLoader = libFactory.Create((int)Environment.OSVersion.Platform, null);
             _libraryLoader.Load();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             GlobalConfiguration.Configure(SwaggerConfig.Register);
