@@ -19,21 +19,21 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         {
         }
 
-        public bool Convert(IHtmlToImageDocument document, Stream stream)
+        public bool Convert(IHtmlToImageDocument document, Func<int, Stream> createStreamFunc)
         {
             if (document is null)
             {
                 throw new ArgumentNullException(nameof(document));
             }
 
-            if (stream is null)
+            if (createStreamFunc is null)
             {
-                throw new ArgumentNullException(nameof(stream));
+                throw new ArgumentNullException(nameof(createStreamFunc));
             }
 
             var converted = false;
             var thread = new Thread(
-                () => converted = ConvertImpl(document, stream))
+                () => converted = ConvertImpl(document, createStreamFunc))
             {
                 IsBackground = true,
             };
@@ -43,7 +43,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             return converted;
         }
 
-        internal bool ConvertImpl(IHtmlToImageDocument document, Stream stream)
+        internal bool ConvertImpl(IHtmlToImageDocument document, Func<int, Stream> createStreamFunc)
         {
             if (document?.ImageSettings == null)
             {
@@ -51,9 +51,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                     "No image settings is defined in document that was passed. At least one object must be defined.");
             }
 
-            if (stream is null)
+            if (createStreamFunc is null)
             {
-                throw new ArgumentNullException(nameof(stream));
+                throw new ArgumentNullException(nameof(createStreamFunc));
             }
 
             ProcessingDocument = document;
@@ -74,7 +74,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
                 if (converted)
                 {
-                    _module.GetOutput(converterPtr, stream);
+                    _module.GetOutput(converterPtr, createStreamFunc);
                 }
 
                 return converted;

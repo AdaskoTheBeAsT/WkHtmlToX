@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
@@ -8,8 +9,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
         ///  Converts document based on given settings.
         /// </summary>
         /// <param name="document">Document to convert.</param>
-        /// <param name="stream">Converted document in <see cref="Stream"/>.</param>
+        /// <param name="createStreamFunc">Creation <see cref="Stream"/> function based on length.</param>
         /// <returns>True if document converted.</returns>
-        bool Convert(IHtmlToPdfDocument document, Stream stream);
+        bool Convert(IHtmlToPdfDocument document, Func<int, Stream> createStreamFunc);
     }
 }

@@ -138,7 +138,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.ConvertImpl(null);
+            Action action = () => _sut.ConvertImpl(null, length => Stream.Null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // Act & Assert
@@ -153,7 +153,20 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             document.ImageSettings = null;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.ConvertImpl(document);
+            Action action = () => _sut.ConvertImpl(document, length => Stream.Null);
+
+            // Act & Assert
+            action.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void ConvertImplShouldThrowExceptionWhenNullCreateStreamFuncPassed()
+        {
+            // Arrange
+            var document = new HtmlToImageDocument();
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            Action action = () => _sut.ConvertImpl(document, null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // Act & Assert
             action.Should().Throw<ArgumentException>();
@@ -167,7 +180,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             _module.Setup(m => m.Initialize(It.IsAny<int>()))
                 .Returns(0);
 
-            Action action = () => _sut.ConvertImpl(document);
+            Action action = () => _sut.ConvertImpl(document, length => Stream.Null);
 
             // Act & Assert
             action.Should().Throw<ArgumentException>();
@@ -192,7 +205,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                     m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
                 .Returns(false);
-            _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>()));
+            _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
             _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
             _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
             _module.Setup(m => m.Terminate());
@@ -201,7 +214,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             document.ImageSettings.Quality = quality;
 
             // Act
-            var result = _sut.ConvertImpl(document);
+            var result = _sut.ConvertImpl(document, length => Stream.Null);
 
             // Assert
             using (new AssertionScope())
@@ -215,11 +228,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                             It.Is<string>(v => v == "quality"),
                             It.Is<string?>(v => v == quality)),
                     Times.Once);
-                _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>()), Times.Never);
+                _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()), Times.Never);
                 _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.DestroyConverter(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.Terminate(), Times.Once);
-                result.Should().Be(Stream.Null);
+                result.Should().BeFalse();
             }
         }
 
@@ -243,8 +256,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                     m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
                 .Returns(true);
-            _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>()))
-                .Returns(memoryStream);
+            _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
             _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
             _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
             _module.Setup(m => m.Terminate());
@@ -253,7 +265,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             document.ImageSettings.Quality = quality;
 
             // Act
-            var result = _sut.ConvertImpl(document);
+            var result = _sut.ConvertImpl(document, length => memoryStream);
 
             // Assert
             using (new AssertionScope())
@@ -267,12 +279,37 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                             It.Is<string>(v => v == "quality"),
                             It.Is<string?>(v => v == quality)),
                     Times.Once);
-                _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>()), Times.Once);
+                _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()), Times.Once);
                 _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.DestroyConverter(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.Terminate(), Times.Once);
-                result.Should().Be(memoryStream);
+                result.Should().BeTrue();
             }
+        }
+
+        [Fact]
+        public void ConvertShouldThrowExceptionWhenNullDocumentPassed()
+        {
+            // Arrange
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            Action action = () => _sut.Convert(null, length => Stream.Null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+            // Act & Assert
+            action.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void ConvertShouldThrowExceptionWhenNullCreateStreamFuncPassed()
+        {
+            // Arrange
+            var document = new HtmlToImageDocument();
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            Action action = () => _sut.Convert(document, null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+            // Act & Assert
+            action.Should().Throw<ArgumentException>();
         }
 
         [Fact]
@@ -294,7 +331,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                     m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
                 .Returns(false);
-            _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>()));
+            _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
             _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
             _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
             _module.Setup(m => m.Terminate());
@@ -303,7 +340,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             document.ImageSettings.Quality = quality;
 
             // Act
-            var result = _sut.Convert(document);
+            var result = _sut.Convert(document, length => Stream.Null);
 
             // Assert
             using (new AssertionScope())
@@ -317,11 +354,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                             It.Is<string>(v => v == "quality"),
                             It.Is<string?>(v => v == quality)),
                     Times.Once);
-                _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>()), Times.Never);
+                _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()), Times.Never);
                 _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.DestroyConverter(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.Terminate(), Times.Once);
-                result.Should().Be(Stream.Null);
+                result.Should().BeFalse();
             }
         }
 
@@ -345,8 +382,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                     m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
                 .Returns(true);
-            _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>()))
-                .Returns(memoryStream);
+            _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
             _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
             _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
             _module.Setup(m => m.Terminate());
@@ -355,7 +391,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             document.ImageSettings.Quality = quality;
 
             // Act
-            var result = _sut.Convert(document);
+            var result = _sut.Convert(document, length => memoryStream);
 
             // Assert
             using (new AssertionScope())
@@ -369,11 +405,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                             It.Is<string>(v => v == "quality"),
                             It.Is<string?>(v => v == quality)),
                     Times.Once);
-                _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>()), Times.Once);
+                _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()), Times.Once);
                 _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.DestroyConverter(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.Terminate(), Times.Once);
-                result.Should().Be(memoryStream);
+                result.Should().BeTrue();
             }
         }
     }

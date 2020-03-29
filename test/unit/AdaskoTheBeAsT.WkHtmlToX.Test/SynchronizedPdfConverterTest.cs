@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Documents;
@@ -7,6 +8,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Settings;
 using AutoFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.IO;
 using Moq;
 using Xunit;
 
@@ -73,7 +75,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                     m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
                 .Returns(false);
-            _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>()));
+            _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
             _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
             _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
             _module.Setup(m => m.Terminate());
@@ -95,8 +97,21 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                     HtmlContent = "<html><head><title>title</title></head><body></body></html>",
                 });
 
+            var recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
+
             // Act
-            var result = await _sut.ConvertAsync(document);
+            Stream? stream = null;
+            var result = await _sut.ConvertAsync(
+                document,
+                length =>
+                {
+                    stream = recyclableMemoryStreamManager.GetStream(
+                        Guid.NewGuid(),
+                        "wkhtmltox",
+                        length);
+                    return stream;
+                },
+                CancellationToken.None);
 
             // Assert
             using (new AssertionScope())
@@ -111,7 +126,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                             It.Is<string?>(v => v == documentTitle)),
                     Times.Once);
                 _pdfModule.Verify(m => m.CreateObjectSettings(), Times.Once);
-                _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>()), Times.Never);
+                _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()), Times.Never);
                 _pdfModule.Verify(
                     m =>
                         m.SetObjectSetting(
@@ -123,7 +138,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.DestroyConverter(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.Terminate(), Times.Once);
-                result.Should().Be(Stream.Null);
+                result.Should().BeFalse();
+#if NETCOREAPP
+                if (stream != null)
+                {
+                    await stream.DisposeAsync();
+                }
+#else
+                stream?.Dispose();
+#endif
             }
         }
 
@@ -148,8 +171,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                     m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
                 .Returns(true);
-            _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>()))
-                .Returns(memoryStream);
+            _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
             _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
             _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
             _module.Setup(m => m.Terminate());
@@ -172,7 +194,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 });
 
             // Act
-            var result = await _sut.ConvertAsync(document);
+            var result = await _sut.ConvertAsync(document, length => memoryStream, CancellationToken.None);
 
             // Assert
             using (new AssertionScope())
@@ -187,7 +209,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                             It.Is<string?>(v => v == documentTitle)),
                     Times.Once);
                 _pdfModule.Verify(m => m.CreateObjectSettings(), Times.Once);
-                _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>()), Times.Once);
+                _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()), Times.Once);
                 _pdfModule.Verify(
                     m =>
                         m.SetObjectSetting(
@@ -199,7 +221,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.DestroyConverter(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.Terminate(), Times.Once);
-                result.Should().Be(memoryStream);
+                result.Should().BeTrue();
             }
         }
 
@@ -208,7 +230,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
             var document = new HtmlToPdfDocument();
-            Func<Task> func = async () => await _sut.ConvertAsync(document);
+            Func<Task> func = async () =>
+                await _sut.ConvertAsync(document, length => Stream.Null, CancellationToken.None);
 
             // Act & Assert
             func.Should().Throw<ArgumentException>();

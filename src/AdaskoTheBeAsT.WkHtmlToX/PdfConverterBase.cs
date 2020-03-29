@@ -83,16 +83,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             return _pdfModule.SetObjectSetting;
         }
 
-        protected internal bool ConvertImpl(IHtmlToPdfDocument document, Stream stream)
+        protected internal bool ConvertImpl(IHtmlToPdfDocument document, Func<int, Stream> createStreamFunc)
         {
             if (document is null)
             {
                 throw new ArgumentNullException(nameof(document));
             }
 
-            if (stream is null)
+            if (createStreamFunc is null)
             {
-                throw new ArgumentNullException(nameof(stream));
+                throw new ArgumentNullException(nameof(createStreamFunc));
             }
 
             if (document.ObjectSettings.Count == 0)
@@ -119,7 +119,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
                 if (converted)
                 {
-                    _module.GetOutput(converterPtr, stream);
+                    _module.GetOutput(converterPtr, createStreamFunc);
                 }
 
                 return converted;

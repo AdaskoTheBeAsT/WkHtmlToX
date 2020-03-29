@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Native;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
 
@@ -10,15 +9,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
     internal class WkHtmlToPdfPosixCommonModule
         : WkHtmlToXModule
     {
-        internal WkHtmlToPdfPosixCommonModule()
-        {
-        }
-
-        internal WkHtmlToPdfPosixCommonModule(IBufferManager bufferManager)
-            : base(bufferManager)
-        {
-        }
-
         public override int Initialize(
             int useGraphics) =>
             NativeMethodsPdfPosix.Initialize(useGraphics);

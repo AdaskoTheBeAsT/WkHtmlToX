@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX" Version="2.0.0" />
+    <ProjectReference Include="..\..\src\AdaskoTheBeAsT.WkHtmlToX\AdaskoTheBeAsT.WkHtmlToX.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Native;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
 
@@ -10,15 +9,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
     internal class WkHtmlToImagePosixCommonModule
         : WkHtmlToXModule
     {
-        internal WkHtmlToImagePosixCommonModule()
-        {
-        }
-
-        internal WkHtmlToImagePosixCommonModule(IBufferManager bufferManager)
-            : base(bufferManager)
-        {
-        }
-
         public override int Initialize(
             int useGraphics) =>
             NativeMethodsImagePosix.Initialize(useGraphics);

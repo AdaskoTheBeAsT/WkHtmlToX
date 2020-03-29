@@ -1,9 +1,11 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Documents;
 using AdaskoTheBeAsT.WkHtmlToX.Loaders;
 using AdaskoTheBeAsT.WkHtmlToX.Settings;
+using Microsoft.IO;
 using TechTalk.SpecFlow;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
@@ -13,9 +15,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
     public sealed class SynchronizedPdfConverterFeatureSteps
         : IDisposable
     {
+        private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager;
         private SynchronizedPdfConverter? _sut;
         private string? _htmlContent;
         private HtmlToPdfDocument? _htmlToPdfDocument;
+
+        public SynchronizedPdfConverterFeatureSteps()
+        {
+            _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
+        }
 
         [Given(@"I have SynchronizedPdfConverter")]
         public void GivenIHaveSynchronizedPdfConverter()
@@ -57,10 +65,26 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
             loader.Load();
             for (int i = 0; i < count; i++)
             {
-                var stream = await _sut!.ConvertAsync(_htmlToPdfDocument!);
-#pragma warning disable AsyncFixer02 // Long running or blocking operations under an async method
-                stream.Dispose();
-#pragma warning restore AsyncFixer02 // Long running or blocking operations under an async method
+                Stream? stream = null;
+                await _sut!.ConvertAsync(
+                    _htmlToPdfDocument!,
+                    length =>
+                    {
+                        stream = _recyclableMemoryStreamManager.GetStream(
+                            Guid.NewGuid(),
+                            "wkhtmltox",
+                            length);
+                        return stream;
+                    },
+                    CancellationToken.None);
+#if NETCOREAPP
+                if (stream != null)
+                {
+                    await stream.DisposeAsync();
+                }
+#else
+                stream?.Dispose();
+#endif
             }
         }
 

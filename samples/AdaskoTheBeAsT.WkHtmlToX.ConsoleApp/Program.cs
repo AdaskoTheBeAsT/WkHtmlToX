@@ -16,24 +16,23 @@ namespace AdaskoTheBeAsT.WkHtmlToX.ConsoleApp
             {
                 libraryLoader.Load();
                 var doc = htmlToPdfGenerator.Generate();
-                using (var converter = new BasicPdfConverter())
+
+                if (!Directory.Exists("files"))
                 {
-                    var pdf = converter.Convert(doc);
+                    Directory.CreateDirectory("files");
+                }
 
-                    if (!Directory.Exists("files"))
-                    {
-                        Directory.CreateDirectory("files");
-                    }
-
-                    using (var stream = new FileStream(
-                        Path.Combine("Files", $"{DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture)}.pdf"),
-                        FileMode.Create))
-                    {
-                        pdf.CopyTo(stream);
-                        pdf.Dispose();
-                    }
+                using (var converter = new BasicPdfConverter())
+                using (var stream = new FileStream(
+                    Path.Combine("Files", $"{DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture)}.pdf"),
+                    FileMode.Create))
+                {
+                    var converted = converter.Convert(doc, length => stream);
+                    Console.WriteLine(converted);
                 }
             }
+
+            Console.ReadKey();
         }
     }
 }

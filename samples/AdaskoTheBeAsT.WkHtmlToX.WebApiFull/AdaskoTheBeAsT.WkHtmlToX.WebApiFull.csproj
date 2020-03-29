@@ -101,6 +101,9 @@
     <PackageReference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
       <Version>2.0.1</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream">
+      <Version>1.3.3</Version>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>
     </PackageReference>
@@ -116,6 +119,10 @@
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\AdaskoTheBeAsT.WkHtmlToX\AdaskoTheBeAsT.WkHtmlToX.csproj">
+      <Project>{3af331b6-0ee4-47bb-a92e-a71cce52b9df}</Project>
+      <Name>AdaskoTheBeAsT.WkHtmlToX</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AdaskoTheBeAsT.WkHtmlToX.BusinessLogic\AdaskoTheBeAsT.WkHtmlToX.BusinessLogic.csproj">
       <Project>{6a48aad9-8d05-4276-85dd-18c0926e9dff}</Project>
       <Name>AdaskoTheBeAsT.WkHtmlToX.BusinessLogic</Name>

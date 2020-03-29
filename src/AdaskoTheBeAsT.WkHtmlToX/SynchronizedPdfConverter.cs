@@ -34,10 +34,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
         public Task<bool> ConvertAsync(
             IHtmlToPdfDocument document,
-            Stream stream)
+            Func<int, Stream> createStreamFunc,
+            CancellationToken token)
         {
-            var item = new PdfConvertWorkItem(document, stream);
-            _blockingCollection.Add(item);
+            var item = new PdfConvertWorkItem(document, createStreamFunc);
+            _blockingCollection.Add(item, token);
             return item.TaskCompletionSource.Task;
         }
 
@@ -74,7 +75,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 {
                     try
                     {
-                        var converted = ConvertImpl(pdfConvertWorkItem.Document, pdfConvertWorkItem.Stream);
+                        var converted = ConvertImpl(pdfConvertWorkItem.Document, pdfConvertWorkItem.StreamFunc);
                         pdfConvertWorkItem.TaskCompletionSource.SetResult(converted);
                     }
                     catch (Exception e)

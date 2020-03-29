@@ -9,16 +9,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WorkItems
     {
         public PdfConvertWorkItem(
             IHtmlToPdfDocument document,
-            Stream stream)
+            Func<int, Stream> streamFunc)
         {
             Document = document ?? throw new ArgumentNullException(nameof(document));
-            Stream = stream ?? throw new ArgumentNullException(nameof(stream));
+            StreamFunc = streamFunc ?? throw new ArgumentNullException(nameof(streamFunc));
             TaskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         public IHtmlToPdfDocument Document { get; }
 
-        public Stream Stream { get; }
+        public Func<int, Stream> StreamFunc { get; }
 
         public TaskCompletionSource<bool> TaskCompletionSource { get; }
     }

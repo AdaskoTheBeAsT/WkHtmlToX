@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.WorkItems;
 using AutoFixture;
@@ -31,7 +32,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.WorkItems
         {
             // Arrange
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _ = new PdfConvertWorkItem(null);
+#pragma warning disable CS8603 // Possible null reference return.
+            Action action = () => _ = new PdfConvertWorkItem(null, length => Stream.Null);
+#pragma warning restore CS8603 // Possible null reference return.
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // Act & Assert
@@ -43,15 +46,18 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.WorkItems
         {
             // Arrange
             var documentMock = _mockRepository.Create<IHtmlToPdfDocument>().Object;
+            var stream = Stream.Null;
 
             // Act
-            var sut = new PdfConvertWorkItem(documentMock);
+            var sut = new PdfConvertWorkItem(documentMock, length => stream);
 
             // Assert
             using (new AssertionScope())
             {
                 sut.Document.Should().NotBeNull();
                 sut.Document.Should().Be(documentMock);
+                sut.StreamFunc.Should().NotBeNull();
+                sut.StreamFunc(0).Should().Be(stream);
                 sut.TaskCompletionSource.Should().NotBeNull();
             }
         }

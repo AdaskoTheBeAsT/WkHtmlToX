@@ -26,16 +26,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 #pragma warning restore CA1051 // Do not declare visible instance fields
 #pragma warning restore SA1401 // Fields should be private
 
-        private readonly IBufferManager _bufferManager;
-
-        protected WkHtmlToXModule(
-            IBufferManager bufferManager)
-        {
-            _bufferManager = bufferManager;
-        }
-
         protected WkHtmlToXModule()
-            : this(new BufferManager())
         {
         }
 
@@ -173,16 +164,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
                 throw new ArgumentException("Create stream returned null");
             }
 
-            var length = Math.Min(totalLength, MaxCopyBufferSize);
-            _bufferManager.CopyBuffer(data, stream, length);
-            totalLength -= length;
+            int length;
+            (totalLength, length) = CopyBuffer(data, stream, totalLength);
 
             while (totalLength > 0)
             {
                 data = IntPtr.Add(data, length);
-                length = Math.Min(totalLength, MaxCopyBufferSize);
-                _bufferManager.CopyBuffer(data, stream, length);
-                totalLength -= length;
+                (totalLength, length) = CopyBuffer(data, stream, totalLength);
             }
 
             stream.Flush();
@@ -220,5 +208,26 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 
         protected abstract IntPtr GetProgressStringImpl(
             IntPtr converter);
+
+        private (int totalLength, int length) CopyBuffer(
+            IntPtr data,
+            Stream stream,
+            int totalLength)
+        {
+            var length = Math.Min(totalLength, MaxCopyBufferSize);
+            var buffer = ArrayPool<byte>.Shared.Rent(length);
+            try
+            {
+                Marshal.Copy(data, buffer, 0, length);
+                stream.Write(buffer, 0, length);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
+
+            totalLength -= length;
+            return (totalLength, length);
+        }
     }
 }

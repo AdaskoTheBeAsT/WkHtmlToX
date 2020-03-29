@@ -22,22 +22,22 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         {
         }
 
-        public bool Convert(IHtmlToPdfDocument document, Stream stream)
+        public bool Convert(IHtmlToPdfDocument document, Func<int, Stream> createStreamFunc)
         {
             if (document is null)
             {
                 throw new ArgumentNullException(nameof(document));
             }
 
-            if (stream is null)
+            if (createStreamFunc is null)
             {
-                throw new ArgumentNullException(nameof(stream));
+                throw new ArgumentNullException(nameof(createStreamFunc));
             }
 
             var converted = false;
 
             var thread = new Thread(
-                () => converted = ConvertImpl(document, stream))
+                () => converted = ConvertImpl(document, createStreamFunc))
             {
                 IsBackground = true,
             };
@@ -50,14 +50,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 #pragma warning disable CA1031 // Do not catch general exception types
         public Task<bool> ConvertAsync(
             IHtmlToPdfDocument document,
-            Stream stream)
+            Func<int, Stream> createStreamFunc,
+            CancellationToken token)
         {
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             var thread = new Thread(() =>
             {
                 try
                 {
-                    var converted = ConvertImpl(document, stream);
+                    var converted = ConvertImpl(document, createStreamFunc);
                     tcs.SetResult(converted);
                 }
                 catch (Exception e)
