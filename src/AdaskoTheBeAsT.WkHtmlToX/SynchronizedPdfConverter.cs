@@ -32,10 +32,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             Initialize();
         }
 
-        public Task<Stream> ConvertAsync(
-            IHtmlToPdfDocument document)
+        public Task<bool> ConvertAsync(
+            IHtmlToPdfDocument document,
+            Stream stream)
         {
-            var item = new PdfConvertWorkItem(document);
+            var item = new PdfConvertWorkItem(document, stream);
             _blockingCollection.Add(item);
             return item.TaskCompletionSource.Task;
         }
@@ -64,6 +65,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         }
 
 #pragma warning disable CA1031 // Do not catch general exception types
+#pragma warning disable S108 // Nested blocks of code should not be left empty
         private void Process(object token)
         {
             try
@@ -72,8 +74,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 {
                     try
                     {
-                        var pdf = ConvertImpl(pdfConvertWorkItem.Document);
-                        pdfConvertWorkItem.TaskCompletionSource.SetResult(pdf);
+                        var converted = ConvertImpl(pdfConvertWorkItem.Document, pdfConvertWorkItem.Stream);
+                        pdfConvertWorkItem.TaskCompletionSource.SetResult(converted);
                     }
                     catch (Exception e)
                     {
@@ -83,9 +85,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             }
             catch (OperationCanceledException)
             {
-                // noop
             }
         }
+#pragma warning restore S108 // Nested blocks of code should not be left empty
 #pragma warning restore CA1031 // Do not catch general exception types
     }
 }

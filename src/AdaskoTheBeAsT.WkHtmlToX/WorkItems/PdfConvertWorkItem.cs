@@ -8,14 +8,18 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WorkItems
     internal class PdfConvertWorkItem
     {
         public PdfConvertWorkItem(
-            IHtmlToPdfDocument document)
+            IHtmlToPdfDocument document,
+            Stream stream)
         {
             Document = document ?? throw new ArgumentNullException(nameof(document));
-            TaskCompletionSource = new TaskCompletionSource<Stream>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Stream = stream ?? throw new ArgumentNullException(nameof(stream));
+            TaskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         public IHtmlToPdfDocument Document { get; }
 
-        public TaskCompletionSource<Stream> TaskCompletionSource { get; }
+        public Stream Stream { get; }
+
+        public TaskCompletionSource<bool> TaskCompletionSource { get; }
     }
 }

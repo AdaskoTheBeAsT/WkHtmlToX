@@ -1,6 +1,7 @@
 using System;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
+using AdaskoTheBeAsT.WkHtmlToX.Utils;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
@@ -8,6 +9,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         : IWkHtmlToXModuleFactory
     {
         public IWkHtmlToXModule GetModule(int platformId, ModuleKind moduleKind)
+        {
+            return GetModule(platformId, moduleKind, new BufferManager());
+        }
+
+        internal IWkHtmlToXModule GetModule(int platformId, ModuleKind moduleKind, IBufferManager bufferManager)
         {
             switch (platformId)
             {
@@ -17,10 +23,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
                 case 128:
                     if (moduleKind == ModuleKind.Pdf)
                     {
-                        return new WkHtmlToPdfPosixCommonModule();
+                        return new WkHtmlToPdfPosixCommonModule(bufferManager);
                     }
 
-                    return new WkHtmlToImagePosixCommonModule();
+                    return new WkHtmlToImagePosixCommonModule(bufferManager);
                 case (int)PlatformID.Win32NT:
                 case (int)PlatformID.Win32S:
                 case (int)PlatformID.Win32Windows:
@@ -28,10 +34,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
                 case (int)PlatformID.Xbox:
                     if (moduleKind == ModuleKind.Pdf)
                     {
-                        return new WkHtmlToPdfWindowsCommonModule();
+                        return new WkHtmlToPdfWindowsCommonModule(bufferManager);
                     }
 
-                    return new WkHtmlToImageWindowsCommonModule();
+                    return new WkHtmlToImageWindowsCommonModule(bufferManager);
                 default:
                     throw new InvalidPlatformIdentifierException();
             }

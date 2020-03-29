@@ -1,12 +1,24 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
+using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Native;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
+    [ExcludeFromCodeCoverage]
     internal class WkHtmlToImageWindowsCommonModule
         : WkHtmlToXModule
     {
+        internal WkHtmlToImageWindowsCommonModule()
+        {
+        }
+
+        internal WkHtmlToImageWindowsCommonModule(IBufferManager bufferManager)
+            : base(bufferManager)
+        {
+        }
+
         public override int Initialize(
             int useGraphics) =>
             NativeMethodsImageWindows.Initialize(useGraphics);

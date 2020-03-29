@@ -9,7 +9,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
         ///  Converts document based on given settings.
         /// </summary>
         /// <param name="document">Document to convert.</param>
-        /// <returns>Returns converted document in <see cref="Stream"/>.</returns>
-        Task<Stream> ConvertAsync(IHtmlToPdfDocument document);
+        /// <param name="stream">Converted document in <see cref="Stream"/>.</param>
+        Task<bool> ConvertAsync(IHtmlToPdfDocument document, Stream stream);
     }
 }

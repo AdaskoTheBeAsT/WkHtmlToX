@@ -1,11 +1,13 @@
 using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
+    [ExcludeFromCodeCoverage]
     internal abstract class WkHtmlToPdfModule
         : IWkHtmlToPdfModule
     {

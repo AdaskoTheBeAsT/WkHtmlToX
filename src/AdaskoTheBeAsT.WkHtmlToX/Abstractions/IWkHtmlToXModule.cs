@@ -54,6 +54,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
 
         int GetHttpErrorCode(IntPtr converter);
 
-        Stream GetOutput(IntPtr converter);
+        void GetOutput(IntPtr converter, Stream stream);
+
+        void GetOutput(IntPtr converter, Func<int, Stream> createStreamFunc);
     }
 }

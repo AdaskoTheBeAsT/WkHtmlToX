@@ -83,11 +83,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             return _pdfModule.SetObjectSetting;
         }
 
-        protected internal Stream ConvertImpl(IHtmlToPdfDocument document)
+        protected internal bool ConvertImpl(IHtmlToPdfDocument document, Stream stream)
         {
             if (document is null)
             {
                 throw new ArgumentNullException(nameof(document));
+            }
+
+            if (stream is null)
+            {
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (document.ObjectSettings.Count == 0)
@@ -98,7 +103,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
             ProcessingDocument = document;
 
-            var result = Stream.Null;
             var loaded = _module.Initialize(0) == 1;
             if (!loaded)
             {
@@ -115,8 +119,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
                 if (converted)
                 {
-                    result = _module.GetOutput(converterPtr);
+                    _module.GetOutput(converterPtr, stream);
                 }
+
+                return converted;
             }
             finally
             {
@@ -130,8 +136,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 _module.Terminate();
                 ProcessingDocument = null;
             }
-
-            return result;
         }
 
         protected internal void AddContent(

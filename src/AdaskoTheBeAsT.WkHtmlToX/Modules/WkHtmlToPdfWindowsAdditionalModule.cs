@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using AdaskoTheBeAsT.WkHtmlToX.Native;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
+    [ExcludeFromCodeCoverage]
     internal class WkHtmlToPdfWindowsAdditionalModule
         : WkHtmlToPdfModule
     {

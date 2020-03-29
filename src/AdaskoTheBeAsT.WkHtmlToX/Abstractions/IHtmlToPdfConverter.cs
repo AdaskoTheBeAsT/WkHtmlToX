@@ -8,7 +8,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
         ///  Converts document based on given settings.
         /// </summary>
         /// <param name="document">Document to convert.</param>
-        /// <returns>Returns converted document in <see cref="Stream"/>.</returns>
-        Stream Convert(IHtmlToPdfDocument document);
+        /// <param name="stream">Converted document in <see cref="Stream"/>.</param>
+        /// <returns>True if document converted.</returns>
+        bool Convert(IHtmlToPdfDocument document, Stream stream);
     }
 }

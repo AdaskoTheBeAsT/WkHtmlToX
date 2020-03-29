@@ -1,16 +1,17 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
-using Microsoft.IO;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
+    [ExcludeFromCodeCoverage]
     internal abstract class WkHtmlToXModule
         : IWkHtmlToXModule
     {
@@ -25,8 +26,18 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 #pragma warning restore CA1051 // Do not declare visible instance fields
 #pragma warning restore SA1401 // Fields should be private
 
-        private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager =
-            new RecyclableMemoryStreamManager();
+        private readonly IBufferManager _bufferManager;
+
+        protected WkHtmlToXModule(
+            IBufferManager bufferManager)
+        {
+            _bufferManager = bufferManager;
+        }
+
+        protected WkHtmlToXModule()
+            : this(new BufferManager())
+        {
+        }
 
         public abstract int Initialize(
             int useGraphics);
@@ -131,32 +142,50 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         public abstract int GetHttpErrorCode(
             IntPtr converter);
 
-        public Stream GetOutput(IntPtr converter)
+        public void GetOutput(IntPtr converter, Stream stream)
         {
-            var length = GetOutputImpl(converter, out IntPtr data);
-            if (length == 0)
+            if (stream == null)
             {
-                return Stream.Null;
+                throw new ArgumentNullException(nameof(stream));
             }
 
-            var stream = _recyclableMemoryStreamManager.GetStream(
-                Guid.NewGuid(),
-                "wkhtmltox",
-                length);
+            GetOutput(converter, length => stream);
+        }
 
-            var copyLength = Math.Min(length, MaxCopyBufferSize);
-
-            CopyBuffer(stream, data, ref copyLength, ref length);
-
-            while (length > 0)
+        public void GetOutput(
+            IntPtr converter,
+            Func<int, Stream> createStreamFunc)
+        {
+            if (createStreamFunc == null)
             {
-                data = IntPtr.Add(data, copyLength);
-                copyLength = Math.Min(length, MaxCopyBufferSize);
-                CopyBuffer(stream, data, ref copyLength, ref length);
+                throw new ArgumentNullException(nameof(createStreamFunc));
             }
 
-            stream.Position = 0;
-            return stream;
+            var totalLength = GetOutputImpl(converter, out IntPtr data);
+            if (totalLength == 0)
+            {
+                return;
+            }
+
+            var stream = createStreamFunc(totalLength);
+            if (stream is null)
+            {
+                throw new ArgumentException("Create stream returned null");
+            }
+
+            var length = Math.Min(totalLength, MaxCopyBufferSize);
+            _bufferManager.CopyBuffer(data, stream, length);
+            totalLength -= length;
+
+            while (totalLength > 0)
+            {
+                data = IntPtr.Add(data, length);
+                length = Math.Min(totalLength, MaxCopyBufferSize);
+                _bufferManager.CopyBuffer(data, stream, length);
+                totalLength -= length;
+            }
+
+            stream.Flush();
         }
 
         public void Dispose()
@@ -191,25 +220,5 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 
         protected abstract IntPtr GetProgressStringImpl(
             IntPtr converter);
-
-        private void CopyBuffer(
-            MemoryStream stream,
-            IntPtr data,
-            ref int copyLength,
-            ref int leftLength)
-        {
-            var buffer = ArrayPool<byte>.Shared.Rent(copyLength);
-            try
-            {
-                Marshal.Copy(data, buffer, 0, copyLength);
-                stream.Write(buffer, 0, copyLength);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
-
-            leftLength -= copyLength;
-        }
     }
 }

@@ -19,21 +19,31 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         {
         }
 
-        public Stream Convert(IHtmlToImageDocument document)
+        public bool Convert(IHtmlToImageDocument document, Stream stream)
         {
-            var pdfStream = Stream.Null;
+            if (document is null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            if (stream is null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            var converted = false;
             var thread = new Thread(
-                () => pdfStream = ConvertImpl(document))
+                () => converted = ConvertImpl(document, stream))
             {
                 IsBackground = true,
             };
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
             thread.Join();
-            return pdfStream;
+            return converted;
         }
 
-        internal Stream ConvertImpl(IHtmlToImageDocument document)
+        internal bool ConvertImpl(IHtmlToImageDocument document, Stream stream)
         {
             if (document?.ImageSettings == null)
             {
@@ -41,9 +51,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                     "No image settings is defined in document that was passed. At least one object must be defined.");
             }
 
+            if (stream is null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
             ProcessingDocument = document;
 
-            var result = Stream.Null;
             var loaded = _module.Initialize(0) == 1;
             if (!loaded)
             {
@@ -60,8 +74,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
                 if (converted)
                 {
-                    result = _module.GetOutput(converterPtr);
+                    _module.GetOutput(converterPtr, stream);
                 }
+
+                return converted;
             }
             finally
             {
@@ -70,8 +86,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 _module.Terminate();
                 ProcessingDocument = null;
             }
-
-            return result;
         }
 
         internal (IntPtr converterPtr, IntPtr globalSettingsPtr) CreateConverter(
