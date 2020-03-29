@@ -50,7 +50,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             var moduleMock = new Mock<IWkHtmlToXModuleFactory>();
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-    
+
             // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = new BasicPdfConverter(moduleMock.Object, null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -120,7 +120,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-         
+
             // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = _sut.CreateConverter(null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.

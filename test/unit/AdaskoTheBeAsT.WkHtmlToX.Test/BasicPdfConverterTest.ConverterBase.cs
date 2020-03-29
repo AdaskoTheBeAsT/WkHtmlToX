@@ -786,6 +786,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             [WkHtml("first")]
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+
+            // ReSharper disable once UnusedAutoPropertyAccessor.Global
             public string First { get; set; }
 #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         }
@@ -794,6 +796,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             : ISettings
         {
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+
+            // ReSharper disable once UnusedAutoPropertyAccessor.Global
             public TestSettings TestSettings { get; set; }
 #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         }
