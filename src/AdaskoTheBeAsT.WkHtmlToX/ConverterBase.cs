@@ -175,7 +175,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 return;
             }
 
+#pragma warning disable S3011 // Make sure that this accessibility bypass is safe here.
             const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+#pragma warning restore S3011 // Make sure that this accessibility bypass is safe here.
 
             foreach (var prop in settings.GetType().GetProperties(bindingFlags))
             {
