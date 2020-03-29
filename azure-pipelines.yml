@@ -1,0 +1,70 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-2019'
+  
+variables:
+  buildConfiguration: 'Release'
+  unitTestProjects: '**/test/unit/**/*.csproj'
+  
+steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET Core SDK from global.json'
+  inputs:
+    packageType: 'sdk'
+    useGlobalJson: true
+ 
+- task: DotNetCoreCLI@2
+  displayName: Restore
+  inputs:
+    command: restore
+    arguments: AdaskoTheBeAsT.WkHtmlToX.sln
+  
+- task: SonarCloudPrepare@1
+  displayName: 'Prepare analysis on SonarCloud'
+  inputs:
+    scannerMode: 'MSBuild'    
+    SonarCloud: 'AdaskoTheBeAsT.WkHtmlToX.SonarCloud'
+    organization: 'adaskothebeast-github'
+    projectKey: 'AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX'
+    projectName: AdaskoTheBeAsT.WkHtmlToX
+    
+  
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    arguments: 'AdaskoTheBeAsT.WkHtmlToX.sln --configuration $(buildConfiguration)'
+  
+- task: DotNetCoreCLI@2
+  displayName: Test
+  inputs:
+    command: test
+    projects: '$(unitTestProjects)'
+    publishTestResults: false
+    arguments: '--configuration $(buildConfiguration) --collect:"Code Coverage" --logger:"trx" --results-directory d:/a/1/TestResults'
+
+- task: ResharperCli@2
+  inputs:
+    solutionOrProjectPath: 'AdaskoTheBeAsT.WkHtmlToX.sln'
+    failBuildLevelSelector: 'Warning'
+  
+- task: SonarCloudAnalyze@1
+  displayName: Sonar Cloud analyze
+
+- task: SonarCloudPublish@1
+  displayName: Sonar Cloud publish
+  inputs:
+    pollingTimeoutSec: '300'
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFormat: 'VSTest'
+    testResultsFiles: '*.trx'
+    searchFolder: 'd:/a/1/TestResults'
