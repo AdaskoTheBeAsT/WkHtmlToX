@@ -12,6 +12,7 @@ pool:
 variables:
   buildConfiguration: 'Release'
   unitTestProjects: '**/test/unit/**/*.csproj'
+  MSBUILDSINGLELOADCONTEXT: 1
   
 steps:
 - task: UseDotNet@2
