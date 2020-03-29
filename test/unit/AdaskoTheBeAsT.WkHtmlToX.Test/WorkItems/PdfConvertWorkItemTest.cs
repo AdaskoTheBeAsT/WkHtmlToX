@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.WorkItems;
-using AutoFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Moq;
@@ -13,12 +12,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.WorkItems
     public sealed class PdfConvertWorkItemTest
         : IDisposable
     {
-        private readonly Fixture _fixture;
         private readonly MockRepository _mockRepository;
 
         public PdfConvertWorkItemTest()
         {
-            _fixture = new Fixture();
             _mockRepository = new MockRepository(MockBehavior.Strict);
         }
 
@@ -33,6 +30,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.WorkItems
             // Arrange
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable CS8603 // Possible null reference return.
+
+            // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = new PdfConvertWorkItem(null, length => Stream.Null);
 #pragma warning restore CS8603 // Possible null reference return.
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.

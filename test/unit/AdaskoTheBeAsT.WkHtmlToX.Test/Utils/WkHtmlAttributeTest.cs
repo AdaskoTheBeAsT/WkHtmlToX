@@ -20,6 +20,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Utils
         {
             // Arrange
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+
+            // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = new WkHtmlAttribute(null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
@@ -32,6 +34,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Utils
         {
             // Arrange
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+
+            // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = new WkHtmlAttribute(string.Empty);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 

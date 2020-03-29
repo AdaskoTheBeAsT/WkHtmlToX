@@ -48,6 +48,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         public void ShouldNotThrowWhenUsingDefaultConstructor()
         {
             // Arrange
+            // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = new BasicPdfConverter();
 
             // Act & Assert
@@ -198,6 +199,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 });
 
             // Act
+            // ReSharper disable once AccessToDisposedClosure
             var result = _sut.Convert(document, length => memoryStream);
 
             // Assert

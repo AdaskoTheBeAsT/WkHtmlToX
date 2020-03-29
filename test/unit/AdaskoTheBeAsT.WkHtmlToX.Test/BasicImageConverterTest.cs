@@ -14,17 +14,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         : IDisposable
     {
         private readonly Fixture _fixture;
-        private readonly MockRepository _mockRepository;
         private readonly Mock<IWkHtmlToXModule> _module;
         private readonly BasicImageConverter _sut;
 
         public BasicImageConverterTest()
         {
             _fixture = new Fixture();
-            _mockRepository = new MockRepository(MockBehavior.Loose);
 
-            var moduleFactoryMock = _mockRepository.Create<IWkHtmlToXModuleFactory>();
-            _module = _mockRepository.Create<IWkHtmlToXModule>();
+            var moduleFactoryMock = new Mock<IWkHtmlToXModuleFactory>();
+            _module = new Mock<IWkHtmlToXModule>();
             _module.Setup(m => m.Dispose());
             moduleFactoryMock.Setup(mf => mf.GetModule(It.IsAny<int>(), It.IsAny<ModuleKind>()))
                 .Returns(_module.Object);
@@ -41,6 +39,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         public void ShouldNotThrowWhenUsingDefaultConstructor()
         {
             // Arrange
+            // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = new BasicImageConverter();
 
             // Act & Assert
@@ -52,6 +51,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+
+            // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = _sut.CreateConverter(null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
@@ -265,6 +266,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             document.ImageSettings.Quality = quality;
 
             // Act
+            // ReSharper disable once AccessToDisposedClosure
             var result = _sut.ConvertImpl(document, length => memoryStream);
 
             // Assert
@@ -391,6 +393,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             document.ImageSettings.Quality = quality;
 
             // Act
+            // ReSharper disable once AccessToDisposedClosure
             var result = _sut.Convert(document, length => memoryStream);
 
             // Assert

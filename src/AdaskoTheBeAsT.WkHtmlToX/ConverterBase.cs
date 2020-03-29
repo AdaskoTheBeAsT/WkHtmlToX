@@ -254,7 +254,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         {
             if (disposing)
             {
-                _module?.Dispose();
+                _module.Dispose();
             }
         }
     }

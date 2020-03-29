@@ -13,6 +13,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         public void ShouldThrowExceptionWhenNullPassedInModuleConstructor()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+
+            // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = new BasicImageConverter(null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
@@ -27,7 +29,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             var intVal = _fixture.Create<int>();
             var name = _fixture.Create<string>();
             var value = _fixture.Create<string>();
-            Func<IntPtr, string, string?, int> setGlobalSetting = (intptr, name, value) => intVal;
+            Func<IntPtr, string, string?, int> setGlobalSetting = (ptr, n, v) => intVal;
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
                 .Returns(setGlobalSetting);
 
@@ -50,7 +52,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             var intVal = _fixture.Create<int>();
             var name = _fixture.Create<string>();
             var value = _fixture.Create<string>();
-            Func<IntPtr, string, string?, int> setGlobalSetting = (intptr, name, value) => intVal;
+            Func<IntPtr, string, string?, int> setGlobalSetting = (ptr, n, v) => intVal;
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
                 .Returns(setGlobalSetting);
 

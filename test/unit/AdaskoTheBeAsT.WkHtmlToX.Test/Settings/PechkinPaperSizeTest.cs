@@ -14,6 +14,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
         public void FromPaperKindShouldThrowExceptionWhenPaperKindUnknown()
         {
             // Arrange
+            // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = PechkinPaperSize.FromPaperKind(PaperKind.Custom);
 
             // Act & Assert

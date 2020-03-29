@@ -26,10 +26,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 #pragma warning restore CA1051 // Do not declare visible instance fields
 #pragma warning restore SA1401 // Fields should be private
 
-        protected WkHtmlToXModule()
-        {
-        }
-
         public abstract int Initialize(
             int useGraphics);
 

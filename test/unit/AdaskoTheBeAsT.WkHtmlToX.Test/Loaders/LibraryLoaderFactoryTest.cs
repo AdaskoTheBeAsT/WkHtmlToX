@@ -72,6 +72,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders
         public void GetModuleShouldThrowWhenNotKnownPlatformIdPassed()
         {
             // Arrange
+            // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = _sut.Create(12345, null);
 
             // Act & Assert
@@ -82,6 +83,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders
         public void GetModuleShouldThrowWhenLinuxPlatformIdAndNotKnownRuntimeIdentifierPassed()
         {
             // Arrange
+            // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = _sut.Create((int)PlatformID.Unix, null);
 
             // Act & Assert

@@ -64,6 +64,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Modules
         public void GetModuleShouldThrowWhenNotKnownPlatformIdPassed()
         {
             // Arrange
+            // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = _sut.GetModule(12345);
 
             // Act & Assert

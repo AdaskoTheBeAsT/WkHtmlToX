@@ -49,6 +49,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         public void ShouldNotThrowWhenUsingDefaultConstructor()
         {
             // Arrange
+            // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = new SynchronizedPdfConverter();
 
             // Act & Assert
