@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net48</TargetFrameworks>
+    <ProjectGuid>936D9586-62DC-426C-A577-C9982CD7EE78</ProjectGuid>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='net48|AnyCPU'">
