@@ -7,6 +7,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
     [Flags]
     internal enum LoadLibraryFlags : uint
     {
+        None = 0,
+
         /// <summary>
         /// If this value is used, and the executable module is a DLL,
         /// the system does not call DllMain for process and thread initialization and termination.
@@ -17,6 +19,29 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// Otherwise, load the library as a DLL or executable module using the LoadLibrary function.
         /// </summary>
         DONT_RESOLVE_DLL_REFERENCES = 0x00000001,
+
+        /// <summary>
+        /// If this value is used, the system maps the file into the calling process's
+        /// virtual address space as if it were a data file. Nothing is done to execute
+        /// or prepare to execute the mapped file. Therefore, you cannot call functions
+        /// like GetModuleFileName, GetModuleHandle or GetProcAddress with this DLL.
+        /// Using this value causes writes to read-only memory to raise an access violation.
+        /// Use this flag when you want to load a DLL only to extract messages or resources from it.
+        /// This value can be used with LOAD_LIBRARY_AS_IMAGE_RESOURCE. For more information, see Remarks.
+        /// </summary>
+        LOAD_LIBRARY_AS_DATAFILE = 0x00000002,
+
+        /// <summary>
+        /// If this value is used and lpFileName specifies an absolute path,
+        /// the system uses the alternate file search strategy discussed in the Remarks section
+        /// to find associated executable modules that the specified module causes to be loaded.
+        /// If this value is used and lpFileName specifies a relative path, the behavior is undefined.
+        /// If this value is not used, or if lpFileName does not specify a path,
+        /// the system uses the standard search strategy discussed in the Remarks section to find
+        /// associated executable modules that the specified module causes to be loaded.
+        /// This value cannot be combined with any LOAD_LIBRARY_SEARCH flag.
+        /// </summary>
+        LOAD_WITH_ALTERED_SEARCH_PATH = 0x00000008,
 
         /// <summary>
         /// If this value is used, the system does not check AppLocker rules or apply Software Restriction Policies for the DLL.
@@ -33,26 +58,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         LOAD_IGNORE_CODE_AUTHZ_LEVEL = 0x00000010,
 
         /// <summary>
-        /// If this value is used, the system maps the file into the calling process's
-        /// virtual address space as if it were a data file. Nothing is done to execute
-        /// or prepare to execute the mapped file. Therefore, you cannot call functions
-        /// like GetModuleFileName, GetModuleHandle or GetProcAddress with this DLL.
-        /// Using this value causes writes to read-only memory to raise an access violation.
-        /// Use this flag when you want to load a DLL only to extract messages or resources from it.
-        /// This value can be used with LOAD_LIBRARY_AS_IMAGE_RESOURCE. For more information, see Remarks.
-        /// </summary>
-        LOAD_LIBRARY_AS_DATAFILE = 0x00000002,
-
-        /// <summary>
-        /// Similar to LOAD_LIBRARY_AS_DATAFILE, except that the DLL file is opened
-        /// with exclusive write access for the calling process. Other processes cannot open the DLL file
-        /// for write access while it is in use. However, the DLL can still be opened by other processes.
-        /// This value can be used with LOAD_LIBRARY_AS_IMAGE_RESOURCE. For more information, see Remarks.
-        /// Windows Server 2003 and Windows XP:  This value is not supported until Windows Vista.
-        /// </summary>
-        LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE = 0x00000040,
-
-        /// <summary>
         /// If this value is used, the system maps the file into the process's virtual address space
         /// as an image file. However, the loader does not load the static imports or perform
         /// the other usual initialization steps. Use this flag when you want to load a DLL only
@@ -66,26 +71,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         LOAD_LIBRARY_AS_IMAGE_RESOURCE = 0x00000020,
 
         /// <summary>
-        /// If this value is used, the application's installation directory is searched for the DLL and its dependencies.
-        /// Directories in the standard search path are not searched. This value cannot be combined with LOAD_WITH_ALTERED_SEARCH_PATH.
-        /// Windows 7, Windows Server 2008 R2, Windows Vista, and Windows Server 2008:
-        /// This value requires KB2533623 to be installed.
-        /// Windows Server 2003 and Windows XP:  This value is not supported.
+        /// Similar to LOAD_LIBRARY_AS_DATAFILE, except that the DLL file is opened
+        /// with exclusive write access for the calling process. Other processes cannot open the DLL file
+        /// for write access while it is in use. However, the DLL can still be opened by other processes.
+        /// This value can be used with LOAD_LIBRARY_AS_IMAGE_RESOURCE. For more information, see Remarks.
+        /// Windows Server 2003 and Windows XP:  This value is not supported until Windows Vista.
         /// </summary>
-        LOAD_LIBRARY_SEARCH_APPLICATION_DIR = 0x00000200,
-
-        /// <summary>
-        /// This value is a combination of LOAD_LIBRARY_SEARCH_APPLICATION_DIR,
-        /// LOAD_LIBRARY_SEARCH_SYSTEM32, and LOAD_LIBRARY_SEARCH_USER_DIRS.
-        /// Directories in the standard search path are not searched.
-        /// This value cannot be combined with LOAD_WITH_ALTERED_SEARCH_PATH.
-        /// This value represents the recommended maximum number of directories
-        /// an application should include in its DLL search path.
-        /// Windows 7, Windows Server 2008 R2, Windows Vista, and Windows Server 2008:
-        /// This value requires KB2533623 to be installed.
-        /// Windows Server 2003 and Windows XP:  This value is not supported.
-        /// </summary>
-        LOAD_LIBRARY_SEARCH_DEFAULT_DIRS = 0x00001000,
+        LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE = 0x00000040,
 
         /// <summary>
         /// If this value is used, the directory that contains the DLL is temporarily
@@ -104,14 +96,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR = 0x00000100,
 
         /// <summary>
-        /// If this value is used, %windows%\system32 is searched for the DLL and its dependencies.
-        /// Directories in the standard search path are not searched.
-        /// This value cannot be combined with LOAD_WITH_ALTERED_SEARCH_PATH.
+        /// If this value is used, the application's installation directory is searched for the DLL and its dependencies.
+        /// Directories in the standard search path are not searched. This value cannot be combined with LOAD_WITH_ALTERED_SEARCH_PATH.
         /// Windows 7, Windows Server 2008 R2, Windows Vista, and Windows Server 2008:
         /// This value requires KB2533623 to be installed.
         /// Windows Server 2003 and Windows XP:  This value is not supported.
         /// </summary>
-        LOAD_LIBRARY_SEARCH_SYSTEM32 = 0x00000800,
+        LOAD_LIBRARY_SEARCH_APPLICATION_DIR = 0x00000200,
 
         /// <summary>
         /// If this value is used, directories added using the AddDllDirectory
@@ -126,16 +117,27 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         LOAD_LIBRARY_SEARCH_USER_DIRS = 0x00000400,
 
         /// <summary>
-        /// If this value is used and lpFileName specifies an absolute path,
-        /// the system uses the alternate file search strategy discussed in the Remarks section
-        /// to find associated executable modules that the specified module causes to be loaded.
-        /// If this value is used and lpFileName specifies a relative path, the behavior is undefined.
-        /// If this value is not used, or if lpFileName does not specify a path,
-        /// the system uses the standard search strategy discussed in the Remarks section to find
-        /// associated executable modules that the specified module causes to be loaded.
-        /// This value cannot be combined with any LOAD_LIBRARY_SEARCH flag.
+        /// If this value is used, %windows%\system32 is searched for the DLL and its dependencies.
+        /// Directories in the standard search path are not searched.
+        /// This value cannot be combined with LOAD_WITH_ALTERED_SEARCH_PATH.
+        /// Windows 7, Windows Server 2008 R2, Windows Vista, and Windows Server 2008:
+        /// This value requires KB2533623 to be installed.
+        /// Windows Server 2003 and Windows XP:  This value is not supported.
         /// </summary>
-        LOAD_WITH_ALTERED_SEARCH_PATH = 0x00000008,
+        LOAD_LIBRARY_SEARCH_SYSTEM32 = 0x00000800,
+
+        /// <summary>
+        /// This value is a combination of LOAD_LIBRARY_SEARCH_APPLICATION_DIR,
+        /// LOAD_LIBRARY_SEARCH_SYSTEM32, and LOAD_LIBRARY_SEARCH_USER_DIRS.
+        /// Directories in the standard search path are not searched.
+        /// This value cannot be combined with LOAD_WITH_ALTERED_SEARCH_PATH.
+        /// This value represents the recommended maximum number of directories
+        /// an application should include in its DLL search path.
+        /// Windows 7, Windows Server 2008 R2, Windows Vista, and Windows Server 2008:
+        /// This value requires KB2533623 to be installed.
+        /// Windows Server 2003 and Windows XP:  This value is not supported.
+        /// </summary>
+        LOAD_LIBRARY_SEARCH_DEFAULT_DIRS = 0x00001000,
     }
 #pragma warning restore S2344
 }

@@ -138,7 +138,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            GetOutput(converter, length => stream);
+            GetOutput(converter, _ => stream);
         }
 
         public void GetOutput(
