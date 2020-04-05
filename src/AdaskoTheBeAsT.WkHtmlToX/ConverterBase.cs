@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.EventDefinitions;
@@ -187,7 +186,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                     continue;
                 }
 
-                var wkHtmlAttribute = prop.GetCustomAttributes().OfType<WkHtmlAttribute>().FirstOrDefault();
+                var wkHtmlAttribute = prop.GetCustomAttribute<WkHtmlAttribute>();
 
                 if (wkHtmlAttribute != null)
                 {

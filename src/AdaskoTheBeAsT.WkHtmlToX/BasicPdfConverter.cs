@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
+using JetBrains.Annotations;
 
 namespace AdaskoTheBeAsT.WkHtmlToX
 {
@@ -22,7 +23,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         {
         }
 
-        public bool Convert(IHtmlToPdfDocument document, Func<int, Stream> createStreamFunc)
+        public bool Convert(
+            IHtmlToPdfDocument document,
+            [InstantHandle] Func<int, Stream> createStreamFunc)
         {
             if (document is null)
             {
@@ -37,7 +40,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             var converted = false;
 
             var thread = new Thread(
-                () => converted = ConvertImpl(document, createStreamFunc))
+                () => converted = ConvertImpl(
+                    document,
+                    createStreamFunc))
             {
                 IsBackground = true,
             };
