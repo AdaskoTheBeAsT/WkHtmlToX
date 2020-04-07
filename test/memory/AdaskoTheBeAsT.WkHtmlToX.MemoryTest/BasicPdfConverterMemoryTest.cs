@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using AdaskoTheBeAsT.WkHtmlToX.Loaders;
@@ -9,11 +9,11 @@ using Xunit.Abstractions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest
 {
-    public class MemoryTest
+    public class BasicPdfConverterMemoryTest
     {
         private readonly ITestOutputHelper _output;
 
-        public MemoryTest(
+        public BasicPdfConverterMemoryTest(
             ITestOutputHelper output)
         {
             _output = output ?? throw new ArgumentNullException(nameof(output));

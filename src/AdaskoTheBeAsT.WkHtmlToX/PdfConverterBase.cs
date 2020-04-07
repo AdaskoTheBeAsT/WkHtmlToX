@@ -185,7 +185,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
             var encoding = pdfObjectSettings.Encoding ?? Encoding.UTF8;
             var length = encoding.GetByteCount(pdfObjectSettings.HtmlContent);
-            var buffer = ArrayPool<byte>.Shared.Rent(length);
+            var buffer = ArrayPool<byte>.Shared.Rent(length + 1);
+            buffer[length] = 0;
+
             try
             {
                 encoding.GetBytes(pdfObjectSettings.HtmlContent, 0, pdfObjectSettings.HtmlContent!.Length, buffer, 0);
