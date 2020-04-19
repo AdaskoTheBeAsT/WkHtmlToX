@@ -44,9 +44,9 @@ steps:
     arguments: 'AdaskoTheBeAsT.WkHtmlToX.sln --configuration $(buildConfiguration)'
 
 - task: DeleteFiles@1
-  displayName: 'Clear staging directory'
+  displayName: 'Clear nuget staging directory'
   inputs:
-    SourceFolder: '$(Build.ArtifactStagingDirectory)'
+    SourceFolder: '$(Build.SourcesDirectory)/nuget'
     Contents: '**/*' 
 
 - task: CopyFiles@2
@@ -54,7 +54,7 @@ steps:
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)'
     contents: '**/$(BuildConfiguration)/**/?(AdaskoTheBeAsT.WkHtmlToX.*.nupkg|AdaskoTheBeAsT.WkHtmlToX.*.snupkg)'
-    targetFolder: '$(Build.ArtifactStagingDirectory)'
+    targetFolder: '$(Build.SourcesDirectory)/nuget'
 
 - task: DeleteFiles@1
   displayName: 'Clear test results'
@@ -89,6 +89,19 @@ steps:
     testResultsFormat: 'VSTest'
     testResultsFiles: '*.trx'
     searchFolder: '$(testResultsDirectory)'
+
+- task: DeleteFiles@1
+  displayName: 'Clear staging directory'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)'
+    Contents: '**/*'
+    
+- task: CopyFiles@2
+  displayName: 'Copy nuget packages'
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/nuget'
+    contents: '**/*'
+    targetFolder: '$(Build.ArtifactStagingDirectory)'    
 
 - task: CopyFiles@2
   displayName: 'Copy test results'
