@@ -70,6 +70,12 @@ steps:
     testResultsFiles: '*.trx'
     searchFolder: 'd:/a/1/TestResults'
 
+- task: DeleteFiles@1
+  displayName: 'Clear staging directory'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)'
+    Contents: '**/*'
+
 - task: CopyFiles@2
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)'
