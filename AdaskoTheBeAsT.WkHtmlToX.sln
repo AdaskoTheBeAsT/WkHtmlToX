@@ -46,6 +46,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "memory", "memory", "{641933
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.WkHtmlToX.MemoryTest", "test\memory\AdaskoTheBeAsT.WkHtmlToX.MemoryTest\AdaskoTheBeAsT.WkHtmlToX.MemoryTest.csproj", "{1DF1B829-F9B0-49A5-B81F-6584E7437068}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".props", ".props", "{A02BB06A-CE22-4BB2-8EAF-D7F74E6D1081}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.targets = src\Directory.Build.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +87,7 @@ Global
 		{CE2A5F4B-4532-44CD-82C0-DFEE609D74B4} = {D2F5259C-126E-4436-AC52-174CA9C6471C}
 		{6419332E-EA13-44A9-B9C7-57CF3FD91EE3} = {E6481397-F2E4-42CF-AE65-C724080C3C40}
 		{1DF1B829-F9B0-49A5-B81F-6584E7437068} = {6419332E-EA13-44A9-B9C7-57CF3FD91EE3}
+		{A02BB06A-CE22-4BB2-8EAF-D7F74E6D1081} = {77493B06-203B-4100-A080-02E242985F55}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {791BEBD5-7E04-4A1B-AF66-0101196CFFFE}
