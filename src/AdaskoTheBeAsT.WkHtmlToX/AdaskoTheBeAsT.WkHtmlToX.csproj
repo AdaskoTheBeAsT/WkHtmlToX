@@ -8,19 +8,20 @@
     <RepositoryType>github</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <Description>AdaskoTheBeAsT.WkHtmlToX c# wrapper</Description>
-    <PackageVersion>3.0.1</PackageVersion>
+    <PackageVersion>3.0.2</PackageVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Authors>Adam "AdaskoTheBeAsT" Pluciński</Authors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
-  <!--<PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <Deterministic>true</Deterministic>
-  </PropertyGroup>-->
+  </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\LICENSE">

@@ -37,6 +37,8 @@ resharper_wrap_object_and_collection_initializer_style=chop_always
 indent_size=2
 [*.props]
 indent_size=2
+[*.targets]
+indent_size=2
 # config files
 [*.config]
 indent_size=2

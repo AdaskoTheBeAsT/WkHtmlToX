@@ -1,3 +1,4 @@
+<!-- This target must be imported into Directory.Build.targets -->
 <!-- Workaround. Remove once we're on 3.1.300+
 https://github.com/dotnet/sourcelink/issues/572 -->
 <Project>
@@ -7,9 +8,16 @@ https://github.com/dotnet/sourcelink/issues/572 -->
   <ItemGroup>
     <EmbeddedFiles Include="$(GeneratedAssemblyInfoFile)"/>
   </ItemGroup>
-
-  <!-- Workaround for https://github.com/dotnet/sdk/issues/11105 -->
   <ItemGroup>
-    <SourceRoot Include="$(NuGetPackageRoot)" Condition="'$(NuGetPackageRoot)' != ''" />
-  </ItemGroup>  
+    <SourceRoot Include="$(NuGetPackageRoot)" />
+  </ItemGroup>
+
+  <Target Name="CoverletGetPathMap"
+          DependsOnTargets="InitializeSourceRootMappedPaths"
+          Returns="@(_LocalTopLevelSourceRoot)"
+          Condition="'$(DeterministicSourcePaths)' == 'true'">
+    <ItemGroup>
+      <_LocalTopLevelSourceRoot Include="@(SourceRoot)" Condition="'%(SourceRoot.NestedRoot)' == ''"/>
+    </ItemGroup>
+  </Target>
 </Project>
