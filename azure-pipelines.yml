@@ -69,3 +69,14 @@ steps:
     testResultsFormat: 'VSTest'
     testResultsFiles: '*.trx'
     searchFolder: 'd:/a/1/TestResults'
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)'
+    contents: '**/$(BuildConfiguration)/**/?(AdaskoTheBeAsT.WkHtmlToX.*.nupkg|AdaskoTheBeAsT.WkHtmlToX.*.snupkg)'
+    targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: NugetPackages

@@ -24,6 +24,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 #pragma warning disable CA1051 // Do not declare visible instance fields
 
         // ReSharper disable once CollectionNeverQueried.Global
+        // ReSharper disable once InconsistentNaming
         protected readonly List<object> _delegates = new List<object>();
 #pragma warning restore CA1051 // Do not declare visible instance fields
 #pragma warning restore SA1401 // Fields should be private

@@ -16,6 +16,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
     {
 #pragma warning disable SA1401 // Fields should be private
 #pragma warning disable CA1051 // Do not declare visible instance fields
+        // ReSharper disable once InconsistentNaming
         internal readonly IWkHtmlToPdfModule _pdfModule;
 #pragma warning restore CA1051 // Do not declare visible instance fields
 #pragma warning restore SA1401 // Fields should be private
