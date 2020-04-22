@@ -5,6 +5,7 @@
 
 trigger:
 - master
+- refs/tags/v*
 
 pool:
   vmImage: 'windows-2019'
@@ -14,7 +15,8 @@ variables:
   unitTestProjects: '**/test/unit/**/*.csproj'
   testResultsDirectory: 'd:/a/1/TestResults'
   MSBUILDSINGLELOADCONTEXT: 1
-  
+  releaseCondition: 'and(succeeded(), startsWith(variables["Build.SourceBranch"], "refs/tags/"))'
+
 steps:
 - task: UseDotNet@2
   displayName: 'Use .NET Core SDK from global.json'
@@ -114,3 +116,19 @@ steps:
   inputs:
     pathToPublish: '$(Build.ArtifactStagingDirectory)'
     artifactName: NugetPackages
+
+- task: NuGetToolInstaller@1
+  displayName: 'Install nuget'
+  condition: '$(releaseCondition)'
+  inputs:
+    versionSpec:
+    checkLatest: true
+
+- task: NuGetCommand@2
+  displayName: 'Publish to nuget'
+  condition: '$(releaseCondition)'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.snupkg'
+    nuGetFeedType: 'external'
+
