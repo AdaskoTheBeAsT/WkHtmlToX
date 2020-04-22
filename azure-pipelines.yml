@@ -15,7 +15,6 @@ variables:
   unitTestProjects: '**/test/unit/**/*.csproj'
   testResultsDirectory: 'd:/a/1/TestResults'
   MSBUILDSINGLELOADCONTEXT: 1
-  releaseCondition: 'and(succeeded(), startsWith(variables["Build.SourceBranch"], "refs/tags/"))'
 
 steps:
 - task: UseDotNet@2
@@ -119,16 +118,16 @@ steps:
 
 - task: NuGetToolInstaller@1
   displayName: 'Install nuget'
-  condition: '$(releaseCondition)'
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
   inputs:
     versionSpec:
     checkLatest: true
 
 - task: NuGetCommand@2
   displayName: 'Publish to nuget'
-  condition: '$(releaseCondition)'
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
   inputs:
     command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.snupkg'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;$(Build.ArtifactStagingDirectory)/**/*.snupkg'
     nuGetFeedType: 'external'
-
+    publishFeedCredentials: 'Nuget'
