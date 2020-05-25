@@ -72,8 +72,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
             string? expected)
         {
             // Arrange
-            var sut = new MarginSettings();
-            sut.Unit = unit;
+            var sut = new MarginSettings
+            {
+                Unit = unit,
+            };
 
             // Act
             var result = sut.GetMarginValue(value);

@@ -25,13 +25,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
             _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
         }
 
-        [Given(@"I have SynchronizedPdfConverter")]
+        [Given("I have SynchronizedPdfConverter")]
         public void GivenIHaveSynchronizedPdfConverter()
         {
             _sut = new SynchronizedPdfConverter();
         }
 
-        [Given(@"I have sample html to convert '(.*)'")]
+        [Given("I have sample html to convert '(.*)'")]
         public void GivenIHaveSampleHtmlToConvert(string fileName)
         {
 #pragma warning disable SCS0018 // Path traversal: injection possible in {1} argument passed to '{0}'
@@ -39,7 +39,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
 #pragma warning restore SCS0018 // Path traversal: injection possible in {1} argument passed to '{0}'
         }
 
-        [Given(@"I created HtmlToPdfDocument")]
+        [Given("I created HtmlToPdfDocument")]
         public void GivenICreatedHtmlToPdfDocument()
         {
             _htmlToPdfDocument = new HtmlToPdfDocument
@@ -58,7 +58,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
             };
         }
 
-        [When(@"I convert html to pdf (.*) times")]
+        [When("I convert html to pdf (.*) times")]
         public async Task WhenIConvertHtmlToPdfTimes(int count)
         {
             using var loader = new LibraryLoaderFactory().Create((int)Environment.OSVersion.Platform, null);
@@ -88,7 +88,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
             }
         }
 
-        [Then(@"proper pdf should be created")]
+        [Then("proper pdf should be created")]
         public void ThenProperPdfShouldBeCreated()
         {
             // noop

@@ -223,10 +223,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             _sut.ProcessingDocument = doc;
             _sut.Error += (
                 sender,
-                args) =>
-            {
-                result = args;
-            };
+                args) => result = args;
 
             // Act
             _sut.OnError(new IntPtr(1), errorMessage);
@@ -261,10 +258,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             _sut.ProcessingDocument = doc;
             _sut.Warning += (
                 sender,
-                args) =>
-            {
-                result = args;
-            };
+                args) => result = args;
 
             // Act
             _sut.OnWarning(new IntPtr(1), errorMessage);
@@ -299,10 +293,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             _sut.ProcessingDocument = doc;
             _sut.Finished += (
                 sender,
-                args) =>
-            {
-                result = args;
-            };
+                args) => result = args;
 
             // Act
             _sut.OnFinished(new IntPtr(1), code);
@@ -345,10 +336,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             _sut.ProcessingDocument = doc;
             _sut.PhaseChanged += (
                 sender,
-                args) =>
-            {
-                result = args;
-            };
+                args) => result = args;
 
             // Act
             _sut.OnPhaseChanged(new IntPtr(1));
@@ -387,10 +375,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             _sut.ProcessingDocument = doc;
             _sut.ProgressChanged += (
                 sender,
-                args) =>
-            {
-                result = args;
-            };
+                args) => result = args;
 
             // Act
             _sut.OnProgressChanged(new IntPtr(1));
@@ -434,7 +419,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             }
 
             var intPtr = new IntPtr(_fixture.Create<int>());
-            var name = "first";
+            const string name = "first";
             var value = _fixture.Create<string>();
             var settings = new TestSettings
             {
@@ -481,7 +466,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             }
 
             var intPtr = new IntPtr(_fixture.Create<int>());
-            var name = "first";
+            const string name = "first";
             var settings = new TestSettings
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -531,7 +516,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             }
 
             var intPtr = new IntPtr(_fixture.Create<int>());
-            var name = "first";
+            const string name = "first";
             var value = _fixture.Create<string>();
 
             var globalSettings = new TestGlobalSettings

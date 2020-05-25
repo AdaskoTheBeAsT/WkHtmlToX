@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.IO;
 using AdaskoTheBeAsT.WkHtmlToX.Loaders;
@@ -39,18 +39,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest
                     Directory.CreateDirectory("files");
                 }
 
-                using (var converter = new BasicPdfConverter())
-                using (var stream = new FileStream(
+                using var converter = new BasicPdfConverter();
+                using var stream = new FileStream(
                     Path.Combine(
                         "Files",
                         $"{DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture)}.pdf"),
-                    FileMode.Create))
-                {
-                    var converted = converter.Convert(
-                        doc,
-                        length => stream);
-                    _output.WriteLine(converted.ToString(CultureInfo.InvariantCulture));
-                }
+                    FileMode.Create);
+                var converted = converter.Convert(
+                    doc,
+                    _ => stream);
+                _output.WriteLine(converted.ToString(CultureInfo.InvariantCulture));
             }
 
             dotMemory.Check(

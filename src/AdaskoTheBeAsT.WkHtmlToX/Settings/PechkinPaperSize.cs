@@ -147,7 +147,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(paperKind),
-                    $"Unknown paper kind {paperKind.ToString("G")} - cannot convert to pechkin paper size");
+                    $"Unknown paper kind {paperKind:G} - cannot convert to pechkin paper size");
             }
 
             return pechkinPaperSize;

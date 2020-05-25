@@ -155,7 +155,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         public async Task ConvertAsyncShouldReturnStreamWhenConverted()
         {
             // Arrange
+#if NET48
             using var memoryStream = new MemoryStream();
+#else
+            await using var memoryStream = new MemoryStream();
+#endif
             var globalSettingsPtr = new IntPtr(_fixture.Create<int>());
             var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
             var converterPtr = new IntPtr(_fixture.Create<int>());
@@ -195,7 +199,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 });
 
             // Act
-            var result = await _sut.ConvertAsync(document, length => memoryStream, CancellationToken.None);
+            var result = await _sut.ConvertAsync(document, _ => memoryStream, CancellationToken.None);
 
             // Assert
             using (new AssertionScope())
@@ -232,7 +236,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             // Arrange
             var document = new HtmlToPdfDocument();
             Func<Task> func = async () =>
-                await _sut.ConvertAsync(document, length => Stream.Null, CancellationToken.None);
+                await _sut.ConvertAsync(document, _ => Stream.Null, CancellationToken.None);
 
             // Act & Assert
             func.Should().Throw<ArgumentException>();

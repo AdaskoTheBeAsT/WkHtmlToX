@@ -139,7 +139,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.ConvertImpl(null, length => Stream.Null);
+            Action action = () => _sut.ConvertImpl(null, _ => Stream.Null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // Act & Assert
@@ -150,11 +150,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         public void ConvertImplShouldThrowExceptionWhenNullImageSettingsPassed()
         {
             // Arrange
-            var document = new HtmlToImageDocument();
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            document.ImageSettings = null;
+            var document = new HtmlToImageDocument
+            {
+                ImageSettings = null,
+            };
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.ConvertImpl(document, length => Stream.Null);
+            Action action = () => _sut.ConvertImpl(document, _ => Stream.Null);
 
             // Act & Assert
             action.Should().Throw<ArgumentException>();
@@ -181,7 +183,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             _module.Setup(m => m.Initialize(It.IsAny<int>()))
                 .Returns(0);
 
-            Action action = () => _sut.ConvertImpl(document, length => Stream.Null);
+            Action action = () => _sut.ConvertImpl(document, _ => Stream.Null);
 
             // Act & Assert
             action.Should().Throw<ArgumentException>();
@@ -215,7 +217,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             document.ImageSettings.Quality = quality;
 
             // Act
-            var result = _sut.ConvertImpl(document, length => Stream.Null);
+            var result = _sut.ConvertImpl(document, _ => Stream.Null);
 
             // Assert
             using (new AssertionScope())
@@ -267,7 +269,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
 
             // Act
             // ReSharper disable once AccessToDisposedClosure
-            var result = _sut.ConvertImpl(document, length => memoryStream);
+            var result = _sut.ConvertImpl(document, _ => memoryStream);
 
             // Assert
             using (new AssertionScope())
@@ -294,7 +296,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.Convert(null, length => Stream.Null);
+            Action action = () => _sut.Convert(null, _ => Stream.Null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // Act & Assert
@@ -342,7 +344,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             document.ImageSettings.Quality = quality;
 
             // Act
-            var result = _sut.Convert(document, length => Stream.Null);
+            var result = _sut.Convert(document, _ => Stream.Null);
 
             // Assert
             using (new AssertionScope())
@@ -394,7 +396,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
 
             // Act
             // ReSharper disable once AccessToDisposedClosure
-            var result = _sut.Convert(document, length => memoryStream);
+            var result = _sut.Convert(document, _ => memoryStream);
 
             // Assert
             using (new AssertionScope())

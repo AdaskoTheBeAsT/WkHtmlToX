@@ -18,7 +18,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
     {
         public static IEnumerable<object?[]> GetTestData()
         {
-            var htmlContent = "<html><head><title>title</title></head><body></body></html>";
+            const string htmlContent = "<html><head><title>title</title></head><body></body></html>";
             yield return new object?[]
             {
                 htmlContent,
@@ -64,16 +64,28 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
             var intVal1 = _fixture.Create<int>();
+#pragma warning disable S1854 // Unused assignments should be removed
             var intVal2 = _fixture.Create<int>();
+#pragma warning restore S1854 // Unused assignments should be removed
             var name = _fixture.Create<string>();
             var value = _fixture.Create<string>();
-            Func<IntPtr, string, string?, int> setGlobalSetting = (ptr, n, v) => intVal1;
-            Func<IntPtr, string, string?, int> setObjectSetting = (ptr, n, v) => intVal2;
+
+            int SetGlobalSetting(
+                IntPtr ptr,
+                string n,
+                string? v) =>
+                intVal1;
+
+            int SetObjectSetting(
+                IntPtr ptr,
+                string n,
+                string? v) =>
+                intVal2;
 
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                    .Returns(setGlobalSetting);
+                    .Returns((Func<IntPtr, string, string?, int>)SetGlobalSetting);
             _pdfModule.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(setObjectSetting);
+                .Returns((Func<IntPtr, string, string?, int>)SetObjectSetting);
 
             // Act
             var resultFunc = _sut.GetApplySettingFunc(true);
@@ -91,17 +103,29 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         public void GetApplySettingFuncShouldReturnObjectApplySettingWhenIsGlobalFalsePassed()
         {
             // Arrange
+#pragma warning disable S1854 // Unused assignments should be removed
             var intVal1 = _fixture.Create<int>();
+#pragma warning restore S1854 // Unused assignments should be removed
             var intVal2 = _fixture.Create<int>();
             var name = _fixture.Create<string>();
             var value = _fixture.Create<string>();
-            Func<IntPtr, string, string?, int> setGlobalSetting = (ptr, n, v) => intVal1;
-            Func<IntPtr, string, string?, int> setObjectSetting = (ptr, n, v) => intVal2;
+
+            int SetGlobalSetting(
+                IntPtr ptr,
+                string n,
+                string? v) =>
+                intVal1;
+
+            int SetObjectSetting(
+                IntPtr ptr,
+                string n,
+                string? v) =>
+                intVal2;
 
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(setGlobalSetting);
+                .Returns((Func<IntPtr, string, string?, int>)SetGlobalSetting);
             _pdfModule.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(setObjectSetting);
+                .Returns((Func<IntPtr, string, string?, int>)SetObjectSetting);
 
             // Act
             var resultFunc = _sut.GetApplySettingFunc(false);
@@ -298,7 +322,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.ConvertImpl(null, length => Stream.Null);
+            Action action = () => _sut.ConvertImpl(null, _ => Stream.Null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // Act & Assert
@@ -324,7 +348,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
             var document = new HtmlToPdfDocument();
-            Action action = () => _sut.ConvertImpl(document, length => Stream.Null);
+            Action action = () => _sut.ConvertImpl(document, _ => Stream.Null);
 
             // Act & Assert
             action.Should().Throw<ArgumentException>();
@@ -339,7 +363,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             _module.Setup(m => m.Initialize(It.IsAny<int>()))
                 .Returns(0);
 
-            Action action = () => _sut.ConvertImpl(document, length => Stream.Null);
+            Action action = () => _sut.ConvertImpl(document, _ => Stream.Null);
 
             // Act & Assert
             action.Should().Throw<ArgumentException>();
@@ -388,7 +412,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 });
 
             // Act
-            var result = _sut.ConvertImpl(document, length => Stream.Null);
+            var result = _sut.ConvertImpl(document, _ => Stream.Null);
 
             // Assert
             using (new AssertionScope())
@@ -470,7 +494,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
 
             // Act
             // ReSharper disable once AccessToDisposedClosure
-            var result = _sut.ConvertImpl(document, length => memoryStream);
+            var result = _sut.ConvertImpl(document, _ => memoryStream);
 
             // Assert
             using (new AssertionScope())

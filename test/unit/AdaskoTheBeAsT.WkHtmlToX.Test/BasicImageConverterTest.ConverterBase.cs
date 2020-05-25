@@ -29,9 +29,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             var intVal = _fixture.Create<int>();
             var name = _fixture.Create<string>();
             var value = _fixture.Create<string>();
-            Func<IntPtr, string, string?, int> setGlobalSetting = (ptr, n, v) => intVal;
+
+            int SetGlobalSetting(
+                IntPtr ptr,
+                string n,
+                string? v) =>
+                intVal;
+
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(setGlobalSetting);
+                .Returns((Func<IntPtr, string, string?, int>)SetGlobalSetting);
 
             // Act
             var resultFunc = _sut.GetApplySettingFunc(true);
@@ -52,9 +58,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             var intVal = _fixture.Create<int>();
             var name = _fixture.Create<string>();
             var value = _fixture.Create<string>();
-            Func<IntPtr, string, string?, int> setGlobalSetting = (ptr, n, v) => intVal;
+
+            int SetGlobalSetting(
+                IntPtr ptr,
+                string n,
+                string? v) =>
+                intVal;
+
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(setGlobalSetting);
+                .Returns((Func<IntPtr, string, string?, int>)SetGlobalSetting);
 
             // Act
             var resultFunc = _sut.GetApplySettingFunc(false);

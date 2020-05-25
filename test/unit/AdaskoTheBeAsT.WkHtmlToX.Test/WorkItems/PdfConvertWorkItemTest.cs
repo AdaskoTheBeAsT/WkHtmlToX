@@ -32,7 +32,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.WorkItems
 #pragma warning disable CS8603 // Possible null reference return.
 
             // ReSharper disable once AssignmentIsFullyDiscarded
-            Action action = () => _ = new PdfConvertWorkItem(null, length => Stream.Null);
+            Action action = () => _ = new PdfConvertWorkItem(null, _ => Stream.Null);
 #pragma warning restore CS8603 // Possible null reference return.
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
@@ -48,7 +48,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.WorkItems
             var stream = Stream.Null;
 
             // Act
-            var sut = new PdfConvertWorkItem(documentMock, length => stream);
+            var sut = new PdfConvertWorkItem(documentMock, _ => stream);
 
             // Assert
             using (new AssertionScope())
