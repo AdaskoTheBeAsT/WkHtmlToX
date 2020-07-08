@@ -1,3 +1,4 @@
+#nullable enable
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
 

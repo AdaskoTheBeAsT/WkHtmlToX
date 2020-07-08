@@ -1,3 +1,4 @@
+#nullable enable
 using System.Globalization;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Settings

@@ -77,7 +77,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
                         return stream;
                     },
                     CancellationToken.None);
-#if NETCOREAPP
+#if NETCOREAPP3_1
                 if (stream != null)
                 {
                     await stream.DisposeAsync();

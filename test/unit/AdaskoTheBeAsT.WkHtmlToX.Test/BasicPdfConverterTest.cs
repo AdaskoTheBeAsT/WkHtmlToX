@@ -309,10 +309,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         public async Task ConvertAsyncShouldReturnStreamWhenConverted()
         {
             // Arrange
-#if NET48
-            using var memoryStream = new MemoryStream();
-#else
+#if NETCOREAPP3_1
             await using var memoryStream = new MemoryStream();
+#else
+            using var memoryStream = new MemoryStream();
 #endif
             var globalSettingsPtr = new IntPtr(_fixture.Create<int>());
             var objectSettingsPtr = new IntPtr(_fixture.Create<int>());

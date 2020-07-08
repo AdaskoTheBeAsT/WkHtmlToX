@@ -90,7 +90,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
         public virtual void ConvertPdf(string filename, string repetitions, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Convert pdf", null, exampleTags);
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("filename", filename);
+            argumentsOfScenario.Add("repetitions", repetitions);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Convert pdf", null, tagsOfScenario, argumentsOfScenario);
 #line 3
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
