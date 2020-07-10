@@ -14,21 +14,21 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
         {
             var container = new Container();
 
-            app.Use(async (context, next) =>
+            app.Use(async (_, next) =>
             {
-                using (AsyncScopedLifestyle.BeginScope(container))
+                await using (AsyncScopedLifestyle.BeginScope(container))
                 {
                     await next();
                 }
             });
 
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
-
-            httpConfiguration.DependencyResolver = new SimpleInjectorWebApiDependencyResolver(container);
             container.RegisterSingleton<IHtmlGenerator, SmallHtmlGenerator>();
             container.RegisterSingleton<IHtmlToPdfDocumentGenerator, HtmlToPdfDocumentGenerator>();
             container.RegisterSingleton<IHtmlToPdfAsyncConverter, SynchronizedPdfConverter>();
+            container.RegisterWebApiControllers(httpConfiguration);
 
+            httpConfiguration.DependencyResolver = new SimpleInjectorWebApiDependencyResolver(container);
             return container;
         }
     }

@@ -22,14 +22,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.ConsoleApp
                     Directory.CreateDirectory("files");
                 }
 
-                using (var converter = new BasicPdfConverter())
-                using (var stream = new FileStream(
+                using var converter = new BasicPdfConverter();
+                using var stream = new FileStream(
                     Path.Combine("Files", $"{DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture)}.pdf"),
-                    FileMode.Create))
-                {
-                    var converted = converter.Convert(doc, length => stream);
-                    Console.WriteLine(converted);
-                }
+                    FileMode.Create);
+                var converted = converter.Convert(doc, _ => stream);
+                Console.WriteLine(converted);
             }
 
             Console.ReadKey();
