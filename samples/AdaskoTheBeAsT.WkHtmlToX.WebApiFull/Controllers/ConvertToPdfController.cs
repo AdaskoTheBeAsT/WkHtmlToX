@@ -31,7 +31,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiFull.Controllers
         public HttpResponseMessage Post()
         {
             var doc = _htmlToPdfDocumentGenerator.Generate();
-            Stream? stream = null;
+            MemoryStream? stream = null;
             _ = _htmlToPdfAsyncConverter.ConvertAsync(
                 doc,
                 length =>
@@ -45,7 +45,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiFull.Controllers
                 CancellationToken.None).GetAwaiter().GetResult();
             stream!.Position = 0;
             var httpResponseMessage = Request.CreateResponse(HttpStatusCode.OK);
-            httpResponseMessage.Content = new StreamContent(stream);
+            httpResponseMessage.Content = new ByteArrayContent(stream.ToArray());
+            httpResponseMessage.Content.Headers.ContentLength = stream.Length;
             httpResponseMessage.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
             {
                 FileName = "sample.pdf",

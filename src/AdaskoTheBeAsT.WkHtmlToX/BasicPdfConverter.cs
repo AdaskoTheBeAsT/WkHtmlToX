@@ -16,10 +16,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         {
         }
 
-        internal BasicPdfConverter(
-            IWkHtmlToXModuleFactory moduleFactory,
-            IWkHtmlToPdfModuleFactory pdfModuleFactory)
-            : base(moduleFactory, pdfModuleFactory)
+        internal BasicPdfConverter(IWkHtmlToXModuleFactory moduleFactory, IWkHtmlToPdfModule pdfModule)
+            : base(moduleFactory, pdfModule)
         {
         }
 

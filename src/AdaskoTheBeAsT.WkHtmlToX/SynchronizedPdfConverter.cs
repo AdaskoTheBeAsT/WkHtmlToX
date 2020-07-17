@@ -24,10 +24,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             Initialize();
         }
 
-        internal SynchronizedPdfConverter(
-            IWkHtmlToXModuleFactory moduleFactory,
-            IWkHtmlToPdfModuleFactory pdfModuleFactory)
-            : base(moduleFactory, pdfModuleFactory)
+        internal SynchronizedPdfConverter(IWkHtmlToXModuleFactory moduleFactory, IWkHtmlToPdfModule pdfModule)
+            : base(moduleFactory, pdfModule)
         {
             Initialize();
         }

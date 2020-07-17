@@ -23,25 +23,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 #pragma warning restore SA1401 // Fields should be private
 
 #pragma warning disable S3442 // "abstract" classes should not have "public" constructors
-        internal PdfConverterBase(
-            IWkHtmlToXModuleFactory moduleFactory,
-            IWkHtmlToPdfModuleFactory pdfModuleFactory)
+        internal PdfConverterBase(IWkHtmlToXModuleFactory moduleFactory, IWkHtmlToPdfModule pdfModule)
             : base(moduleFactory, ModuleKind.Pdf)
         {
-            if (pdfModuleFactory is null)
-            {
-                throw new ArgumentNullException(nameof(pdfModuleFactory));
-            }
-
-            _pdfModule = pdfModuleFactory.GetModule((int)Environment.OSVersion.Platform);
+            _pdfModule = pdfModule ?? throw new ArgumentNullException(nameof(pdfModule));
         }
 #pragma warning restore S3442 // "abstract" classes should not have "public" constructors
 
         [ExcludeFromCodeCoverage]
         protected PdfConverterBase()
-            : this(
-                new WkHtmlToXModuleFactory(),
-                new WkHtmlToPdfModuleFactory())
+            : this(new WkHtmlToXModuleFactory(), new WkHtmlToPdfAdditionalModule())
         {
         }
 

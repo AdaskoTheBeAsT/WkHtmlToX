@@ -55,9 +55,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
             var captionText = _fixture.Create<string>();
             var encoding = _fixture.Create<Encoding>();
             var fontScale = _fixture.Create<string>();
-            var footerSettings = _fixture.Create<FooterSettings>();
+            var footerSettings = _fixture.Create<SectionSettings>();
             var forwardLinks = _fixture.Create<bool>();
-            var headerSettings = _fixture.Create<HeaderSettings>();
+            var headerSettings = _fixture.Create<SectionSettings>();
             var htmlContent = _fixture.Create<string>();
             var includeInOutline = _fixture.Create<bool>();
             var indentation = _fixture.Create<string>();

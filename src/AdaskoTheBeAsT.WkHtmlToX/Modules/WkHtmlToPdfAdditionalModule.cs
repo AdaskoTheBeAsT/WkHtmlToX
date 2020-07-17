@@ -6,31 +6,31 @@ using AdaskoTheBeAsT.WkHtmlToX.Native;
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
     [ExcludeFromCodeCoverage]
-    internal class WkHtmlToPdfPosixAdditionalModule
+    internal class WkHtmlToPdfAdditionalModule
         : WkHtmlToPdfModule
     {
-        public override IntPtr CreateObjectSettings() => NativeMethodsPdfPosix.CreateObjectSettings();
+        public override IntPtr CreateObjectSettings() => NativeMethodsPdf.wkhtmltopdf_create_object_settings();
 
         public override int DestroyObjectSetting(
             IntPtr settings) =>
-            NativeMethodsPdfPosix.DestroyObjectSettings(settings);
+            NativeMethodsPdf.wkhtmltopdf_destroy_object_settings(settings);
 
         public override int SetObjectSetting(
             IntPtr settings,
             string name,
-            string? value) => NativeMethodsPdfPosix.SetObjectSettings(settings, name, value);
+            string? value) => NativeMethodsPdf.wkhtmltopdf_set_object_setting(settings, name, value);
 
         public override void AddObject(
             IntPtr converter,
             IntPtr objectSettings,
             byte[] data) =>
-            NativeMethodsPdfPosix.AddObject(converter, objectSettings, data);
+            NativeMethodsPdf.wkhtmltopdf_add_object(converter, objectSettings, data);
 
         public override void AddObject(
             IntPtr converter,
             IntPtr objectSettings,
             string data) =>
-            NativeMethodsPdfPosix.AddObject(converter, objectSettings, data);
+            NativeMethodsPdf.wkhtmltopdf_add_object(converter, objectSettings, data);
 
         protected override int GetObjectSettingImpl(
             IntPtr settings,
@@ -42,7 +42,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
                 throw new ArgumentNullException(nameof(buffer));
             }
 
-            return NativeMethodsPdfPosix.GetObjectSettings(
+            return NativeMethodsPdf.wkhtmltopdf_get_object_setting(
                 settings,
                 name,
                 buffer,

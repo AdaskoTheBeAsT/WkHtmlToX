@@ -31,7 +31,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 throw new ArgumentNullException(nameof(moduleFactory));
             }
 
-            _module = moduleFactory.GetModule((int)Environment.OSVersion.Platform, moduleKind);
+            _module = moduleFactory.GetModule(moduleKind);
         }
 #pragma warning restore S3442 // "abstract" classes should not have "public" constructors
 
@@ -169,7 +169,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             Warning?.Invoke(this, eventArgs);
         }
 
-        protected internal void ApplyConfig(IntPtr config, ISettings settings, bool isGlobal)
+        protected internal void ApplyConfig(IntPtr config, ISettings settings, bool isGlobal, string? prefix = null)
         {
             if (settings == null)
             {
@@ -189,19 +189,23 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 }
 
                 var wkHtmlAttribute = prop.GetCustomAttribute<WkHtmlAttribute>();
-
-                if (wkHtmlAttribute != null)
+                if (wkHtmlAttribute != null
+                    && propValue is ISettings propSettings)
                 {
-                    Apply(config, wkHtmlAttribute.Name, propValue, isGlobal);
+                    ApplyConfig(config, propSettings, isGlobal, wkHtmlAttribute.Name);
                 }
-                else if (propValue is ISettings propSettings)
+                else if (wkHtmlAttribute != null)
                 {
-                    ApplyConfig(config, propSettings, isGlobal);
+                    Apply(config, prefix, wkHtmlAttribute.Name, propValue, isGlobal);
+                }
+                else if (propValue is ISettings propSettings2)
+                {
+                    ApplyConfig(config, propSettings2, isGlobal);
                 }
             }
         }
 
-        protected internal void Apply(IntPtr config, string name, object value, bool isGlobal)
+        protected internal void Apply(IntPtr config, string? prefix, string name, object value, bool isGlobal)
         {
             if (value is null)
             {
@@ -211,14 +215,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             var type = value.GetType();
 
             var applySetting = GetApplySettingFunc(isGlobal);
+            var localName = string.IsNullOrEmpty(prefix) ? name : $"{prefix}.{name}";
 
             if (typeof(bool) == type)
             {
-                applySetting(config, name, (bool)value ? "true" : "false");
+                applySetting(config, localName, (bool)value ? "true" : "false");
             }
             else if (typeof(double) == type)
             {
-                applySetting(config, name, ((double)value).ToString("0.##", CultureInfo.InvariantCulture));
+                applySetting(config, localName, ((double)value).ToString("0.##", CultureInfo.InvariantCulture));
             }
             else if (typeof(Dictionary<string, string>).IsAssignableFrom(type))
             {
@@ -233,15 +238,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                     }
 
                     // https://github.com/wkhtmltopdf/wkhtmltopdf/blob/c754e38b074a75a51327df36c4a53f8962020510/src/lib/reflect.hh#L192
-                    applySetting(config, $"{name}.append", null);
-                    applySetting(config, $"{name}[{index}]", $"{pair.Key}\n{pair.Value}");
+                    applySetting(config, $"{localName}.append", null);
+                    applySetting(config, $"{localName}[{index}]", $"{pair.Key}\n{pair.Value}");
 
                     index++;
                 }
             }
             else
             {
-                applySetting(config, name, value.ToString());
+                applySetting(config, localName, value.ToString());
             }
         }
 

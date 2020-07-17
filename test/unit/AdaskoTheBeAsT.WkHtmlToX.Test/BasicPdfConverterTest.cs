@@ -28,15 +28,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             var moduleFactoryMock = new Mock<IWkHtmlToXModuleFactory>();
             _module = new Mock<IWkHtmlToXModule>();
             _module.Setup(m => m.Dispose());
-            moduleFactoryMock.Setup(mf => mf.GetModule(It.IsAny<int>(), It.IsAny<ModuleKind>()))
+            moduleFactoryMock.Setup(mf => mf.GetModule(It.IsAny<ModuleKind>()))
                 .Returns(_module.Object);
 
-            var pdfModuleFactoryMock = new Mock<IWkHtmlToPdfModuleFactory>();
             _pdfModule = new Mock<IWkHtmlToPdfModule>();
-            pdfModuleFactoryMock.Setup(mf => mf.GetModule(It.IsAny<int>()))
-                .Returns(_pdfModule.Object);
 
-            _sut = new BasicPdfConverter(moduleFactoryMock.Object, pdfModuleFactoryMock.Object);
+            _sut = new BasicPdfConverter(moduleFactoryMock.Object, _pdfModule.Object);
         }
 
         public void Dispose()

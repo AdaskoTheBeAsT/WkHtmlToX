@@ -8,51 +8,50 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
 {
 #pragma warning disable CA1060 // Move pinvokes to native methods class
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
-    internal static class NativeMethodsImagePosix
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+    internal static class NativeMethodsImage
     {
-        private const CallingConvention CallConvention = CallingConvention.Cdecl;
-
         /// <summary>
         /// wkhtmltoimage_init.
         /// </summary>
         /// <param name="useGraphics"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_init", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
 
-        internal static extern int Initialize(int useGraphics);
+        internal static extern int wkhtmltoimage_init(int useGraphics);
 
         /// <summary>
         /// wkhtmltoimage_deinit.
         /// </summary>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_deinit", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int Terminate();
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltoimage_deinit();
 
         /// <summary>
         /// wkhtmltoimage_extended_qt.
         /// </summary>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint= "wkhtmltoimage_extended_qt", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int ExtendedQt();
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltoimage_extended_qt();
 
         /// <summary>
         /// wkhtmltoimage_version.
         /// </summary>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_version", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern IntPtr GetVersion();
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern IntPtr wkhtmltoimage_version();
 
         /// <summary>
         /// wkhtmltoimage_create_global_settings.
         /// </summary>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_create_global_settings", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern IntPtr CreateGlobalSettings();
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern IntPtr wkhtmltoimage_create_global_settings();
 
         /// <summary>
         /// wkhtmltoimage_destroy_global_settings.
@@ -60,8 +59,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="settings"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_destroy_global_settings", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int DestroyGlobalSettings(IntPtr settings);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltoimage_destroy_global_settings(IntPtr settings);
 
         /// <summary>
         /// wkhtmltoimage_set_global_setting.
@@ -71,8 +70,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="value"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_set_global_setting", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int SetGlobalSettings(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltoimage_set_global_setting(
             IntPtr settings,
             [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string name,
             [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string? value);
@@ -86,8 +85,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="valueSize"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_get_global_setting", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int GetGlobalSettings(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltoimage_get_global_setting(
             IntPtr settings,
             [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string name,
             [MarshalAs(UnmanagedType.LPArray)] byte[] value,
@@ -99,16 +98,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="globalSettings"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_create_converter", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern IntPtr CreateConverter(IntPtr globalSettings);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern IntPtr wkhtmltoimage_create_converter(IntPtr globalSettings);
 
         /// <summary>
         /// wkhtmltoimage_destroy_converter.
         /// </summary>
         /// <param name="converter"></param>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_destroy_converter", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern void DestroyConverter(IntPtr converter);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern void wkhtmltoimage_destroy_converter(IntPtr converter);
 
         /// <summary>
         /// wkhtmltoimage_set_warning_callback.
@@ -117,8 +116,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="callback"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_set_warning_callback", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int SetWarningCallback(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltoimage_set_warning_callback(
             IntPtr converter,
             [MarshalAs(UnmanagedType.FunctionPtr)] StringCallback callback);
 
@@ -129,8 +128,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="callback"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_set_error_callback", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int SetErrorCallback(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltoimage_set_error_callback(
             IntPtr converter,
             [MarshalAs(UnmanagedType.FunctionPtr)] StringCallback callback);
 
@@ -141,8 +140,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="callback"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_set_phase_changed_callback", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int SetPhaseChangedCallback(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltoimage_set_phase_changed_callback(
             IntPtr converter,
             [MarshalAs(UnmanagedType.FunctionPtr)] VoidCallback callback);
 
@@ -153,8 +152,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="callback"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_set_progress_changed_callback", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int SetProgressChangedCallback(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltoimage_set_progress_changed_callback(
             IntPtr converter,
             [MarshalAs(UnmanagedType.FunctionPtr)] VoidCallback callback);
 
@@ -165,8 +164,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="callback"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_set_finished_callback", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int SetFinishedCallback(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltoimage_set_finished_callback(
             IntPtr converter,
             [MarshalAs(UnmanagedType.FunctionPtr)] IntCallback callback);
 
@@ -176,8 +175,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="converter"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_convert", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern bool Convert(IntPtr converter);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern bool wkhtmltoimage_convert(IntPtr converter);
 
         /// <summary>
         /// wkhtmltoimage_current_phase.
@@ -185,8 +184,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="converter"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_current_phase", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int GetCurrentPhase(IntPtr converter);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltoimage_current_phase(IntPtr converter);
 
         /// <summary>
         /// wkhtmltoimage_phase_description.
@@ -195,8 +194,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="phase"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_phase_description", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern IntPtr GetPhaseDescription(IntPtr converter, int phase);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern IntPtr wkhtmltoimage_phase_description(IntPtr converter, int phase);
 
         /// <summary>
         /// wkhtmltoimage_progress_string.
@@ -204,8 +203,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="converter"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_progress_string", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern IntPtr GetProgressDescription(IntPtr converter);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern IntPtr wkhtmltoimage_progress_string(IntPtr converter);
 
         /// <summary>
         /// wkhtmltoimage_phase_count.
@@ -213,8 +212,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="converter"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_phase_count", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int GetPhaseCount(IntPtr converter);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltoimage_phase_count(IntPtr converter);
 
         /// <summary>
         /// wkhtmltoimage_http_error_code.
@@ -222,8 +221,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="converter"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_http_error_code", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int GetHttpErrorCode(IntPtr converter);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltoimage_http_error_code(IntPtr converter);
 
         /// <summary>
         /// wkhtmltoimage_get_output.
@@ -232,9 +231,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="data"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltoimage_get_output", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int GetOutput(IntPtr converter, out IntPtr data);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltoimage_get_output(IntPtr converter, out IntPtr data);
     }
+#pragma warning restore SA1300 // Element should begin with upper-case letter
 #pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
 #pragma warning restore CA1060 // Move pinvokes to native methods class
 }

@@ -100,9 +100,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
 
         public WebSettings WebSettings { get; set; } = new WebSettings();
 
-        public HeaderSettings HeaderSettings { get; set; } = new HeaderSettings();
+        [WkHtml("header")]
+        public SectionSettings HeaderSettings { get; set; } = new SectionSettings();
 
-        public FooterSettings FooterSettings { get; set; } = new FooterSettings();
+        [WkHtml("footer")]
+        public SectionSettings FooterSettings { get; set; } = new SectionSettings();
 
         public LoadSettings LoadSettings { get; set; } = new LoadSettings();
     }

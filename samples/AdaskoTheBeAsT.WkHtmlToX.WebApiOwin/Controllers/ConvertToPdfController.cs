@@ -32,7 +32,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin.Controllers
         public async Task<IHttpActionResult> Post()
         {
             var doc = _htmlToPdfDocumentGenerator.Generate();
-            Stream? stream = null;
+            MemoryStream? stream = null;
             _ = await _htmlToPdfAsyncConverter.ConvertAsync(
                 doc,
                 length =>
@@ -48,7 +48,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin.Controllers
 #pragma warning disable CA2000 // Dispose objects before losing scope
             var httpResponseMessage = Request.CreateResponse(HttpStatusCode.OK);
 #pragma warning restore CA2000 // Dispose objects before losing scope
-            httpResponseMessage.Content = new StreamContent(stream);
+            httpResponseMessage.Content = new ByteArrayContent(stream.ToArray());
+            httpResponseMessage.Content.Headers.ContentLength = stream.Length;
             httpResponseMessage.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
             {
                 FileName = "sample.pdf",

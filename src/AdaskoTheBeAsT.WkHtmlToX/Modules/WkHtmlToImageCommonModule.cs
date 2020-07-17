@@ -7,46 +7,46 @@ using AdaskoTheBeAsT.WkHtmlToX.Utils;
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
     [ExcludeFromCodeCoverage]
-    internal class WkHtmlToImagePosixCommonModule
+    internal class WkHtmlToImageCommonModule
         : WkHtmlToXModule
     {
         public override int Initialize(
             int useGraphics) =>
-            NativeMethodsImagePosix.Initialize(useGraphics);
+            NativeMethodsImage.wkhtmltoimage_init(useGraphics);
 
-        public override int Terminate() => NativeMethodsImagePosix.Terminate();
+        public override int Terminate() => NativeMethodsImage.wkhtmltoimage_deinit();
 
-        public override int ExtendedQt() => NativeMethodsImagePosix.ExtendedQt();
+        public override int ExtendedQt() => NativeMethodsImage.wkhtmltoimage_extended_qt();
 
-        public override IntPtr CreateGlobalSettings() => NativeMethodsImagePosix.CreateGlobalSettings();
+        public override IntPtr CreateGlobalSettings() => NativeMethodsImage.wkhtmltoimage_create_global_settings();
 
         public override int DestroyGlobalSetting(
             IntPtr settings) =>
-            NativeMethodsImagePosix.DestroyGlobalSettings(settings);
+            NativeMethodsImage.wkhtmltoimage_destroy_global_settings(settings);
 
         public override int SetGlobalSetting(
             IntPtr settings,
             string name,
             string? value) =>
-            NativeMethodsImagePosix.SetGlobalSettings(
+            NativeMethodsImage.wkhtmltoimage_set_global_setting(
                 settings,
                 name,
                 value);
 
         public override IntPtr CreateConverter(
             IntPtr globalSettings) =>
-            NativeMethodsImagePosix.CreateConverter(globalSettings);
+            NativeMethodsImage.wkhtmltoimage_create_converter(globalSettings);
 
         public override void DestroyConverter(
             IntPtr converter) =>
-            NativeMethodsImagePosix.DestroyConverter(converter);
+            NativeMethodsImage.wkhtmltoimage_destroy_converter(converter);
 
         public override int SetWarningCallback(
             IntPtr converter,
             StringCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsImagePosix.SetWarningCallback(
+            return NativeMethodsImage.wkhtmltoimage_set_warning_callback(
                 converter,
                 callback);
         }
@@ -56,7 +56,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             StringCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsImagePosix.SetErrorCallback(
+            return NativeMethodsImage.wkhtmltoimage_set_error_callback(
                 converter,
                 callback);
         }
@@ -66,7 +66,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             VoidCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsImagePosix.SetPhaseChangedCallback(
+            return NativeMethodsImage.wkhtmltoimage_set_phase_changed_callback(
                 converter,
                 callback);
         }
@@ -76,7 +76,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             VoidCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsImagePosix.SetProgressChangedCallback(
+            return NativeMethodsImage.wkhtmltoimage_set_progress_changed_callback(
                 converter,
                 callback);
         }
@@ -86,28 +86,28 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             IntCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsImagePosix.SetFinishedCallback(
+            return NativeMethodsImage.wkhtmltoimage_set_finished_callback(
                 converter,
                 callback);
         }
 
         public override bool Convert(
             IntPtr converter) =>
-            NativeMethodsImagePosix.Convert(converter);
+            NativeMethodsImage.wkhtmltoimage_convert(converter);
 
         public override int GetCurrentPhase(
             IntPtr converter) =>
-            NativeMethodsImagePosix.GetCurrentPhase(
+            NativeMethodsImage.wkhtmltoimage_current_phase(
                 converter);
 
         public override int GetPhaseCount(
             IntPtr converter) =>
-            NativeMethodsImagePosix.GetPhaseCount(
+            NativeMethodsImage.wkhtmltoimage_phase_count(
                 converter);
 
         public override int GetHttpErrorCode(
             IntPtr converter) =>
-            NativeMethodsImagePosix.GetHttpErrorCode(
+            NativeMethodsImage.wkhtmltoimage_http_error_code(
                 converter);
 
         protected override int GetGlobalSettingImpl(
@@ -120,7 +120,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
                 throw new ArgumentNullException(nameof(buffer));
             }
 
-            return NativeMethodsImagePosix.GetGlobalSettings(
+            return NativeMethodsImage.wkhtmltoimage_get_global_setting(
                 settings,
                 name,
                 buffer,
@@ -130,23 +130,23 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         protected override int GetOutputImpl(
             IntPtr converter,
             out IntPtr data) =>
-            NativeMethodsImagePosix.GetOutput(
+            NativeMethodsImage.wkhtmltoimage_get_output(
                 converter,
                 out data);
 
         protected override IntPtr GetLibraryVersionImpl() =>
-            NativeMethodsImagePosix.GetVersion();
+            NativeMethodsImage.wkhtmltoimage_version();
 
         protected override IntPtr GetPhaseDescriptionImpl(
             IntPtr converter,
             int phase) =>
-            NativeMethodsImagePosix.GetPhaseDescription(
+            NativeMethodsImage.wkhtmltoimage_phase_description(
                 converter,
                 phase);
 
         protected override IntPtr GetProgressStringImpl(
             IntPtr converter) =>
-            NativeMethodsImagePosix.GetProgressDescription(
+            NativeMethodsImage.wkhtmltoimage_progress_string(
                 converter);
     }
 }

@@ -8,50 +8,50 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
 {
 #pragma warning disable CA1060 // Move pinvokes to native methods class
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
-    internal static class NativeMethodsPdfWindows
+#pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+    internal static class NativeMethodsPdf
     {
-        private const CallingConvention CallConvention = CallingConvention.StdCall;
-
         /// <summary>
         /// wkhtmltopdf_init.
         /// </summary>
         /// <param name="useGraphics"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_init", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int Initialize(int useGraphics);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_init(int useGraphics);
 
         /// <summary>
         /// wkhtmltopdf_deinit.
         /// </summary>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_deinit", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int Terminate();
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_deinit();
 
         /// <summary>
         /// wkhtmltopdf_extended_qt.
         /// </summary>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_extended_qt", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int ExtendedQt();
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_extended_qt();
 
         /// <summary>
         /// wkhtmltopdf_version.
         /// </summary>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_version", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern IntPtr GetVersion();
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern IntPtr wkhtmltopdf_version();
 
         /// <summary>
         /// wkhtmltopdf_create_global_settings.
         /// </summary>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_create_global_settings", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern IntPtr CreateGlobalSettings();
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern IntPtr wkhtmltopdf_create_global_settings();
 
         /// <summary>
         /// wkhtmltopdf_destroy_global_settings.
@@ -59,16 +59,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="settings"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_destroy_global_settings", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int DestroyGlobalSettings(IntPtr settings);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_destroy_global_settings(IntPtr settings);
 
         /// <summary>
         /// wkhtmltopdf_create_object_settings.
         /// </summary>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_create_object_settings", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern IntPtr CreateObjectSettings();
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern IntPtr wkhtmltopdf_create_object_settings();
 
         /// <summary>
         /// wkhtmltopdf_destroy_object_settings.
@@ -76,8 +76,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="settings"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_destroy_object_settings", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int DestroyObjectSettings(IntPtr settings);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_destroy_object_settings(IntPtr settings);
 
         /// <summary>
         /// wkhtmltopdf_set_global_setting.
@@ -87,8 +87,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="value"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_set_global_setting", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int SetGlobalSettings(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_set_global_setting(
             IntPtr settings,
             [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string name,
             [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string? value);
@@ -102,8 +102,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="valueSize"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_get_global_setting", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int GetGlobalSettings(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_get_global_setting(
             IntPtr settings,
             [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string name,
             [MarshalAs(UnmanagedType.LPArray)] byte[] value,
@@ -117,8 +117,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="value"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_set_object_setting", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int SetObjectSettings(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_set_object_setting(
             IntPtr settings,
             [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string name,
             [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string? value);
@@ -132,8 +132,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="valueSize"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_get_object_setting", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int GetObjectSettings(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_get_object_setting(
             IntPtr settings,
             [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string name,
             [MarshalAs(UnmanagedType.LPArray)] byte[] value,
@@ -145,16 +145,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="globalSettings"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_create_converter", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern IntPtr CreateConverter(IntPtr globalSettings);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern IntPtr wkhtmltopdf_create_converter(IntPtr globalSettings);
 
         /// <summary>
         /// wkhtmltopdf_destroy_converter.
         /// </summary>
         /// <param name="converter"></param>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_destroy_converter", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern void DestroyConverter(IntPtr converter);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern void wkhtmltopdf_destroy_converter(IntPtr converter);
 
         /// <summary>
         /// wkhtmltopdf_set_warning_callback.
@@ -163,8 +163,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="callback"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_set_warning_callback", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int SetWarningCallback(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_set_warning_callback(
             IntPtr converter,
             [MarshalAs(UnmanagedType.FunctionPtr)] StringCallback callback);
 
@@ -175,8 +175,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="callback"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_set_error_callback", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int SetErrorCallback(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_set_error_callback(
             IntPtr converter,
             [MarshalAs(UnmanagedType.FunctionPtr)] StringCallback callback);
 
@@ -187,8 +187,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="callback"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_set_phase_changed_callback", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int SetPhaseChangedCallback(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_set_phase_changed_callback(
             IntPtr converter,
             [MarshalAs(UnmanagedType.FunctionPtr)] VoidCallback callback);
 
@@ -199,8 +199,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="callback"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_set_progress_changed_callback", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int SetProgressChangedCallback(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_set_progress_changed_callback(
             IntPtr converter,
             [MarshalAs(UnmanagedType.FunctionPtr)] VoidCallback callback);
 
@@ -211,8 +211,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="callback"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_set_finished_callback", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int SetFinishedCallback(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_set_finished_callback(
             IntPtr converter,
             [MarshalAs(UnmanagedType.FunctionPtr)] IntCallback callback);
 
@@ -222,8 +222,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="converter"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_convert", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern bool Convert(IntPtr converter);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern bool wkhtmltopdf_convert(IntPtr converter);
 
         /// <summary>
         /// wkhtmltopdf_add_object.
@@ -232,8 +232,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="objectSettings"></param>
         /// <param name="data"></param>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_add_object", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern void AddObject(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern void wkhtmltopdf_add_object(
             IntPtr converter,
             IntPtr objectSettings,
             byte[] data);
@@ -245,8 +245,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="objectSettings"></param>
         /// <param name="data"></param>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_add_object", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern void AddObject(
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern void wkhtmltopdf_add_object(
             IntPtr converter,
             IntPtr objectSettings,
             [MarshalAs((short)CustomUnmanagedType.LPUTF8Str)] string data);
@@ -257,8 +257,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="converter"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_current_phase", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int GetCurrentPhase(IntPtr converter);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_current_phase(IntPtr converter);
 
         /// <summary>
         /// wkhtmltopdf_phase_description.
@@ -267,8 +267,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="phase"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_phase_description", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern IntPtr GetPhaseDescription(IntPtr converter, int phase);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern IntPtr wkhtmltopdf_phase_description(IntPtr converter, int phase);
 
         /// <summary>
         /// wkhtmltopdf_progress_string.
@@ -276,8 +276,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="converter"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_progress_string", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern IntPtr GetProgressDescription(IntPtr converter);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern IntPtr wkhtmltopdf_progress_string(IntPtr converter);
 
         /// <summary>
         /// wkhtmltopdf_phase_count.
@@ -285,8 +285,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="converter"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_phase_count", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int GetPhaseCount(IntPtr converter);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_phase_count(IntPtr converter);
 
         /// <summary>
         /// wkhtmltopdf_http_error_code.
@@ -294,8 +294,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="converter"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_http_error_code", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int GetHttpErrorCode(IntPtr converter);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_http_error_code(IntPtr converter);
 
         /// <summary>
         /// wkhtmltopdf_get_output.
@@ -304,9 +304,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         /// <param name="data"></param>
         /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeLib.DllName, EntryPoint = "wkhtmltopdf_get_output", CharSet = NativeLib.Charset, CallingConvention = CallConvention)]
-        internal static extern int GetOutput(IntPtr converter, out IntPtr data);
+        [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
+        internal static extern int wkhtmltopdf_get_output(IntPtr converter, out IntPtr data);
     }
+#pragma warning restore SA1300 // Element should begin with upper-case letter
+#pragma warning restore IDE1006 // Naming Styles
 #pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
 #pragma warning restore CA1060 // Move pinvokes to native methods class
 }

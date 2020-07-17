@@ -67,7 +67,7 @@
     <PackageReference Include="SerilogAnalyzer" Version="0.15.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.9.0.19135" >
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.10.0.19839" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.164" >

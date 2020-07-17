@@ -7,42 +7,42 @@ using AdaskoTheBeAsT.WkHtmlToX.Utils;
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
     [ExcludeFromCodeCoverage]
-    internal class WkHtmlToPdfPosixCommonModule
+    internal class WkHtmlToPdfCommonModule
         : WkHtmlToXModule
     {
         public override int Initialize(
             int useGraphics) =>
-            NativeMethodsPdfPosix.Initialize(useGraphics);
+            NativeMethodsPdf.wkhtmltopdf_init(useGraphics);
 
-        public override int Terminate() => NativeMethodsPdfPosix.Terminate();
+        public override int Terminate() => NativeMethodsPdf.wkhtmltopdf_deinit();
 
-        public override int ExtendedQt() => NativeMethodsPdfPosix.ExtendedQt();
+        public override int ExtendedQt() => NativeMethodsPdf.wkhtmltopdf_extended_qt();
 
-        public override IntPtr CreateGlobalSettings() => NativeMethodsPdfPosix.CreateGlobalSettings();
+        public override IntPtr CreateGlobalSettings() => NativeMethodsPdf.wkhtmltopdf_create_global_settings();
 
         public override int DestroyGlobalSetting(
             IntPtr settings) =>
-            NativeMethodsPdfPosix.DestroyGlobalSettings(settings);
+            NativeMethodsPdf.wkhtmltopdf_destroy_global_settings(settings);
 
         public override int SetGlobalSetting(
             IntPtr settings,
             string name,
-            string? value) => NativeMethodsPdfPosix.SetGlobalSettings(settings, name, value);
+            string? value) => NativeMethodsPdf.wkhtmltopdf_set_global_setting(settings, name, value);
 
         public override IntPtr CreateConverter(
             IntPtr globalSettings) =>
-            NativeMethodsPdfPosix.CreateConverter(globalSettings);
+            NativeMethodsPdf.wkhtmltopdf_create_converter(globalSettings);
 
         public override void DestroyConverter(
             IntPtr converter) =>
-            NativeMethodsPdfPosix.DestroyConverter(converter);
+            NativeMethodsPdf.wkhtmltopdf_destroy_converter(converter);
 
         public override int SetWarningCallback(
             IntPtr converter,
             StringCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsPdfPosix.SetWarningCallback(converter, callback);
+            return NativeMethodsPdf.wkhtmltopdf_set_warning_callback(converter, callback);
         }
 
         public override int SetErrorCallback(
@@ -50,7 +50,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             StringCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsPdfPosix.SetErrorCallback(converter, callback);
+            return NativeMethodsPdf.wkhtmltopdf_set_error_callback(converter, callback);
         }
 
         public override int SetPhaseChangedCallback(
@@ -58,7 +58,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             VoidCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsPdfPosix.SetPhaseChangedCallback(converter, callback);
+            return NativeMethodsPdf.wkhtmltopdf_set_phase_changed_callback(converter, callback);
         }
 
         public override int SetProgressChangedCallback(
@@ -66,7 +66,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             VoidCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsPdfPosix.SetProgressChangedCallback(converter, callback);
+            return NativeMethodsPdf.wkhtmltopdf_set_progress_changed_callback(converter, callback);
         }
 
         public override int SetFinishedCallback(
@@ -74,24 +74,24 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             IntCallback callback)
         {
             _delegates.Add(callback);
-            return NativeMethodsPdfPosix.SetFinishedCallback(converter, callback);
+            return NativeMethodsPdf.wkhtmltopdf_set_finished_callback(converter, callback);
         }
 
         public override bool Convert(
             IntPtr converter) =>
-            NativeMethodsPdfPosix.Convert(converter);
+            NativeMethodsPdf.wkhtmltopdf_convert(converter);
 
         public override int GetCurrentPhase(
             IntPtr converter) =>
-            NativeMethodsPdfPosix.GetCurrentPhase(converter);
+            NativeMethodsPdf.wkhtmltopdf_current_phase(converter);
 
         public override int GetPhaseCount(
             IntPtr converter) =>
-            NativeMethodsPdfPosix.GetPhaseCount(converter);
+            NativeMethodsPdf.wkhtmltopdf_phase_count(converter);
 
         public override int GetHttpErrorCode(
             IntPtr converter) =>
-            NativeMethodsPdfPosix.GetHttpErrorCode(converter);
+            NativeMethodsPdf.wkhtmltopdf_http_error_code(converter);
 
         protected override int GetGlobalSettingImpl(
             IntPtr settings,
@@ -103,7 +103,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
                 throw new ArgumentNullException(nameof(buffer));
             }
 
-            return NativeMethodsPdfPosix.GetGlobalSettings(
+            return NativeMethodsPdf.wkhtmltopdf_get_global_setting(
                 settings,
                 name,
                 buffer,
@@ -113,17 +113,17 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         protected override int GetOutputImpl(
             IntPtr converter,
             out IntPtr data) =>
-            NativeMethodsPdfPosix.GetOutput(converter, out data);
+            NativeMethodsPdf.wkhtmltopdf_get_output(converter, out data);
 
-        protected override IntPtr GetLibraryVersionImpl() => NativeMethodsPdfPosix.GetVersion();
+        protected override IntPtr GetLibraryVersionImpl() => NativeMethodsPdf.wkhtmltopdf_version();
 
         protected override IntPtr GetPhaseDescriptionImpl(
             IntPtr converter,
             int phase) =>
-            NativeMethodsPdfPosix.GetPhaseDescription(converter, phase);
+            NativeMethodsPdf.wkhtmltopdf_phase_description(converter, phase);
 
         protected override IntPtr GetProgressStringImpl(
             IntPtr converter) =>
-            NativeMethodsPdfPosix.GetProgressDescription(converter);
+            NativeMethodsPdf.wkhtmltopdf_progress_string(converter);
     }
 }
