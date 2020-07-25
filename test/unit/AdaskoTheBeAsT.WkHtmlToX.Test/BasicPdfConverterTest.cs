@@ -46,7 +46,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
             // ReSharper disable once AssignmentIsFullyDiscarded
+#pragma warning disable IDISP004 // Don't ignore created IDisposable.
             Action action = () => _ = new BasicPdfConverter();
+#pragma warning restore IDISP004 // Don't ignore created IDisposable.
 
             // Act & Assert
             action.Should().NotThrow();
@@ -78,6 +80,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             action.Should().Throw<ArgumentNullException>();
         }
 
+#pragma warning disable MA0051 // Method is too long
         [Fact]
         public void ConvertShouldReturnNullStreamWhenNotConverted()
         {
@@ -151,7 +154,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 result.Should().BeFalse();
             }
         }
+#pragma warning restore MA0051 // Method is too long
 
+#pragma warning disable MA0051 // Method is too long
         [Fact]
         public void ConvertShouldReturnStreamWhenConverted()
         {
@@ -227,7 +232,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 result.Should().BeTrue();
             }
         }
+#pragma warning restore MA0051 // Method is too long
 
+#pragma warning disable MA0051 // Method is too long
         [Fact]
         public async Task ConvertAsyncShouldReturnNullStreamWhenNotConverted()
         {
@@ -301,7 +308,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 result.Should().BeFalse();
             }
         }
+#pragma warning restore MA0051 // Method is too long
 
+#pragma warning disable MA0051 // Method is too long
         [Fact]
         public async Task ConvertAsyncShouldReturnStreamWhenConverted()
         {
@@ -380,6 +389,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 result.Should().BeTrue();
             }
         }
+#pragma warning restore MA0051 // Method is too long
 
         [Fact]
         public void ConvertAsyncShouldShouldThrowExceptionWhenSomethingInvalid()
@@ -387,7 +397,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             // Arrange
             var document = new HtmlToPdfDocument();
             Func<Task> func = async () =>
-                await _sut.ConvertAsync(document, _ => Stream.Null, CancellationToken.None);
+                await _sut.ConvertAsync(document, _ => Stream.Null, CancellationToken.None)
+                    .ConfigureAwait(false);
 
             // Act & Assert
             func.Should().Throw<ArgumentException>();

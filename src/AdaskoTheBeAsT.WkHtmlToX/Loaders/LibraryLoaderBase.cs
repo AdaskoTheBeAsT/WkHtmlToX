@@ -5,6 +5,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 {
+#pragma warning disable IDISP025 // Class with no virtual dispose method should be sealed.
     public abstract class LibraryLoaderBase
         : ILibraryLoader
     {
@@ -21,8 +22,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
             GC.SuppressFinalize(this);
         }
 
-        protected abstract void Dispose(
-            bool disposing);
+        protected virtual void Dispose(bool disposing)
+        {
+            // no op
+        }
 
         protected string GetCurrentDir()
         {
@@ -50,4 +53,5 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
             return Path.Combine(rootDirectory, libraryName);
         }
     }
+#pragma warning restore IDISP025 // Class with no virtual dispose method should be sealed.
 }

@@ -22,6 +22,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 #pragma warning restore CA1051 // Do not declare visible instance fields
 
 #pragma warning disable S3442 // "abstract" classes should not have "public" constructors
+#pragma warning disable MA0017 // Abstract types should not have public or internal constructors
         internal ConverterBase(
             IWkHtmlToXModuleFactory moduleFactory,
             ModuleKind moduleKind)
@@ -33,6 +34,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
             _module = moduleFactory.GetModule(moduleKind);
         }
+#pragma warning restore MA0017 // Abstract types should not have public or internal constructors
 #pragma warning restore S3442 // "abstract" classes should not have "public" constructors
 
         [ExcludeFromCodeCoverage]
@@ -239,7 +241,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
                     // https://github.com/wkhtmltopdf/wkhtmltopdf/blob/c754e38b074a75a51327df36c4a53f8962020510/src/lib/reflect.hh#L192
                     applySetting(config, $"{localName}.append", null);
-                    applySetting(config, $"{localName}[{index}]", $"{pair.Key}\n{pair.Value}");
+                    applySetting(config, $"{localName}[{index.ToString(CultureInfo.InvariantCulture)}]", $"{pair.Key}\n{pair.Value}");
 
                     index++;
                 }

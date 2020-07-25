@@ -158,7 +158,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
                 return;
             }
 
+#pragma warning disable IDISP001 // Dispose created.
             var stream = createStreamFunc(totalLength);
+#pragma warning restore IDISP001 // Dispose created.
             if (stream is null)
             {
                 throw new ArgumentException("Create stream returned null");

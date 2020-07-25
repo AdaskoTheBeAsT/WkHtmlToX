@@ -8,6 +8,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
 {
 #pragma warning disable CA1060 // Move pinvokes to native methods class
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
+#pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable SA1300 // Element should begin with upper-case letter
     internal static class NativeMethodsImage
     {
@@ -235,6 +236,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         internal static extern int wkhtmltoimage_get_output(IntPtr converter, out IntPtr data);
     }
 #pragma warning restore SA1300 // Element should begin with upper-case letter
+#pragma warning restore IDE1006 // Naming Styles
 #pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
 #pragma warning restore CA1060 // Move pinvokes to native methods class
 }

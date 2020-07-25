@@ -63,6 +63,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 
         public override void Release()
         {
+            if (_libraryHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
             var retVal = NativeMethodsSystemPosix.dlclose(_libraryHandle);
             if (retVal != 0)
             {
@@ -75,13 +80,14 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
             }
         }
 
-        protected override void Dispose(
-            bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
                 Release();
             }
+
+            base.Dispose(disposing);
         }
 
         protected abstract string GetLibraryName();

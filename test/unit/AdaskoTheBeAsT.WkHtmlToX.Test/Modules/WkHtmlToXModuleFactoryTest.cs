@@ -37,7 +37,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Modules
             Type type)
         {
             // Act
-            var result = _sut.GetModule(moduleKind);
+            using var result = _sut.GetModule(moduleKind);
 
             // Assert
             result.Should().BeOfType(type);

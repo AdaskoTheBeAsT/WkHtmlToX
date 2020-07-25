@@ -15,7 +15,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // ReSharper disable once AssignmentIsFullyDiscarded
+#pragma warning disable MA0003 // Name parameter
+#pragma warning disable IDISP004 // Don't ignore created IDisposable.
             Action action = () => _ = new BasicImageConverter(null);
+#pragma warning restore IDISP004 // Don't ignore created IDisposable.
+#pragma warning restore MA0003 // Name parameter
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // Act & Assert

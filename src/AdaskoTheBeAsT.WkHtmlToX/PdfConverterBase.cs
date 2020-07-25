@@ -23,11 +23,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 #pragma warning restore SA1401 // Fields should be private
 
 #pragma warning disable S3442 // "abstract" classes should not have "public" constructors
+#pragma warning disable MA0017 // Abstract types should not have public or internal constructors
         internal PdfConverterBase(IWkHtmlToXModuleFactory moduleFactory, IWkHtmlToPdfModule pdfModule)
             : base(moduleFactory, ModuleKind.Pdf)
         {
             _pdfModule = pdfModule ?? throw new ArgumentNullException(nameof(pdfModule));
         }
+#pragma warning restore MA0017 // Abstract types should not have public or internal constructors
 #pragma warning restore S3442 // "abstract" classes should not have "public" constructors
 
         [ExcludeFromCodeCoverage]
@@ -45,7 +47,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             }
 
             var globalSettings = _module.CreateGlobalSettings();
-            ApplyConfig(globalSettings, document.GlobalSettings, true);
+            ApplyConfig(globalSettings, document.GlobalSettings, isGlobal: true);
             var converter = _module.CreateConverter(globalSettings);
             var objectSettingsPtr = new List<IntPtr>();
             foreach (var obj in document.ObjectSettings)
@@ -221,7 +223,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             var buffer = ArrayPool<byte>.Shared.Rent(len);
             try
             {
-                htmlContentStream.Read(buffer, 0, len);
+                _ = htmlContentStream.Read(buffer, 0, len);
                 _pdfModule.AddObject(converter, objectSettings, buffer);
             }
             finally

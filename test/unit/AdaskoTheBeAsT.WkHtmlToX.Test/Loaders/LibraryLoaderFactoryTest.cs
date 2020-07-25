@@ -73,7 +73,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders
         {
             // Arrange
             // ReSharper disable once AssignmentIsFullyDiscarded
+#pragma warning disable IDISP004 // Don't ignore created IDisposable.
             Action action = () => _ = _sut.Create(12345, null);
+#pragma warning restore IDISP004 // Don't ignore created IDisposable.
 
             // Act & Assert
             action.Should().Throw<InvalidPlatformIdentifierException>();
@@ -84,7 +86,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders
         {
             // Arrange
             // ReSharper disable once AssignmentIsFullyDiscarded
+#pragma warning disable IDISP004 // Don't ignore created IDisposable.
             Action action = () => _ = _sut.Create((int)PlatformID.Unix, null);
+#pragma warning restore IDISP004 // Don't ignore created IDisposable.
 
             // Act & Assert
             action.Should().Throw<InvalidLinuxRuntimeIdentifierException>();
@@ -98,7 +102,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders
             Type type)
         {
             // Act
-            var result = _sut.Create(platformId, runtimeIdentifier);
+            using var result = _sut.Create(platformId, runtimeIdentifier);
 
             // Assert
             result.Should().BeOfType(type);

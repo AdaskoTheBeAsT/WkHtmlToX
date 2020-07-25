@@ -40,7 +40,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
             // ReSharper disable once AssignmentIsFullyDiscarded
+#pragma warning disable IDISP004 // Don't ignore created IDisposable.
             Action action = () => _ = new BasicImageConverter();
+#pragma warning restore IDISP004 // Don't ignore created IDisposable.
 
             // Act & Assert
             action.Should().NotThrow();

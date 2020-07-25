@@ -47,6 +47,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
             }
         }
 
+#pragma warning disable MA0051 // Method is too long
         [Fact]
         public void ShouldAllowToSetValues()
         {
@@ -119,5 +120,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
                 sut.Xsl.Should().Be(xsl);
             }
         }
+#pragma warning restore MA0051 // Method is too long
     }
 }

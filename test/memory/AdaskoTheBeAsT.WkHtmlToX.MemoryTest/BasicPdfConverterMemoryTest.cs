@@ -29,7 +29,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest
             var memoryCheckPoint = dotMemory.Check();
             using (var libraryLoader = libFactory.Create(
                 (int)Environment.OSVersion.Platform,
-                null))
+                runtimeIdentifier: null))
             {
                 libraryLoader.Load();
                 var doc = htmlToPdfGenerator.Generate();
@@ -40,11 +40,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest
                 }
 
                 using var converter = new BasicPdfConverter();
+#pragma warning disable SEC0112 // Path Tampering Unvalidated File Path
                 using var stream = new FileStream(
                     Path.Combine(
                         "Files",
                         $"{DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture)}.pdf"),
                     FileMode.Create);
+#pragma warning restore SEC0112 // Path Tampering Unvalidated File Path
                 var converted = converter.Convert(
                     doc,
                     _ => stream);

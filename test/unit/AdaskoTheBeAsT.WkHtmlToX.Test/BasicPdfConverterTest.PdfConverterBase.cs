@@ -34,7 +34,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 null,
             };
 
+#pragma warning disable IDISP001 // Dispose created.
             var stream = new MemoryStream(htmlContentByteArray);
+#pragma warning restore IDISP001 // Dispose created.
             yield return new object?[]
             {
                 null,
@@ -52,7 +54,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // ReSharper disable once AssignmentIsFullyDiscarded
+#pragma warning disable IDISP004 // Don't ignore created IDisposable.
             Action action = () => _ = new BasicPdfConverter(moduleMock.Object, null);
+#pragma warning restore IDISP004 // Don't ignore created IDisposable.
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // Act & Assert
@@ -251,6 +255,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             }
         }
 
+#pragma warning disable MA0051 // Method is too long
         [Fact]
         public void CreateConverterShouldSetObjectSettings()
         {
@@ -316,6 +321,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 result.objectSettingsPtrs[0].Should().Be(objectSettingsPtr);
             }
         }
+#pragma warning restore MA0051 // Method is too long
 
         [Fact]
         public void ConvertImplShouldThrowExceptionWhenNullDocumentPassed()
@@ -369,6 +375,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             action.Should().Throw<ArgumentException>();
         }
 
+#pragma warning disable MA0051 // Method is too long
         [Fact]
         public void ConvertImplShouldReturnNullStreamWhenNotConverted()
         {
@@ -442,7 +449,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 result.Should().BeFalse();
             }
         }
+#pragma warning restore MA0051 // Method is too long
 
+#pragma warning disable MA0051 // Method is too long
         [Theory]
         [MemberData(nameof(GetTestData))]
         public void ConvertImplShouldReturnStreamWhenConverted(
@@ -524,6 +533,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 result.Should().BeTrue();
             }
         }
+#pragma warning restore MA0051 // Method is too long
 
         [Fact]
         public void AddContentShouldThrowExceptionWhenNullPdfObjectSettingsPassed()

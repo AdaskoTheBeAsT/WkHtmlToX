@@ -87,6 +87,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 
                 _libraryHandle = null;
             }
+
+            base.Dispose(disposing);
         }
     }
 }

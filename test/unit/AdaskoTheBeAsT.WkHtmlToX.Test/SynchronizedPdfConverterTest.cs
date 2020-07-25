@@ -47,13 +47,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
             // ReSharper disable once AssignmentIsFullyDiscarded
+#pragma warning disable IDISP004 // Don't ignore created IDisposable.
             Action action = () => _ = new SynchronizedPdfConverter();
+#pragma warning restore IDISP004 // Don't ignore created IDisposable.
 
             // Act & Assert
             action.Should().NotThrow();
         }
 
         [Fact]
+#pragma warning disable MA0051 // Method is too long
         public async Task ConvertAsyncShouldReturnNullStreamWhenNotConverted()
         {
             // Arrange
@@ -99,6 +102,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
 
             // Act
             Stream? stream = null;
+#pragma warning disable IDISP003 // Dispose previous before re-assigning.
             var result = await _sut.ConvertAsync(
                 document,
                 length =>
@@ -110,6 +114,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                     return stream;
                 },
                 CancellationToken.None);
+#pragma warning restore IDISP003 // Dispose previous before re-assigning.
 
             // Assert
             using (new AssertionScope())
@@ -147,8 +152,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
 #endif
             }
         }
+#pragma warning restore MA0051 // Method is too long
 
         [Fact]
+#pragma warning disable MA0051 // Method is too long
         public async Task ConvertAsyncShouldReturnStreamWhenConverted()
         {
             // Arrange
@@ -226,6 +233,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 result.Should().BeTrue();
             }
         }
+#pragma warning restore MA0051 // Method is too long
 
         [Fact]
         public void ConvertAsyncShouldShouldThrowExceptionWhenSomethingInvalid()
@@ -233,7 +241,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             // Arrange
             var document = new HtmlToPdfDocument();
             Func<Task> func = async () =>
-                await _sut.ConvertAsync(document, _ => Stream.Null, CancellationToken.None);
+                await _sut.ConvertAsync(document, _ => Stream.Null, CancellationToken.None)
+                    .ConfigureAwait(false);
 
             // Act & Assert
             func.Should().Throw<ArgumentException>();
