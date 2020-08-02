@@ -17,7 +17,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest
 
         public HtmlToPdfDocument Generate()
         {
-            var doc = new HtmlToPdfDocument()
+            var doc = new HtmlToPdfDocument
             {
                 GlobalSettings =
                 {
@@ -27,7 +27,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest
                 },
                 ObjectSettings =
                 {
-                    new PdfObjectSettings()
+                    new PdfObjectSettings
                     {
                         PagesCount = true,
                         WebSettings =

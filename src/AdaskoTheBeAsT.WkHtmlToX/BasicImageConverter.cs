@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 
@@ -37,7 +38,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             {
                 IsBackground = true,
             };
-            thread.SetApartmentState(ApartmentState.STA);
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                thread.SetApartmentState(ApartmentState.STA);
+            }
+
             thread.Start();
             thread.Join();
             return converted;

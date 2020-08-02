@@ -58,7 +58,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest
                 {
                     var objects = memory.GetDifference(memoryCheckPoint)
                         .GetSurvivedObjects()
-                        .GetObjects(where => where.Namespace.Like("AdaskoTheBeAsT"));
+                        .GetObjects(where => where.Namespace.Like(nameof(AdaskoTheBeAsT)));
                     var objectCount = objects.ObjectsCount;
                     objectCount.Should().BeLessOrEqualTo(5);
                 });

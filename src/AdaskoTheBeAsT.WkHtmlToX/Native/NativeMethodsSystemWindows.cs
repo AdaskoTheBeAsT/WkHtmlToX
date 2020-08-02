@@ -29,7 +29,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         internal static extern bool FreeLibrary(IntPtr hModule);
 
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(KernelLib, CharSet = CharSet.Ansi, EntryPoint = "GetProcAddress", ExactSpelling = true, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        [DllImport(KernelLib, CharSet = CharSet.Ansi, ExactSpelling = true, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern IntPtr GetProcAddress(SafeLibraryHandle hModule, string procname);
     }
 #pragma warning restore CA1060 // Move pinvokes to native methods class

@@ -129,7 +129,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             ProgressChanged?.Invoke(this, eventArgs);
         }
 
+#pragma warning disable CC0057 // Unused parameters
         protected internal void OnFinished(IntPtr converter, int success)
+#pragma warning restore CC0057 // Unused parameters
         {
             if (Finished == null)
             {
@@ -143,7 +145,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             Finished?.Invoke(this, eventArgs);
         }
 
+#pragma warning disable CC0057 // Unused parameters
         protected internal void OnError(IntPtr converter, string message)
+#pragma warning restore CC0057 // Unused parameters
         {
             if (Error == null)
             {
@@ -157,7 +161,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             Error?.Invoke(this, eventArgs);
         }
 
+#pragma warning disable CC0057 // Unused parameters
         protected internal void OnWarning(IntPtr converter, string message)
+#pragma warning restore CC0057 // Unused parameters
         {
             if (Warning == null)
             {

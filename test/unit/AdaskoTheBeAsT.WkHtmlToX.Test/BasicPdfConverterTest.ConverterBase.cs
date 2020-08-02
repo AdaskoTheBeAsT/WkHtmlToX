@@ -22,7 +22,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             // ReSharper disable once AssignmentIsFullyDiscarded
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable IDISP004 // Don't ignore created IDisposable.
-            Action action = () => _ = new BasicPdfConverter(null, pdfModuleMock.Object);
+            Action action = () => _ = new BasicPdfConverter(moduleFactory: null, pdfModuleMock.Object);
 #pragma warning restore IDISP004 // Don't ignore created IDisposable.
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
@@ -217,7 +217,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         public void OnErrorShouldPassDetailsAboutError()
         {
             // Arrange
-            ErrorEventArgs? result = default;
+            var result = default(ErrorEventArgs?);
             var errorMessage = _fixture.Create<string>();
             var doc = new Mock<IDocument>().Object;
 
@@ -252,7 +252,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         public void OnWarningShouldPassDetailsAboutError()
         {
             // Arrange
-            WarningEventArgs? result = default;
+            var result = default(WarningEventArgs?);
             var errorMessage = _fixture.Create<string>();
             var doc = new Mock<IDocument>().Object;
 
@@ -287,7 +287,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         public void OnFinishedShouldPassDetailsAboutError()
         {
             // Arrange
-            FinishedEventArgs? result = default;
+            var result = default(FinishedEventArgs?);
             var code = _fixture.Create<int>();
             var doc = new Mock<IDocument>().Object;
 
@@ -331,7 +331,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             _module.Setup(m => m.GetPhaseDescription(It.IsAny<IntPtr>(), It.IsAny<int>()))
                 .Returns(phaseDescription);
 
-            PhaseChangedEventArgs? result = default;
+            var result = default(PhaseChangedEventArgs?);
             var doc = new Mock<IDocument>().Object;
 
             _sut.ProcessingDocument = doc;
@@ -370,7 +370,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             _module.Setup(m => m.GetProgressDescription(It.IsAny<IntPtr>()))
                 .Returns(progressDescription);
 
-            ProgressChangedEventArgs? result = default;
+            var result = default(ProgressChangedEventArgs?);
             var doc = new Mock<IDocument>().Object;
 
             _sut.ProcessingDocument = doc;
@@ -397,7 +397,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             // Arrange
             var intPtr = new IntPtr(_fixture.Create<int>());
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.ApplyConfig(intPtr, null, isGlobal);
+            Action action = () => _sut.ApplyConfig(intPtr, settings: null, isGlobal);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // Act & Assert
@@ -559,7 +559,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             var intPtr = new IntPtr(_fixture.Create<int>());
             var name = _fixture.Create<string>();
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.Apply(intPtr, string.Empty, name, null, true);
+            Action action = () => _sut.Apply(intPtr, string.Empty, name, value: null, isGlobal: true);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // Act & Assert

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <IsTestProject>true</IsTestProject>
     <IsPackable>false</IsPackable>
+	  <NoWarn>$(NoWarn);CC0022;CC0057;CC0091</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.13.0" />

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
@@ -16,8 +17,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         : PdfConverterBase,
             IHtmlToPdfAsyncConverter
     {
+#pragma warning disable CC0033 // Dispose Fields Properly
         private readonly BlockingCollection<PdfConvertWorkItem> _blockingCollection = new BlockingCollection<PdfConvertWorkItem>();
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+#pragma warning restore CC0033 // Dispose Fields Properly
 
         public SynchronizedPdfConverter()
         {
@@ -43,7 +46,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX
         protected override void Dispose(
             bool disposing)
         {
-            base.Dispose(disposing);
             if (disposing)
             {
                 _blockingCollection.CompleteAdding();
@@ -51,6 +53,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 _blockingCollection.Dispose();
                 _cancellationTokenSource.Dispose();
             }
+
+            base.Dispose(disposing);
         }
 
         private void Initialize()
@@ -59,7 +63,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             {
                 IsBackground = true,
             };
-            thread.SetApartmentState(ApartmentState.STA);
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                thread.SetApartmentState(ApartmentState.STA);
+            }
+
             thread.Start(_cancellationTokenSource.Token);
         }
 
@@ -82,9 +91,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                     }
                 }
             }
+#pragma warning disable CC0004 // Catch block cannot be empty
             catch (OperationCanceledException)
             {
+                // no op
             }
+#pragma warning restore CC0004 // Catch block cannot be empty
         }
 #pragma warning restore S108 // Nested blocks of code should not be left empty
 #pragma warning restore CA1031 // Do not catch general exception types
