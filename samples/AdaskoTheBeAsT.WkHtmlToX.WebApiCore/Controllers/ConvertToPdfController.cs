@@ -32,7 +32,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiCore.Controllers
         }
 
         [HttpPost]
+#pragma warning disable SEC0019 // Missing AntiForgeryToken Attribute
+#pragma warning disable SEC0120 // Missing Authorization Attribute
         public async Task<IActionResult> Convert()
+#pragma warning restore SEC0120 // Missing Authorization Attribute
+#pragma warning restore SEC0019 // Missing AntiForgeryToken Attribute
         {
             var doc = _htmlToPdfDocumentGenerator.Generate();
             Stream? stream = null;
@@ -40,10 +44,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiCore.Controllers
                 doc,
                 length =>
                 {
+#pragma warning disable IDISP003 // Dispose previous before re-assigning.
                     stream = _recyclableMemoryStreamManager.GetStream(
                         Guid.NewGuid(),
                         "wkhtmltox",
                         length);
+#pragma warning restore IDISP003 // Dispose previous before re-assigning.
                     return stream;
                 },
                 _httpContextAccessor.HttpContext.RequestAborted);

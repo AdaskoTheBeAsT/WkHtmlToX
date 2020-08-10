@@ -17,7 +17,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.BusinessLogic
 
         public HtmlToPdfDocument Generate()
         {
-            var doc = new HtmlToPdfDocument()
+            var doc = new HtmlToPdfDocument
             {
                 GlobalSettings =
                 {
@@ -27,7 +27,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.BusinessLogic
                 },
                 ObjectSettings =
                 {
-                    new PdfObjectSettings()
+                    new PdfObjectSettings
                     {
                         PagesCount = true,
                         WebSettings =

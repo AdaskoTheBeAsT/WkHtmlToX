@@ -19,12 +19,14 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin.Handlers
                 throw new ArgumentNullException(nameof(next));
             }
 
-            if (context.Request.Method == "GET")
+            if (context.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase))
             {
                 context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
             }
 
+#pragma warning disable CC0031 // Check for null before calling a delegate
             return next();
+#pragma warning restore CC0031 // Check for null before calling a delegate
         }
 
         public static void PreventResponseCaching(this IAppBuilder app)

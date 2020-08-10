@@ -19,7 +19,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
             }
 
 #pragma warning disable CA2000 // Dispose objects before losing scope
+#pragma warning disable IDISP001 // Dispose created.
             var httpConfiguration = new HttpConfiguration();
+#pragma warning restore IDISP001 // Dispose created.
 #pragma warning restore CA2000 // Dispose objects before losing scope
             ConfigureAppStart(app);
 
@@ -35,7 +37,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
                 defaults: new { id = RouteParameter.Optional });
 
 #pragma warning disable CA2000 // Dispose objects before losing scope
+#pragma warning disable IDISP001 // Dispose created.
             var container = ConfigureIoC(app, httpConfiguration);
+#pragma warning restore IDISP001 // Dispose created.
 #pragma warning restore CA2000 // Dispose objects before losing scope
             container.Verify();
             app.PreventResponseCaching();

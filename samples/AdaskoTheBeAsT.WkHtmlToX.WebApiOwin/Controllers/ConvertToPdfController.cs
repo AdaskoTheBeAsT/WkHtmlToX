@@ -37,16 +37,20 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin.Controllers
                 doc,
                 length =>
                 {
+#pragma warning disable IDISP003 // Dispose previous before re-assigning.
                     stream = _recyclableMemoryStreamManager.GetStream(
                         Guid.NewGuid(),
                         "wkhtmltox",
                         length);
+#pragma warning restore IDISP003 // Dispose previous before re-assigning.
                     return stream;
                 },
-                HttpContext.Current.Request.GetOwinContext().Request.CallCancelled);
+                HttpContext.Current.Request.GetOwinContext().Request.CallCancelled).ConfigureAwait(false);
             stream!.Position = 0;
 #pragma warning disable CA2000 // Dispose objects before losing scope
+#pragma warning disable IDISP001 // Dispose created.
             var httpResponseMessage = Request.CreateResponse(HttpStatusCode.OK);
+#pragma warning restore IDISP001 // Dispose created.
 #pragma warning restore CA2000 // Dispose objects before losing scope
             httpResponseMessage.Content = new ByteArrayContent(stream.ToArray());
             httpResponseMessage.Content.Headers.ContentLength = stream.Length;

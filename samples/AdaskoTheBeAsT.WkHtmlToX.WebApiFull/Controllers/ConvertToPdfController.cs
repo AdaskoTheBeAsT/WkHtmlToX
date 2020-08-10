@@ -36,10 +36,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiFull.Controllers
                 doc,
                 length =>
                 {
+#pragma warning disable IDISP003 // Dispose previous before re-assigning.
                     stream = _recyclableMemoryStreamManager.GetStream(
                         Guid.NewGuid(),
                         "wkhtmltox",
                         length);
+#pragma warning restore IDISP003 // Dispose previous before re-assigning.
                     return stream;
                 },
                 CancellationToken.None).GetAwaiter().GetResult();

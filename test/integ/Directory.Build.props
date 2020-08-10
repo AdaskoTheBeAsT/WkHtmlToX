@@ -2,9 +2,9 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
   <ItemGroup>
     
-    <PackageReference Include="SpecFlow" Version="3.3.57" />
-    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.3.57" />
-    <PackageReference Include="SpecFlow.xUnit" Version="3.3.57" />
+    <PackageReference Include="SpecFlow" Version="3.3.74" />
+    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.3.74" />
+    <PackageReference Include="SpecFlow.xUnit" Version="3.3.74" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">

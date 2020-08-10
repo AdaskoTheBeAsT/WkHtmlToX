@@ -19,7 +19,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiFull
 
             // Web API configuration and services
 #pragma warning disable CA2000 // Dispose objects before losing scope
+#pragma warning disable IDISP001 // Dispose created.
             var container = new Container();
+#pragma warning restore IDISP001 // Dispose created.
 #pragma warning restore CA2000 // Dispose objects before losing scope
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 

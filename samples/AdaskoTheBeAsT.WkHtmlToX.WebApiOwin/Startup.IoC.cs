@@ -18,7 +18,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
             {
                 await using (AsyncScopedLifestyle.BeginScope(container))
                 {
+#pragma warning disable CC0031 // Check for null before calling a delegate
+#pragma warning disable MA0004 // Use .ConfigureAwait(false)
                     await next();
+#pragma warning restore MA0004 // Use .ConfigureAwait(false)
+#pragma warning restore CC0031 // Check for null before calling a delegate
                 }
             });
 
