@@ -5,7 +5,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.WorkItems
 {
-    internal class PdfConvertWorkItem
+    internal sealed class PdfConvertWorkItem
     {
         public PdfConvertWorkItem(
             IHtmlToPdfDocument document,

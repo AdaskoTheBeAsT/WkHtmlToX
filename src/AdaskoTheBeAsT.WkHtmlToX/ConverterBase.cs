@@ -57,7 +57,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
         public void Dispose()
         {
-            Dispose(true);
+            Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
 
@@ -177,9 +177,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             Warning?.Invoke(this, eventArgs);
         }
 
-        protected internal void ApplyConfig(IntPtr config, ISettings settings, bool isGlobal, string? prefix = null)
+        protected internal void ApplyConfig(IntPtr config, ISettings? settings, bool isGlobal, string? prefix = null)
         {
-            if (settings == null)
+            if (settings is null)
             {
                 return;
             }
@@ -246,7 +246,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                     }
 
                     // https://github.com/wkhtmltopdf/wkhtmltopdf/blob/c754e38b074a75a51327df36c4a53f8962020510/src/lib/reflect.hh#L192
-                    applySetting(config, $"{localName}.append", null);
+                    applySetting(config, $"{localName}.append", arg3: null);
                     applySetting(config, $"{localName}[{index.ToString(CultureInfo.InvariantCulture)}]", $"{pair.Key}\n{pair.Value}");
 
                     index++;

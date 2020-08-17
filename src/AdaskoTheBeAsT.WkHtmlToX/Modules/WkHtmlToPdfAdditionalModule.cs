@@ -6,7 +6,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Native;
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
     [ExcludeFromCodeCoverage]
-    internal class WkHtmlToPdfAdditionalModule
+    internal sealed class WkHtmlToPdfAdditionalModule
         : WkHtmlToPdfModule
     {
         public override IntPtr CreateObjectSettings() => NativeMethodsPdf.wkhtmltopdf_create_object_settings();

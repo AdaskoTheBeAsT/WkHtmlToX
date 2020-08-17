@@ -18,27 +18,23 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 
         public void Dispose()
         {
-            Dispose(true);
+            Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            // no op
-        }
-
-        protected string GetCurrentDir()
+        protected static string GetCurrentDir()
         {
             var uri = new Uri(Assembly.GetExecutingAssembly().GetName().CodeBase);
-            return Path.GetDirectoryName(uri.LocalPath);
+
+            return Path.GetDirectoryName(uri.LocalPath) ?? "./";
         }
 
-        protected string GetProcessorArchitecture()
+        protected static string GetProcessorArchitecture()
         {
             return Environment.Is64BitProcess ? "x64" : "x86";
         }
 
-        protected string GetRuntimeLibraryPath(
+        protected static string GetRuntimeLibraryPath(
             string rootDirectory,
             string runtimeIdentifier,
             string libraryName)
@@ -46,11 +42,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
             return Path.Combine(rootDirectory, RuntimesFolder, runtimeIdentifier, NativeFolder, libraryName);
         }
 
-        protected string GetCurrentDirectoryLibraryPath(
+        protected static string GetCurrentDirectoryLibraryPath(
             string rootDirectory,
             string libraryName)
         {
             return Path.Combine(rootDirectory, libraryName);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            // no op
         }
     }
 #pragma warning restore IDISP025 // Class with no virtual dispose method should be sealed.

@@ -7,7 +7,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Utils;
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
     [ExcludeFromCodeCoverage]
-    internal class WkHtmlToPdfCommonModule
+    internal sealed class WkHtmlToPdfCommonModule
         : WkHtmlToXModule
     {
         public override int Initialize(

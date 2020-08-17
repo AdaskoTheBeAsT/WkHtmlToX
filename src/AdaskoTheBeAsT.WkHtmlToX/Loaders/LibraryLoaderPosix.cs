@@ -34,7 +34,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 
             foreach (var path in paths)
             {
-                if (path == null)
+                if (string.IsNullOrEmpty(path))
                 {
                     continue;
                 }

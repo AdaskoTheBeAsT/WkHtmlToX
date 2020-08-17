@@ -7,7 +7,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Utils;
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
     [ExcludeFromCodeCoverage]
-    internal class WkHtmlToImageCommonModule
+    internal sealed class WkHtmlToImageCommonModule
         : WkHtmlToXModule
     {
         public override int Initialize(

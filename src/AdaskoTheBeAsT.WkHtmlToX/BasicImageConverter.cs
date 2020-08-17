@@ -49,7 +49,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             return converted;
         }
 
-        internal bool ConvertImpl(IHtmlToImageDocument document, Func<int, Stream> createStreamFunc)
+        internal bool ConvertImpl(IHtmlToImageDocument? document, Func<int, Stream> createStreamFunc)
         {
             if (document?.ImageSettings == null)
             {
@@ -103,7 +103,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             }
 
             var globalSettings = _module.CreateGlobalSettings();
-            ApplyConfig(globalSettings, document.ImageSettings, true);
+            ApplyConfig(globalSettings, document.ImageSettings, isGlobal: true);
             var converter = _module.CreateConverter(globalSettings);
 
             return (converter, globalSettings);

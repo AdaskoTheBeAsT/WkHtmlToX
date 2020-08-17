@@ -40,7 +40,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         public string GetLibraryVersion()
         {
             var ptr = GetLibraryVersionImpl();
-            return Marshal.PtrToStringAnsi(ptr);
+            return Marshal.PtrToStringAnsi(ptr) ?? string.Empty;
         }
 
         public abstract IntPtr CreateGlobalSettings();
@@ -117,14 +117,14 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             int phase)
         {
             var ptr = GetPhaseDescriptionImpl(converter, phase);
-            return Marshal.PtrToStringAnsi(ptr);
+            return Marshal.PtrToStringAnsi(ptr) ?? string.Empty;
         }
 
         public string GetProgressDescription(
             IntPtr converter)
         {
             var ptr = GetProgressStringImpl(converter);
-            return Marshal.PtrToStringAnsi(ptr);
+            return Marshal.PtrToStringAnsi(ptr) ?? string.Empty;
         }
 
         public abstract int GetPhaseCount(
@@ -180,7 +180,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 
         public void Dispose()
         {
-            Dispose(true);
+            Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
 
@@ -211,7 +211,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         protected abstract IntPtr GetProgressStringImpl(
             IntPtr converter);
 
-        private (int totalLength, int length) CopyBuffer(
+        private static (int totalLength, int length) CopyBuffer(
             IntPtr data,
             Stream stream,
             int totalLength)

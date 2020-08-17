@@ -60,7 +60,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX
                 var objectSettings = _pdfModule.CreateObjectSettings();
                 objectSettingsPtr.Add(objectSettings);
 
-                ApplyConfig(objectSettings, obj, false);
+                ApplyConfig(objectSettings, obj, isGlobal: false);
 
                 AddContent(converter, objectSettings, obj);
             }
@@ -179,13 +179,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX
             }
 
             var encoding = pdfObjectSettings.Encoding ?? Encoding.UTF8;
-            var length = encoding.GetByteCount(pdfObjectSettings.HtmlContent);
+            var length = encoding.GetByteCount(pdfObjectSettings.HtmlContent ?? string.Empty);
             var buffer = ArrayPool<byte>.Shared.Rent(length + 1);
             buffer[length] = 0;
 
             try
             {
-                encoding.GetBytes(pdfObjectSettings.HtmlContent, 0, pdfObjectSettings.HtmlContent!.Length, buffer, 0);
+                encoding.GetBytes(pdfObjectSettings.HtmlContent ?? string.Empty, 0, pdfObjectSettings.HtmlContent!.Length, buffer, 0);
                 _pdfModule.AddObject(converter, objectSettings, buffer);
             }
             finally

@@ -16,7 +16,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
     internal sealed class SafeLibraryHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         private SafeLibraryHandle()
-            : base(true)
+            : base(ownsHandle: true)
         {
         }
 

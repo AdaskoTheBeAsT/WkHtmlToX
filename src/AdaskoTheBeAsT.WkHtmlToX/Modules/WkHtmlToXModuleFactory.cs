@@ -2,7 +2,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
-    internal class WkHtmlToXModuleFactory
+    internal sealed class WkHtmlToXModuleFactory
         : IWkHtmlToXModuleFactory
     {
         public IWkHtmlToXModule GetModule(
