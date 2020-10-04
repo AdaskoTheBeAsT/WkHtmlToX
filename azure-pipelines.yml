@@ -33,7 +33,7 @@ steps:
   displayName: 'Prepare analysis on SonarCloud'
   inputs:
     scannerMode: 'MSBuild'    
-    SonarCloud: 'AdaskoTheBeAsT.WkHtmlToX.SonarCloud'
+    SonarCloud: 'Sonar.AdaskoTheBeAsT.WkHtmlToX'
     organization: 'adaskothebeast-github'
     projectKey: 'AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX'
     projectName: AdaskoTheBeAsT.WkHtmlToX
