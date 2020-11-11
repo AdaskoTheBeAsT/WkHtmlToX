@@ -142,7 +142,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
                 _module.Verify(m => m.DestroyConverter(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.Terminate(), Times.Once);
                 result.Should().BeFalse();
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET
                 if (stream != null)
                 {
                     await stream.DisposeAsync();
@@ -159,7 +159,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         public async Task ConvertAsyncShouldReturnStreamWhenConverted()
         {
             // Arrange
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET
             await using var memoryStream = new MemoryStream();
 #else
             using var memoryStream = new MemoryStream();

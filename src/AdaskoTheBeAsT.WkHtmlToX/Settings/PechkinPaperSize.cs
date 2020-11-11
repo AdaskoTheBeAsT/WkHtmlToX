@@ -142,8 +142,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         public static PechkinPaperSize FromPaperKind(
             PaperKind paperKind)
         {
-            var result = Dictionary.TryGetValue(paperKind, out PechkinPaperSize pechkinPaperSize);
+            var result = Dictionary.TryGetValue(paperKind, out PechkinPaperSize? pechkinPaperSize);
             if (!result)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(paperKind),
+                    $"Unknown paper kind {paperKind:G} - cannot convert to pechkin paper size");
+            }
+
+            if (pechkinPaperSize is null)
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(paperKind),

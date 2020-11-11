@@ -1,5 +1,8 @@
 using System;
+#if NET
+#else
 using System.Runtime.ConstrainedExecution;
+#endif
 using System.Runtime.InteropServices;
 using System.Security;
 using AdaskoTheBeAsT.WkHtmlToX.Loaders;
@@ -23,7 +26,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
             [MarshalAs(UnmanagedType.U4)] LoadLibraryFlags dwFlags);
 
         [SuppressUnmanagedCodeSecurity]
+#if NET
+#else
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+#endif
         [DllImport(KernelLib, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool FreeLibrary(IntPtr hModule);

@@ -3,8 +3,8 @@ C# wrapper for wkhtmltopdf.org Html to Pdf and Image library
 
 ## Badges
 [![Build Status](https://adaskothebeast.visualstudio.com/AdaskoTheBeAsT.WkHtmlToX/_apis/build/status/AdaskoTheBeAsT.WkHtmlToX?branchName=master)](https://adaskothebeast.visualstudio.com/AdaskoTheBeAsT.WkHtmlToX/_build/latest?definitionId=8&branchName=master)
-![Azure DevOps tests](https://img.shields.io/azure-devops/tests/AdaskoTheBeAsT/AdaskoTheBeAsT.WkHtmlToX/11)
-![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/AdaskoTheBeAsT/AdaskoTheBeAsT.WkHtmlToX/11?style=plastic)
+![Azure DevOps tests](https://img.shields.io/azure-devops/tests/AdaskoTheBeAsT/AdaskoTheBeAsT.WkHtmlToX/18)
+![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/AdaskoTheBeAsT/AdaskoTheBeAsT.WkHtmlToX/18?style=plastic)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX&metric=alert_status)](https://sonarcloud.io/dashboard?id=AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX)
 ![Sonar Tests](https://img.shields.io/sonar/tests/AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX?server=https%3A%2F%2Fsonarcloud.io)
 ![Sonar Test Count](https://img.shields.io/sonar/total_tests/AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX?server=https%3A%2F%2Fsonarcloud.io)

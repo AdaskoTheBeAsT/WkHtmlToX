@@ -74,11 +74,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX
 
 #pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable S108 // Nested blocks of code should not be left empty
-        private void Process(object token)
+        private void Process(object? token)
         {
+            if (token is null)
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
             try
             {
-                foreach (var pdfConvertWorkItem in _blockingCollection.GetConsumingEnumerable((CancellationToken)token))
+                foreach (var pdfConvertWorkItem in _blockingCollection.GetConsumingEnumerable((CancellationToken)token!))
                 {
                     try
                     {

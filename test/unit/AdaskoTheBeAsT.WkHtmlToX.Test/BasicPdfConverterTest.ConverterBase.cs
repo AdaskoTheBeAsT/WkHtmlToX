@@ -71,19 +71,34 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             {
                 _module.Verify(
                     m =>
-                        m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()), Times.Never);
+                        m.SetErrorCallback(
+                            It.IsAny<IntPtr>(),
+                            It.IsAny<StringCallback>()),
+                    Times.Never);
                 _module.Verify(
                     m =>
-                        m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()), Times.Never);
+                        m.SetWarningCallback(
+                            It.IsAny<IntPtr>(),
+                            It.IsAny<StringCallback>()),
+                    Times.Never);
                 _module.Verify(
                     m =>
-                        m.SetFinishedCallback(It.IsAny<IntPtr>(), It.IsAny<IntCallback>()), Times.Never);
+                        m.SetFinishedCallback(
+                            It.IsAny<IntPtr>(),
+                            It.IsAny<IntCallback>()),
+                    Times.Never);
                 _module.Verify(
                     m =>
-                        m.SetPhaseChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()), Times.Never);
+                        m.SetPhaseChangedCallback(
+                            It.IsAny<IntPtr>(),
+                            It.IsAny<VoidCallback>()),
+                    Times.Never);
                 _module.Verify(
                     m =>
-                        m.SetProgressChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()), Times.Never);
+                        m.SetProgressChangedCallback(
+                            It.IsAny<IntPtr>(),
+                            It.IsAny<VoidCallback>()),
+                    Times.Never);
             }
         }
 
@@ -106,7 +121,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             {
                 _module.Verify(
                     m =>
-                        m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()), Times.Once);
+                        m.SetErrorCallback(
+                            It.IsAny<IntPtr>(),
+                            It.IsAny<StringCallback>()),
+                    Times.Once);
             }
         }
 
@@ -129,7 +147,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             {
                 _module.Verify(
                     m =>
-                        m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()), Times.Once);
+                        m.SetWarningCallback(
+                            It.IsAny<IntPtr>(),
+                            It.IsAny<StringCallback>()),
+                    Times.Once);
             }
         }
 
@@ -152,7 +173,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             {
                 _module.Verify(
                     m =>
-                        m.SetFinishedCallback(It.IsAny<IntPtr>(), It.IsAny<IntCallback>()), Times.Once);
+                        m.SetFinishedCallback(
+                            It.IsAny<IntPtr>(),
+                            It.IsAny<IntCallback>()),
+                    Times.Once);
             }
         }
 
@@ -175,7 +199,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             {
                 _module.Verify(
                     m =>
-                        m.SetPhaseChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()), Times.Once);
+                        m.SetPhaseChangedCallback(
+                            It.IsAny<IntPtr>(),
+                            It.IsAny<VoidCallback>()),
+                    Times.Once);
             }
         }
 
@@ -198,7 +225,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             {
                 _module.Verify(
                     m =>
-                        m.SetProgressChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()), Times.Once);
+                        m.SetProgressChangedCallback(
+                            It.IsAny<IntPtr>(),
+                            It.IsAny<VoidCallback>()),
+                    Times.Once);
             }
         }
 

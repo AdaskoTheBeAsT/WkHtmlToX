@@ -83,7 +83,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
                     CancellationToken.None).ConfigureAwait(false);
 #pragma warning restore RCS1212 // Remove redundant assignment.
 
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET
                 if (stream != null)
                 {
                     await stream.DisposeAsync().ConfigureAwait(false);

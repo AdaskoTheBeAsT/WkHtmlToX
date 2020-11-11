@@ -24,7 +24,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 
         protected static string GetCurrentDir()
         {
-            var uri = new Uri(Assembly.GetExecutingAssembly().GetName().CodeBase);
+            var uri = new Uri(Assembly.GetExecutingAssembly().GetName().CodeBase!);
 
             return Path.GetDirectoryName(uri.LocalPath) ?? "./";
         }

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;net462;net47;net471;net472;net48;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net461;net462;net47;net471;net472;net48;netstandard2.1;net5</TargetFrameworks>
     <ProjectGuid>D4842FD1-D8B6-432C-98AB-EBF7E839A3D0</ProjectGuid>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
