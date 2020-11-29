@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;net462;net47;net471;net472;net48;netcoreapp3.1;net5</TargetFrameworks>
+    <TargetFrameworks>net461;net462;net47;net471;net472;net48;netcoreapp3.1;net5.0</TargetFrameworks>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PlatformTarget>x64</PlatformTarget>
     <ProjectGuid>5036F388-7C90-4DC5-8D80-74A5BC4D82C8</ProjectGuid>
@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.native.win.x64" Version="0.12.6" />
-    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.3.5" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.3.6" />
   </ItemGroup>
 
   <ItemGroup>
