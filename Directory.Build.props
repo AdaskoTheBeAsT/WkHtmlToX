@@ -36,10 +36,10 @@
     <PackageReference Include="HSR.ParallelChecker" Version="1.7.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="IDisposableAnalyzers" Version="3.4.5" >
+    <PackageReference Include="IDisposableAnalyzers" Version="3.4.6" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.613" >
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.620" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" >

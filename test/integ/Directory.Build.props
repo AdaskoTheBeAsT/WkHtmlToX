@@ -2,9 +2,9 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
   <ItemGroup>
     
-    <PackageReference Include="SpecFlow" Version="3.5.5" />
-    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.5.5" />
-    <PackageReference Include="SpecFlow.xUnit" Version="3.5.5" />
+    <PackageReference Include="SpecFlow" Version="3.5.14" />
+    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.5.14" />
+    <PackageReference Include="SpecFlow.xUnit" Version="3.5.14" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
