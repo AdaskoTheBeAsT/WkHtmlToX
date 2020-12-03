@@ -631,7 +631,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             }
             else
             {
-                // ReSharper disable once AccessToDisposedClosure
                 _pdfModule.Verify(
                     m =>
                         m.SetObjectSetting(
