@@ -636,6 +636,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(html));
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+
             // ReSharper disable once AccessToDisposedClosure
             Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, memoryStream);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
