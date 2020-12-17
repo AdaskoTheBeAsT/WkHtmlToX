@@ -16,7 +16,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
 
             app.Use(async (_, next) =>
             {
-                await using (AsyncScopedLifestyle.BeginScope(container))
+                using (AsyncScopedLifestyle.BeginScope(container))
                 {
 #pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable MA0004 // Use .ConfigureAwait(false)
