@@ -36,10 +36,10 @@
     <PackageReference Include="HSR.ParallelChecker" Version="1.7.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="IDisposableAnalyzers" Version="3.4.7" >
+    <PackageReference Include="IDisposableAnalyzers" Version="3.4.8" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.639" >
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.645" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" >
@@ -60,7 +60,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.1" >
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.8.0" >
@@ -75,7 +75,10 @@
     <PackageReference Include="Roslynator.Analyzers" Version="3.0.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.CodeFixes" Version="2.0.0" >
+    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="1.0.0" >
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="1.0.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="SecurityCodeScan" Version="3.5.3" >
@@ -87,7 +90,7 @@
     <PackageReference Include="SonarAnalyzer.CSharp" Version="8.16.0.25740" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.312" >
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.321" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
 
