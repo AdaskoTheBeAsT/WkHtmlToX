@@ -107,11 +107,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
             _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
+
+            // ReSharper disable UnusedParameter.Local
             _sut.Error += (
                 sender,
                 args) =>
             {
             };
+
+            // ReSharper restore UnusedParameter.Local
 
             // Act
             _sut.RegisterEvents(new IntPtr(12));
@@ -133,11 +137,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
             _module.Setup(m => m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
+
+            // ReSharper disable UnusedParameter.Local
             _sut.Warning += (
                 sender,
                 args) =>
             {
             };
+
+            // ReSharper restore UnusedParameter.Local
 
             // Act
             _sut.RegisterEvents(new IntPtr(12));
@@ -159,11 +167,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
             _module.Setup(m => m.SetFinishedCallback(It.IsAny<IntPtr>(), It.IsAny<IntCallback>()));
+
+            // ReSharper disable UnusedParameter.Local
             _sut.Finished += (
                 sender,
                 args) =>
             {
             };
+
+            // ReSharper restore UnusedParameter.Local
 
             // Act
             _sut.RegisterEvents(new IntPtr(12));
@@ -185,11 +197,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
             _module.Setup(m => m.SetPhaseChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()));
+
+            // ReSharper disable UnusedParameter.Local
             _sut.PhaseChanged += (
                 sender,
                 args) =>
             {
             };
+
+            // ReSharper restore UnusedParameter.Local
 
             // Act
             _sut.RegisterEvents(new IntPtr(12));
@@ -211,11 +227,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
             _module.Setup(m => m.SetProgressChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()));
+
+            // ReSharper disable UnusedParameter.Local
             _sut.ProgressChanged += (
                 sender,
                 args) =>
             {
             };
+
+            // ReSharper restore UnusedParameter.Local
 
             // Act
             _sut.RegisterEvents(new IntPtr(12));
@@ -252,9 +272,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             var doc = new Mock<IDocument>().Object;
 
             _sut.ProcessingDocument = doc;
+
+            // ReSharper disable UnusedParameter.Local
             _sut.Error += (
                 sender,
                 args) => result = args;
+
+            // ReSharper restore UnusedParameter.Local
 
             // Act
             _sut.OnError(new IntPtr(1), errorMessage);
@@ -287,9 +311,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             var doc = new Mock<IDocument>().Object;
 
             _sut.ProcessingDocument = doc;
+
+            // ReSharper disable UnusedParameter.Local
             _sut.Warning += (
                 sender,
                 args) => result = args;
+
+            // ReSharper restore UnusedParameter.Local
 
             // Act
             _sut.OnWarning(new IntPtr(1), errorMessage);
@@ -322,9 +350,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             var doc = new Mock<IDocument>().Object;
 
             _sut.ProcessingDocument = doc;
+
+            // ReSharper disable UnusedParameter.Local
             _sut.Finished += (
                 sender,
                 args) => result = args;
+
+            // ReSharper restore UnusedParameter.Local
 
             // Act
             _sut.OnFinished(new IntPtr(1), code);
@@ -365,9 +397,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             var doc = new Mock<IDocument>().Object;
 
             _sut.ProcessingDocument = doc;
+
+            // ReSharper disable UnusedParameter.Local
             _sut.PhaseChanged += (
                 sender,
                 args) => result = args;
+
+            // ReSharper restore UnusedParameter.Local
 
             // Act
             _sut.OnPhaseChanged(new IntPtr(1));
@@ -404,9 +440,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             var doc = new Mock<IDocument>().Object;
 
             _sut.ProcessingDocument = doc;
+
+            // ReSharper disable UnusedParameter.Local
             _sut.ProgressChanged += (
                 sender,
                 args) => result = args;
+
+            // ReSharper restore UnusedParameter.Local
 
             // Act
             _sut.OnProgressChanged(new IntPtr(1));
