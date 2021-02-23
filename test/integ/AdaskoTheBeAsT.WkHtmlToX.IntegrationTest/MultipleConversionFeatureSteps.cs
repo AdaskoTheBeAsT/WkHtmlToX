@@ -18,8 +18,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
         private PdfConverter? _sut;
         private string? _htmlContent;
         private HtmlToPdfDocument? _htmlToPdfDocument;
-        private byte[]? content1;
-        private byte[]? content2;
+        private byte[]? _content1;
+        private byte[]? _content2;
 
         public MultipleConversionFeatureSteps()
         {
@@ -45,19 +45,19 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
         [When(@"I convert first time")]
         public async Task WhenIConvertFirstTime()
         {
-            content1 = await GenerateContentAsync().ConfigureAwait(false);
+            _content1 = await GenerateContentAsync().ConfigureAwait(false);
         }
 
         [When(@"I convert same html second time")]
         public async Task WhenIConvertSameHtmlSecondTime()
         {
-            content2 = await GenerateContentAsync().ConfigureAwait(false);
+            _content2 = await GenerateContentAsync().ConfigureAwait(false);
         }
 
         [Then(@"I should obtain files with same length")]
         public void ThenIShouldObtainFilesWithSameLength()
         {
-            content1.Should().HaveCount(content2?.Length ?? 0);
+            _content1.Should().HaveCount(_content2?.Length ?? 0);
         }
 
         private async Task<byte[]> GenerateContentAsync()
@@ -110,10 +110,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
                     await stream.DisposeAsync().ConfigureAwait(false);
                 }
 
-                if (ms != null)
-                {
-                    await ms.DisposeAsync().ConfigureAwait(false);
-                }
+                await ms.DisposeAsync().ConfigureAwait(false);
 #else
                 stream?.Dispose();
                 ms?.Dispose();
