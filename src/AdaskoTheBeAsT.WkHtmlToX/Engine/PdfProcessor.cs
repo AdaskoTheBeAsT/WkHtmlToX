@@ -73,7 +73,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
             }
         }
 
-        protected internal (IntPtr converterPtr, IntPtr globalSettingsPtr, List<IntPtr> objectSettingsPtrs) CreateConverter(
+        internal (IntPtr converterPtr, IntPtr globalSettingsPtr, List<IntPtr> objectSettingsPtrs) CreateConverter(
             IHtmlToPdfDocument document)
         {
             if (document is null)
@@ -101,6 +101,106 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
             }
 
             return (converter, globalSettings, objectSettingsPtr);
+        }
+
+        internal void AddContent(
+            IntPtr converter,
+            IntPtr objectSettings,
+            PdfObjectSettings pdfObjectSettings)
+        {
+            if (pdfObjectSettings is null)
+            {
+                throw new ArgumentNullException(nameof(pdfObjectSettings));
+            }
+
+            if (!string.IsNullOrEmpty(pdfObjectSettings.HtmlContent))
+            {
+                AddContentString(converter, objectSettings, pdfObjectSettings);
+            }
+            else if (pdfObjectSettings.HtmlContentByteArray != null)
+            {
+                AddContentByteArray(converter, objectSettings, pdfObjectSettings.HtmlContentByteArray);
+            }
+            else if (pdfObjectSettings.HtmlContentStream != null)
+            {
+                AddContentStream(converter, objectSettings, pdfObjectSettings.HtmlContentStream);
+            }
+            else
+            {
+                throw new HtmlContentEmptyException(
+                    $"pdfObjectSettings should have non-empty {nameof(PdfObjectSettings.HtmlContent)}"
+                    + $" or {nameof(PdfObjectSettings.HtmlContentByteArray)} or {nameof(PdfObjectSettings.HtmlContentStream)}");
+            }
+        }
+
+        internal void AddContentString(
+            IntPtr converter,
+            IntPtr objectSettings,
+            PdfObjectSettings pdfObjectSettings)
+        {
+            if (pdfObjectSettings is null)
+            {
+                throw new ArgumentNullException(nameof(pdfObjectSettings));
+            }
+
+            if (string.IsNullOrEmpty(pdfObjectSettings.HtmlContent))
+            {
+                throw new ArgumentException("Html content should not be empty");
+            }
+
+            var encoding = pdfObjectSettings.Encoding ?? Encoding.UTF8;
+            var length = encoding.GetByteCount(pdfObjectSettings.HtmlContent ?? string.Empty);
+            var buffer = ArrayPool<byte>.Shared.Rent(length + 1);
+            buffer[length] = 0;
+
+            try
+            {
+                encoding.GetBytes(
+                    pdfObjectSettings.HtmlContent ?? string.Empty, 0, pdfObjectSettings.HtmlContent!.Length, buffer, 0);
+                WkHtmlToPdfModule.AddObject(converter, objectSettings, buffer);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
+        }
+
+        internal void AddContentByteArray(
+            IntPtr converter,
+            IntPtr objectSettings,
+            byte[] htmlContentByteArray)
+        {
+            WkHtmlToPdfModule.AddObject(converter, objectSettings, htmlContentByteArray);
+        }
+
+        internal void AddContentStream(
+            IntPtr converter,
+            IntPtr objectSettings,
+            Stream htmlContentStream)
+        {
+            if (htmlContentStream is null)
+            {
+                throw new ArgumentNullException(nameof(htmlContentStream));
+            }
+
+            var length = htmlContentStream.Length;
+            if (length > int.MaxValue)
+            {
+                throw new HtmlContentStreamTooLargeException();
+            }
+
+            var len = (int)length;
+
+            var buffer = ArrayPool<byte>.Shared.Rent(len);
+            try
+            {
+                _ = htmlContentStream.Read(buffer, 0, len);
+                WkHtmlToPdfModule.AddObject(converter, objectSettings, buffer);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
 
         protected internal override Func<IntPtr, string, string?, int> GetApplySettingFunc(bool isGlobal)
@@ -150,105 +250,5 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
             IntPtr converter,
             IntCallback callback) =>
             WkHtmlToPdfModule.SetFinishedCallback(converter, callback);
-
-        protected internal void AddContent(
-            IntPtr converter,
-            IntPtr objectSettings,
-            PdfObjectSettings pdfObjectSettings)
-        {
-            if (pdfObjectSettings is null)
-            {
-                throw new ArgumentNullException(nameof(pdfObjectSettings));
-            }
-
-            if (!string.IsNullOrEmpty(pdfObjectSettings.HtmlContent))
-            {
-                AddContentString(converter, objectSettings, pdfObjectSettings);
-            }
-            else if (pdfObjectSettings.HtmlContentByteArray != null)
-            {
-                AddContentByteArray(converter, objectSettings, pdfObjectSettings.HtmlContentByteArray);
-            }
-            else if (pdfObjectSettings.HtmlContentStream != null)
-            {
-                AddContentStream(converter, objectSettings, pdfObjectSettings.HtmlContentStream);
-            }
-            else
-            {
-                throw new HtmlContentEmptyException(
-                    $"pdfObjectSettings should have non-empty {nameof(PdfObjectSettings.HtmlContent)}"
-                    + $" or {nameof(PdfObjectSettings.HtmlContentByteArray)} or {nameof(PdfObjectSettings.HtmlContentStream)}");
-            }
-        }
-
-        protected internal void AddContentString(
-            IntPtr converter,
-            IntPtr objectSettings,
-            PdfObjectSettings pdfObjectSettings)
-        {
-            if (pdfObjectSettings is null)
-            {
-                throw new ArgumentNullException(nameof(pdfObjectSettings));
-            }
-
-            if (string.IsNullOrEmpty(pdfObjectSettings.HtmlContent))
-            {
-                throw new ArgumentException("Html content should not be empty");
-            }
-
-            var encoding = pdfObjectSettings.Encoding ?? Encoding.UTF8;
-            var length = encoding.GetByteCount(pdfObjectSettings.HtmlContent ?? string.Empty);
-            var buffer = ArrayPool<byte>.Shared.Rent(length + 1);
-            buffer[length] = 0;
-
-            try
-            {
-                encoding.GetBytes(
-                    pdfObjectSettings.HtmlContent ?? string.Empty, 0, pdfObjectSettings.HtmlContent!.Length, buffer, 0);
-                WkHtmlToPdfModule.AddObject(converter, objectSettings, buffer);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
-        }
-
-        protected internal void AddContentByteArray(
-            IntPtr converter,
-            IntPtr objectSettings,
-            byte[] htmlContentByteArray)
-        {
-            WkHtmlToPdfModule.AddObject(converter, objectSettings, htmlContentByteArray);
-        }
-
-        protected internal void AddContentStream(
-            IntPtr converter,
-            IntPtr objectSettings,
-            Stream htmlContentStream)
-        {
-            if (htmlContentStream is null)
-            {
-                throw new ArgumentNullException(nameof(htmlContentStream));
-            }
-
-            var length = htmlContentStream.Length;
-            if (length > int.MaxValue)
-            {
-                throw new HtmlContentStreamTooLargeException();
-            }
-
-            var len = (int)length;
-
-            var buffer = ArrayPool<byte>.Shared.Rent(len);
-            try
-            {
-                _ = htmlContentStream.Read(buffer, 0, len);
-                WkHtmlToPdfModule.AddObject(converter, objectSettings, buffer);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
-        }
     }
 }
