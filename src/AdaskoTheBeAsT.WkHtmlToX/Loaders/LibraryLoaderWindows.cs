@@ -6,7 +6,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Native;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 {
-    public class LibraryLoaderWindows
+    internal class LibraryLoaderWindows
         : LibraryLoaderBase
     {
         private const string LibraryName = "wkhtmltox.dll";
@@ -87,8 +87,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 
                 _libraryHandle = null;
             }
-
-            base.Dispose(disposing);
         }
     }
 }

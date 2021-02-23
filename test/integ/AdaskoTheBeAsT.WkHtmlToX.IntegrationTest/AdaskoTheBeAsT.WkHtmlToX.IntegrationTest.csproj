@@ -21,6 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="HtmlSamples\Bug0002SameHtmlTwice.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="HtmlSamples\Large.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

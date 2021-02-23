@@ -45,8 +45,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApi
             }
 
             ConfigureIoC(app);
-            ConfigureAppStart(app);
-            ConfigureAppDispose(app, appLifetime);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

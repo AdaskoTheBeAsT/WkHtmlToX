@@ -1,6 +1,8 @@
+using System;
 using System.Web.Http;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.BusinessLogic;
+using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using Owin;
 using SimpleInjector;
 using SimpleInjector.Integration.WebApi;
@@ -29,7 +31,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
             container.RegisterSingleton<IHtmlGenerator, SmallHtmlGenerator>();
             container.RegisterSingleton<IHtmlToPdfDocumentGenerator, HtmlToPdfDocumentGenerator>();
-            container.RegisterSingleton<IHtmlToPdfAsyncConverter, SynchronizedPdfConverter>();
+            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
+            container.RegisterInstance(configuration);
+            container.RegisterSingleton<IWkHtmlToXEngine, WkHtmlToXEngine>();
+            container.RegisterSingleton<IPdfConverter, PdfConverter>();
+            container.RegisterInitializer<IWkHtmlToXEngine>(e => e.Initialize());
             container.RegisterWebApiControllers(httpConfiguration);
 
             httpConfiguration.DependencyResolver = new SimpleInjectorWebApiDependencyResolver(container);

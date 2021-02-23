@@ -23,7 +23,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
             var httpConfiguration = new HttpConfiguration();
 #pragma warning restore IDISP001 // Dispose created.
 #pragma warning restore CA2000 // Dispose objects before losing scope
-            ConfigureAppStart(app);
 
             ConfigureSwagger(httpConfiguration);
 
@@ -47,8 +46,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
             httpConfiguration.EnsureInitialized();
 
             app.UseStageMarker(PipelineStage.MapHandler);
-
-            ConfigureAppDispose(app);
         }
     }
 }

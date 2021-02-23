@@ -1,9 +1,9 @@
-using AdaskoTheBeAsT.WkHtmlToX.Loaders;
+using AdaskoTheBeAsT.WkHtmlToX.Engine;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
 {
-    public interface ILibraryLoaderFactory
+    internal interface ILibraryLoaderFactory
     {
-        ILibraryLoader Create(int platformId, WkHtmlToXRuntimeIdentifier? runtimeIdentifier);
+        ILibraryLoader Create(WkHtmlToXConfiguration wkHtmlToXConfiguration);
     }
 }

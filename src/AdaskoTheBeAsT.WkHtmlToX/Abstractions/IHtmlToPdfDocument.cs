@@ -4,7 +4,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Settings;
 namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
 {
     public interface IHtmlToPdfDocument
-        : IDocument
+        : ISettings
     {
         List<PdfObjectSettings> ObjectSettings { get; }
 

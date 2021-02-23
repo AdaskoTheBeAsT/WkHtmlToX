@@ -1,25 +1,22 @@
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.WorkItems
 {
-    internal sealed class PdfConvertWorkItem
+    public sealed class PdfConvertWorkItem
+        : ConvertWorkItemBase
     {
         public PdfConvertWorkItem(
             IHtmlToPdfDocument document,
             Func<int, Stream> streamFunc)
+            : base(streamFunc)
         {
             Document = document ?? throw new ArgumentNullException(nameof(document));
-            StreamFunc = streamFunc ?? throw new ArgumentNullException(nameof(streamFunc));
-            TaskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         public IHtmlToPdfDocument Document { get; }
 
-        public Func<int, Stream> StreamFunc { get; }
-
-        public TaskCompletionSource<bool> TaskCompletionSource { get; }
+        public override void Accept(IWorkItemVisitor visitor) => visitor.Visit(this);
     }
 }

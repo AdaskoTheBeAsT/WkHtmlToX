@@ -18,29 +18,31 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiCore.Controllers
         private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHtmlToPdfDocumentGenerator _htmlToPdfDocumentGenerator;
-        private readonly IHtmlToPdfAsyncConverter _htmlToPdfAsyncConverter;
+        private readonly IPdfConverter _pdfConverter;
 
         public ConvertToPdfController(
             IHttpContextAccessor httpContextAccessor,
             IHtmlToPdfDocumentGenerator htmlToPdfDocumentGenerator,
-            IHtmlToPdfAsyncConverter htmlToPdfAsyncConverter)
+            IPdfConverter pdfConverter)
         {
             _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
             _httpContextAccessor = httpContextAccessor;
             _htmlToPdfDocumentGenerator = htmlToPdfDocumentGenerator;
-            _htmlToPdfAsyncConverter = htmlToPdfAsyncConverter;
+            _pdfConverter = pdfConverter;
         }
 
         [HttpPost]
 #pragma warning disable SEC0019 // Missing AntiForgeryToken Attribute
 #pragma warning disable SEC0120 // Missing Authorization Attribute
+#pragma warning disable SCS0012 // Controller method is potentially vulnerable to authorization bypass.
         public async Task<IActionResult> Convert()
+#pragma warning restore SCS0012 // Controller method is potentially vulnerable to authorization bypass.
 #pragma warning restore SEC0120 // Missing Authorization Attribute
 #pragma warning restore SEC0019 // Missing AntiForgeryToken Attribute
         {
             var doc = _htmlToPdfDocumentGenerator.Generate();
             Stream? stream = null;
-            var converted = await _htmlToPdfAsyncConverter.ConvertAsync(
+            var converted = await _pdfConverter.ConvertAsync(
                 doc,
                 length =>
                 {

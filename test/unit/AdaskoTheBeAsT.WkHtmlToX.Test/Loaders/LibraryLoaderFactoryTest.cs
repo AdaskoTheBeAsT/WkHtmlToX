@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 using AdaskoTheBeAsT.WkHtmlToX.Loaders;
 using FluentAssertions;
@@ -72,9 +73,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders
         public void GetModuleShouldThrowWhenNotKnownPlatformIdPassed()
         {
             // Arrange
+            var wkHtmlToXConfiguration = new WkHtmlToXConfiguration(12345, null);
+
             // ReSharper disable once AssignmentIsFullyDiscarded
 #pragma warning disable IDISP004 // Don't ignore created IDisposable.
-            Action action = () => _ = _sut.Create(12345, null);
+            Action action = () => _ = _sut.Create(wkHtmlToXConfiguration);
 #pragma warning restore IDISP004 // Don't ignore created IDisposable.
 
             // Act & Assert
@@ -85,9 +88,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders
         public void GetModuleShouldThrowWhenLinuxPlatformIdAndNotKnownRuntimeIdentifierPassed()
         {
             // Arrange
+            var wkHtmlToXConfiguration = new WkHtmlToXConfiguration((int)PlatformID.Unix, null);
+
             // ReSharper disable once AssignmentIsFullyDiscarded
 #pragma warning disable IDISP004 // Don't ignore created IDisposable.
-            Action action = () => _ = _sut.Create((int)PlatformID.Unix, null);
+            Action action = () => _ = _sut.Create(wkHtmlToXConfiguration);
 #pragma warning restore IDISP004 // Don't ignore created IDisposable.
 
             // Act & Assert
@@ -101,8 +106,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders
             WkHtmlToXRuntimeIdentifier? runtimeIdentifier,
             Type type)
         {
+            // Arrange
+            var wkHtmlToXConfiguration = new WkHtmlToXConfiguration(platformId, runtimeIdentifier);
+
             // Act
-            using var result = _sut.Create(platformId, runtimeIdentifier);
+            using var result = _sut.Create(wkHtmlToXConfiguration);
 
             // Assert
             result.Should().BeOfType(type);

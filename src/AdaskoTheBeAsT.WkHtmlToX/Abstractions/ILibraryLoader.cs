@@ -2,7 +2,7 @@ using System;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
 {
-    public interface ILibraryLoader : IDisposable
+    internal interface ILibraryLoader : IDisposable
     {
         void Load();
 

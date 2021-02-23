@@ -6,7 +6,6 @@ using AdaskoTheBeAsT.WkHtmlToX.Utils;
 namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
 {
     internal interface IWkHtmlToXModule
-        : IDisposable
     {
         int Initialize(int useGraphics);
 

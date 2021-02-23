@@ -7,14 +7,14 @@ namespace AdaskoTheBeAsT.WkHtmlToX.EventDefinitions
     public class ProgressChangedEventArgs : EventArgs
     {
         public ProgressChangedEventArgs(
-            IDocument? document,
+            ISettings? document,
             string description)
         {
             Document = document;
             Description = description;
         }
 
-        public IDocument? Document { get; }
+        public ISettings? Document { get; }
 
         public string Description { get; }
     }

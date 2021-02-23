@@ -4,6 +4,7 @@ using System;
 namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
 {
     internal interface IWkHtmlToPdfModule
+        : IWkHtmlToXModule
     {
         IntPtr CreateObjectSettings();
 

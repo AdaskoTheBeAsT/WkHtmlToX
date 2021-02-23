@@ -3,7 +3,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Settings;
 namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
 {
     public interface IHtmlToImageDocument
-        : IDocument
+        : ISettings
     {
         ImageSettings ImageSettings { get; set; }
     }

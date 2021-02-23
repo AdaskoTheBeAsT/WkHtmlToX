@@ -2,7 +2,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 {
-    public class LibraryLoaderLinux
+    internal class LibraryLoaderLinux
         : LibraryLoaderPosix
     {
         private readonly WkHtmlToXRuntimeIdentifier _runtimeIdentifier;

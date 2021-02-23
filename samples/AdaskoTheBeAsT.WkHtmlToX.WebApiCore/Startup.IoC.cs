@@ -1,5 +1,7 @@
+using System;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.BusinessLogic;
+using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,7 +40,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiCore
         {
             _container.RegisterSingleton<IHtmlGenerator, SmallHtmlGenerator>();
             _container.RegisterSingleton<IHtmlToPdfDocumentGenerator, HtmlToPdfDocumentGenerator>();
-            _container.RegisterSingleton<IHtmlToPdfAsyncConverter, SynchronizedPdfConverter>();
+            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
+            _container.RegisterInstance(configuration);
+            _container.RegisterSingleton<IWkHtmlToXEngine, WkHtmlToXEngine>();
+            _container.RegisterSingleton<IPdfConverter, PdfConverter>();
+            _container.RegisterInitializer<IWkHtmlToXEngine>(e => e.Initialize());
         }
     }
 }

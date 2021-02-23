@@ -6,7 +6,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
 {
     public class PechkinPaperSize
     {
-        private static readonly Dictionary<PaperKind, PechkinPaperSize> Dictionary = new Dictionary<PaperKind, PechkinPaperSize>
+        private static readonly Dictionary<PaperKind, PechkinPaperSize> Dictionary = new()
         {
             // paper sizes from http://msdn.microsoft.com/en-us/library/system.drawing.printing.paperkind.aspx
             { PaperKind.Letter, new PechkinPaperSize("8.5in", "11in") },

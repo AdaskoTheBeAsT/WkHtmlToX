@@ -17,15 +17,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin.Controllers
     {
         private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager;
         private readonly IHtmlToPdfDocumentGenerator _htmlToPdfDocumentGenerator;
-        private readonly IHtmlToPdfAsyncConverter _htmlToPdfAsyncConverter;
+        private readonly IPdfConverter _pdfConverter;
 
         public ConvertToPdfController(
             IHtmlToPdfDocumentGenerator htmlToPdfDocumentGenerator,
-            IHtmlToPdfAsyncConverter htmlToPdfAsyncConverter)
+            IPdfConverter pdfConverter)
         {
             _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
             _htmlToPdfDocumentGenerator = htmlToPdfDocumentGenerator;
-            _htmlToPdfAsyncConverter = htmlToPdfAsyncConverter;
+            _pdfConverter = pdfConverter;
         }
 
         [HttpPost]
@@ -33,7 +33,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin.Controllers
         {
             var doc = _htmlToPdfDocumentGenerator.Generate();
             MemoryStream? stream = null;
-            _ = await _htmlToPdfAsyncConverter.ConvertAsync(
+            _ = await _pdfConverter.ConvertAsync(
                 doc,
                 length =>
                 {

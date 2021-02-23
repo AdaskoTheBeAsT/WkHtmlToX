@@ -2,6 +2,7 @@ using System;
 using System.Web.Http;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.BusinessLogic;
+using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using SimpleInjector;
 using SimpleInjector.Integration.WebApi;
 using SimpleInjector.Lifestyles;
@@ -28,7 +29,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiFull
             // Register your types, for instance using the scoped lifestyle:
             container.RegisterSingleton<IHtmlGenerator, SmallHtmlGenerator>();
             container.RegisterSingleton<IHtmlToPdfDocumentGenerator, HtmlToPdfDocumentGenerator>();
-            container.RegisterSingleton<IHtmlToPdfAsyncConverter, SynchronizedPdfConverter>();
+            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
+            container.RegisterInstance(configuration);
+            container.RegisterSingleton<IWkHtmlToXEngine, WkHtmlToXEngine>();
+            container.RegisterSingleton<IPdfConverter, PdfConverter>();
+            container.RegisterInitializer<IWkHtmlToXEngine>(e => e.Initialize());
 
             // This is an extension method from the integration package.
             container.RegisterWebApiControllers(GlobalConfiguration.Configuration);

@@ -1,20 +1,22 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.BusinessLogic;
-using AdaskoTheBeAsT.WkHtmlToX.Loaders;
+using AdaskoTheBeAsT.WkHtmlToX.Engine;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.ConsoleApp
 {
     internal static class Program
     {
-        private static void Main()
+        private static async Task Main()
         {
-            var libFactory = new LibraryLoaderFactory();
             var htmlToPdfGenerator = new HtmlToPdfDocumentGenerator(new SmallHtmlGenerator());
-            using (var libraryLoader = libFactory.Create((int)Environment.OSVersion.Platform, null))
+            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
+            using (var engine = new WkHtmlToXEngine(configuration))
             {
-                libraryLoader.Load();
+                engine.Initialize();
                 var doc = htmlToPdfGenerator.Generate();
 
                 if (!Directory.Exists("files"))
@@ -22,15 +24,17 @@ namespace AdaskoTheBeAsT.WkHtmlToX.ConsoleApp
                     Directory.CreateDirectory("files");
                 }
 
-#pragma warning disable CC0022 // Should dispose object
-                using var converter = new BasicPdfConverter();
+                var converter = new PdfConverter(engine);
 #pragma warning disable SEC0112 // Path Tampering Unvalidated File Path
+#pragma warning disable SCS0018 // Potential Path Traversal vulnerability was found where '{0}' in '{1}' may be tainted by user-controlled data from '{2}' in method '{3}'.
+#pragma warning disable CC0022 // Should dispose object
                 using var stream = new FileStream(
                     Path.Combine("Files", $"{DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture)}.pdf"),
                     FileMode.Create);
-#pragma warning restore SEC0112 // Path Tampering Unvalidated File Path
 #pragma warning restore CC0022 // Should dispose object
-                var converted = converter.Convert(doc, _ => stream);
+#pragma warning restore SCS0018 // Potential Path Traversal vulnerability was found where '{0}' in '{1}' may be tainted by user-controlled data from '{2}' in method '{3}'.
+#pragma warning restore SEC0112 // Path Tampering Unvalidated File Path
+                var converted = await converter.ConvertAsync(doc, _ => stream, CancellationToken.None).ConfigureAwait(false);
                 Console.WriteLine(converted);
             }
 

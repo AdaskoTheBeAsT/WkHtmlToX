@@ -8,7 +8,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Native;
 namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 {
     [ExcludeFromCodeCoverage]
-    public abstract class LibraryLoaderPosix
+    internal abstract class LibraryLoaderPosix
         : LibraryLoaderBase
     {
         private IntPtr _libraryHandle;
@@ -86,8 +86,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
             {
                 Release();
             }
-
-            base.Dispose(disposing);
         }
 
         protected abstract string GetLibraryName();

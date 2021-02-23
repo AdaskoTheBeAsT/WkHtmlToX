@@ -98,14 +98,14 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
 
         public Encoding? Encoding { get; set; }
 
-        public WebSettings WebSettings { get; set; } = new WebSettings();
+        public WebSettings WebSettings { get; set; } = new();
 
         [WkHtml("header")]
-        public SectionSettings HeaderSettings { get; set; } = new SectionSettings();
+        public SectionSettings HeaderSettings { get; set; } = new();
 
         [WkHtml("footer")]
-        public SectionSettings FooterSettings { get; set; } = new SectionSettings();
+        public SectionSettings FooterSettings { get; set; } = new();
 
-        public LoadSettings LoadSettings { get; set; } = new LoadSettings();
+        public LoadSettings LoadSettings { get; set; } = new();
     }
 }

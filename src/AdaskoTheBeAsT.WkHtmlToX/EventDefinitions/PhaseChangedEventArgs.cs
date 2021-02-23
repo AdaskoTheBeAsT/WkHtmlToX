@@ -7,7 +7,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.EventDefinitions
     public class PhaseChangedEventArgs : EventArgs
     {
         public PhaseChangedEventArgs(
-            IDocument? document,
+            ISettings? document,
             int phaseCount,
             int currentPhase,
             string description)
@@ -18,7 +18,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.EventDefinitions
             Description = description;
         }
 
-        public IDocument? Document { get; }
+        public ISettings? Document { get; }
 
         public int PhaseCount { get; }
 

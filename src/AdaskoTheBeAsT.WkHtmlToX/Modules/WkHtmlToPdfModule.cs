@@ -5,24 +5,104 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
+using AdaskoTheBeAsT.WkHtmlToX.Native;
+using AdaskoTheBeAsT.WkHtmlToX.Utils;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Modules
 {
     [ExcludeFromCodeCoverage]
-    internal abstract class WkHtmlToPdfModule
-        : IWkHtmlToPdfModule
+    internal sealed class WkHtmlToPdfModule
+        : WkHtmlToXModule,
+            IWkHtmlToPdfModule
     {
-        protected const int MaxBufferSize = 2048;
+        public override int Initialize(
+            int useGraphics) =>
+            NativeMethodsPdf.wkhtmltopdf_init(useGraphics);
 
-        public abstract IntPtr CreateObjectSettings();
+        public override int Terminate() => NativeMethodsPdf.wkhtmltopdf_deinit();
 
-        public abstract int DestroyObjectSetting(
-            IntPtr settings);
+        public override int ExtendedQt() => NativeMethodsPdf.wkhtmltopdf_extended_qt();
 
-        public abstract int SetObjectSetting(
+        public override IntPtr CreateGlobalSettings() => NativeMethodsPdf.wkhtmltopdf_create_global_settings();
+
+        public override int DestroyGlobalSetting(
+            IntPtr settings) =>
+            NativeMethodsPdf.wkhtmltopdf_destroy_global_settings(settings);
+
+        public override int SetGlobalSetting(
             IntPtr settings,
             string name,
-            string? value);
+            string? value) => NativeMethodsPdf.wkhtmltopdf_set_global_setting(settings, name, value);
+
+        public override IntPtr CreateConverter(
+            IntPtr globalSettings) =>
+            NativeMethodsPdf.wkhtmltopdf_create_converter(globalSettings);
+
+        public override void DestroyConverter(
+            IntPtr converter) =>
+            NativeMethodsPdf.wkhtmltopdf_destroy_converter(converter);
+
+        public override int SetWarningCallback(
+            IntPtr converter,
+            StringCallback callback)
+        {
+            return NativeMethodsPdf.wkhtmltopdf_set_warning_callback(converter, callback);
+        }
+
+        public override int SetErrorCallback(
+            IntPtr converter,
+            StringCallback callback)
+        {
+            return NativeMethodsPdf.wkhtmltopdf_set_error_callback(converter, callback);
+        }
+
+        public override int SetPhaseChangedCallback(
+            IntPtr converter,
+            VoidCallback callback)
+        {
+            return NativeMethodsPdf.wkhtmltopdf_set_phase_changed_callback(converter, callback);
+        }
+
+        public override int SetProgressChangedCallback(
+            IntPtr converter,
+            VoidCallback callback)
+        {
+            return NativeMethodsPdf.wkhtmltopdf_set_progress_changed_callback(converter, callback);
+        }
+
+        public override int SetFinishedCallback(
+            IntPtr converter,
+            IntCallback callback)
+        {
+            return NativeMethodsPdf.wkhtmltopdf_set_finished_callback(converter, callback);
+        }
+
+        public override bool Convert(
+            IntPtr converter) =>
+            NativeMethodsPdf.wkhtmltopdf_convert(converter);
+
+        public override int GetCurrentPhase(
+            IntPtr converter) =>
+            NativeMethodsPdf.wkhtmltopdf_current_phase(converter);
+
+        public override int GetPhaseCount(
+            IntPtr converter) =>
+            NativeMethodsPdf.wkhtmltopdf_phase_count(converter);
+
+        public override int GetHttpErrorCode(
+            IntPtr converter) =>
+            NativeMethodsPdf.wkhtmltopdf_http_error_code(converter);
+
+        public IntPtr CreateObjectSettings() => NativeMethodsPdf.wkhtmltopdf_create_object_settings();
+
+        public int DestroyObjectSetting(
+            IntPtr settings) =>
+            NativeMethodsPdf.wkhtmltopdf_destroy_object_settings(settings);
+
+        public int SetObjectSetting(
+            IntPtr settings,
+            string name,
+            string? value) => NativeMethodsPdf.wkhtmltopdf_set_object_setting(settings, name, value);
 
         public string GetObjectSetting(
             IntPtr settings,
@@ -51,19 +131,66 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             }
         }
 
-        public abstract void AddObject(
+        public void AddObject(
             IntPtr converter,
             IntPtr objectSettings,
-            byte[] data);
+            byte[] data) =>
+            NativeMethodsPdf.wkhtmltopdf_add_object(converter, objectSettings, data);
 
-        public abstract void AddObject(
+        public void AddObject(
             IntPtr converter,
             IntPtr objectSettings,
-            string data);
+            string data) =>
+            NativeMethodsPdf.wkhtmltopdf_add_object(converter, objectSettings, data);
 
-        protected abstract int GetObjectSettingImpl(
+        protected override int GetGlobalSettingImpl(
             IntPtr settings,
             string name,
-            byte[] buffer);
+            byte[] buffer)
+        {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
+            return NativeMethodsPdf.wkhtmltopdf_get_global_setting(
+                settings,
+                name,
+                buffer,
+                buffer.Length);
+        }
+
+        protected override int GetOutputImpl(
+            IntPtr converter,
+            out IntPtr data) =>
+            NativeMethodsPdf.wkhtmltopdf_get_output(converter, out data);
+
+        protected override IntPtr GetLibraryVersionImpl() => NativeMethodsPdf.wkhtmltopdf_version();
+
+        protected override IntPtr GetPhaseDescriptionImpl(
+            IntPtr converter,
+            int phase) =>
+            NativeMethodsPdf.wkhtmltopdf_phase_description(converter, phase);
+
+        protected override IntPtr GetProgressStringImpl(
+            IntPtr converter) =>
+            NativeMethodsPdf.wkhtmltopdf_progress_string(converter);
+
+        private int GetObjectSettingImpl(
+            IntPtr settings,
+            string name,
+            byte[] buffer)
+        {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
+            return NativeMethodsPdf.wkhtmltopdf_get_object_setting(
+                settings,
+                name,
+                buffer,
+                buffer.Length);
+        }
     }
 }

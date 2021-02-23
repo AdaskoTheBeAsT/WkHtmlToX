@@ -6,7 +6,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 {
 #pragma warning disable IDISP025 // Class with no virtual dispose method should be sealed.
-    public abstract class LibraryLoaderBase
+    internal abstract class LibraryLoaderBase
         : ILibraryLoader
     {
         private const string NativeFolder = "native";
@@ -49,10 +49,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
             return Path.Combine(rootDirectory, libraryName);
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            // no op
-        }
+        protected abstract void Dispose(bool disposing);
     }
 #pragma warning restore IDISP025 // Class with no virtual dispose method should be sealed.
 }

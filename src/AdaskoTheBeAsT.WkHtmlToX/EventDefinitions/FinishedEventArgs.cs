@@ -7,14 +7,14 @@ namespace AdaskoTheBeAsT.WkHtmlToX.EventDefinitions
     public class FinishedEventArgs : EventArgs
     {
         public FinishedEventArgs(
-            IDocument? document,
+            ISettings? document,
             bool success)
         {
             Document = document;
             Success = success;
         }
 
-        public IDocument? Document { get; }
+        public ISettings? Document { get; }
 
         public bool Success { get; }
     }

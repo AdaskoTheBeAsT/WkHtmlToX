@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -16,19 +15,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
     internal abstract class WkHtmlToXModule
         : IWkHtmlToXModule
     {
-        protected const int MaxCopyBufferSize = 81920;
         protected const int MaxBufferSize = 2048;
-
-        // used to maintain a reference to delegates to prevent them being garbage collected...
-        // ReSharper disable once CollectionNeverQueried.Local
-#pragma warning disable SA1401 // Fields should be private
-#pragma warning disable CA1051 // Do not declare visible instance fields
-
-        // ReSharper disable once CollectionNeverQueried.Global
-        // ReSharper disable once InconsistentNaming
-        protected readonly List<object> _delegates = new List<object>();
-#pragma warning restore CA1051 // Do not declare visible instance fields
-#pragma warning restore SA1401 // Fields should be private
+        private const int MaxCopyBufferSize = 81920;
 
         public abstract int Initialize(
             int useGraphics);
@@ -176,21 +164,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             }
 
             stream.Flush();
-        }
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(
-            bool disposing)
-        {
-            if (disposing)
-            {
-                _delegates.Clear();
-            }
         }
 
         protected abstract int GetGlobalSettingImpl(

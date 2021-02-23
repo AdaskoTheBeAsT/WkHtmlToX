@@ -83,7 +83,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         [WkHtml("useCompression")]
         public bool? UseCompression { get; set; }
 
-        public MarginSettings Margins { get; set; } = new MarginSettings();
+        public MarginSettings Margins { get; set; } = new();
 
         /// <summary>
         /// The maximal DPI to use for images in the pdf document. Default = 600.

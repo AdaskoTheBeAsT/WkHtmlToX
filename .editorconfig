@@ -1,53 +1,54 @@
-root=true
+root = true
 # To learn more about .editorconfig see https://aka.ms/editorconfigdocs
 ###############################
 # Core EditorConfig Options   #
 ###############################
 # All files
 [*]
-indent_style=space
-insert_final_newline=true
-charset=utf-8
+indent_style = space
+insert_final_newline = true
+charset = utf-8
 
 # ReSharper properties
-resharper_csharp_wrap_after_declaration_lpar=true
-resharper_csharp_wrap_after_invocation_lpar=true
-resharper_csharp_wrap_before_binary_opsign=true
-resharper_csharp_wrap_chained_method_calls=chop_if_long
-resharper_csharp_wrap_extends_list_style=chop_always
-resharper_csharp_wrap_parameters_style=chop_always
-resharper_force_chop_compound_do_expression=true
-resharper_force_chop_compound_if_expression=true
-resharper_force_chop_compound_while_expression=true
-resharper_keep_existing_embedded_block_arrangement=false
-resharper_keep_existing_enum_arrangement=false
-resharper_keep_existing_expr_member_arrangement=false
-resharper_keep_existing_switch_expression_arrangement=false
-resharper_place_constructor_initializer_on_same_line=false
-resharper_place_simple_initializer_on_single_line=false
-resharper_place_type_constraints_on_same_line=false
-resharper_wrap_array_initializer_style=chop_always
-resharper_wrap_before_extends_colon=true
-resharper_wrap_chained_binary_expressions=chop_if_long
-resharper_wrap_multiple_type_parameter_constraints_style=chop_always
-resharper_wrap_object_and_collection_initializer_style=chop_always
+resharper_csharp_wrap_after_declaration_lpar = true
+resharper_csharp_wrap_after_invocation_lpar = true
+resharper_csharp_wrap_before_binary_opsign = true
+resharper_csharp_wrap_chained_method_calls = chop_if_long
+resharper_csharp_wrap_extends_list_style = chop_always
+resharper_csharp_wrap_parameters_style = chop_if_long
+resharper_force_chop_compound_do_expression = true
+resharper_force_chop_compound_if_expression = true
+resharper_force_chop_compound_while_expression = true
+resharper_keep_existing_embedded_block_arrangement = false
+resharper_keep_existing_enum_arrangement = false
+resharper_keep_existing_expr_member_arrangement = false
+resharper_keep_existing_switch_expression_arrangement = false
+resharper_max_formal_parameters_on_line = 1
+resharper_place_constructor_initializer_on_same_line = false
+resharper_place_simple_initializer_on_single_line = false
+resharper_place_type_constraints_on_same_line = false
+resharper_wrap_array_initializer_style = chop_always
+resharper_wrap_before_extends_colon = true
+resharper_wrap_chained_binary_expressions = chop_if_long
+resharper_wrap_multiple_type_parameter_constraints_style = chop_always
+resharper_wrap_object_and_collection_initializer_style = chop_always
 
 # csproj files
 [*.csproj]
-indent_size=2
+indent_size = 2
 [*.props]
-indent_size=2
+indent_size = 2
 [*.targets]
-indent_size=2
+indent_size = 2
 # config files
 [*.config]
-indent_size=2
+indent_size = 2
 # json files
 [*.json]
-indent_size=2
+indent_size = 2
 # Code files
 [*.{cs,csx,vb,vbx}]
-indent_size=4
+indent_size = 4
 
 ###############################
 # .NET Coding Conventions     #
@@ -58,14 +59,14 @@ dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = true
 
 # this. preferences
-dotnet_style_qualification_for_field=false:silent
-dotnet_style_qualification_for_property=false:silent
-dotnet_style_qualification_for_method=false:silent
-dotnet_style_qualification_for_event=false:silent
+dotnet_style_qualification_for_field = false:silent
+dotnet_style_qualification_for_property = false:silent
+dotnet_style_qualification_for_method = false:silent
+dotnet_style_qualification_for_event = false:silent
 
 # Language keywords vs BCL types preferences
-dotnet_style_predefined_type_for_locals_parameters_members=true:silent
-dotnet_style_predefined_type_for_member_access=true:silent
+dotnet_style_predefined_type_for_locals_parameters_members = true:silent
+dotnet_style_predefined_type_for_member_access = true:silent
 
 # Parentheses preferences
 dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:silent
@@ -74,7 +75,7 @@ dotnet_style_parentheses_in_other_operators = never_if_unnecessary:silent
 dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:silent
 
 # Modifier preferences
-dotnet_style_require_accessibility_modifiers=for_non_interface_members:silent
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:silent
 
 # Expression-level preferences
 csharp_style_deconstructed_variable_declaration = true:suggestion
@@ -124,12 +125,12 @@ csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
 csharp_style_prefer_switch_expression = true:suggestion
 
 # Null-checking preferences
-csharp_style_throw_expression=true:suggestion
-csharp_style_conditional_delegate_call=true:suggestion
+csharp_style_throw_expression = true:suggestion
+csharp_style_conditional_delegate_call = true:suggestion
 
 # Modifier preferences
 csharp_prefer_static_local_function = true:suggestion
-csharp_preferred_modifier_order=public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:suggestion
+csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:suggestion
 
 # Expression-level preferences
 csharp_prefer_simple_default_expression = true:suggestion
@@ -207,17 +208,17 @@ dotnet_naming_rule.non_field_members_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.non_field_members_should_be_pascal_case.symbols = non_field_members
 dotnet_naming_rule.non_field_members_should_be_pascal_case.style = pascal_case
 
-dotnet_naming_rule.constant_fields_should_be_pascal_case.severity=suggestion
-dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols=constant_fields
-dotnet_naming_rule.constant_fields_should_be_pascal_case.style=pascal_case_style
+dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = suggestion
+dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols = constant_fields
+dotnet_naming_rule.constant_fields_should_be_pascal_case.style = pascal_case_style
 
 
 
 # Symbol specifications
 
-dotnet_naming_symbols.constant_fields.applicable_kinds=field
-dotnet_naming_symbols.constant_fields.applicable_accessibilities=*
-dotnet_naming_symbols.constant_fields.required_modifiers=const
+dotnet_naming_symbols.constant_fields.applicable_kinds = field
+dotnet_naming_symbols.constant_fields.applicable_accessibilities = *
+dotnet_naming_symbols.constant_fields.required_modifiers = const
 
 dotnet_naming_symbols.interface.applicable_kinds = interface
 dotnet_naming_symbols.interface.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
@@ -235,7 +236,7 @@ dotnet_naming_symbols.non_field_members.required_modifiers =
 # Naming Conventions          #
 ###############################
 # Style Definitions
-dotnet_naming_style.pascal_case_style.capitalization=pascal_case
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 
 # Naming styles
 

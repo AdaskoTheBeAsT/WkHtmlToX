@@ -80,8 +80,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         [WkHtml("quality")]
         public string? Quality { get; set; }
 
-        public LoadSettings LoadSettings { get; set; } = new LoadSettings();
+        public LoadSettings LoadSettings { get; set; } = new();
 
-        public WebSettings WebSettings { get; set; } = new WebSettings();
+        public WebSettings WebSettings { get; set; } = new();
     }
 }

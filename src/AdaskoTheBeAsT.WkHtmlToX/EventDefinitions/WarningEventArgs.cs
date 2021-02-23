@@ -7,14 +7,14 @@ namespace AdaskoTheBeAsT.WkHtmlToX.EventDefinitions
     public class WarningEventArgs : EventArgs
     {
         public WarningEventArgs(
-            IDocument? document,
+            ISettings? document,
             string message)
         {
             Document = document;
             Message = message;
         }
 
-        public IDocument? Document { get; }
+        public ISettings? Document { get; }
 
         public string Message { get; }
     }

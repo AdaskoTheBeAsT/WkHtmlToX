@@ -31,22 +31,14 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiCore
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(
             IApplicationBuilder app,
-            IWebHostEnvironment env,
-            IHostApplicationLifetime appLifetime)
+            IWebHostEnvironment env)
         {
             if (app is null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
 
-            if (appLifetime is null)
-            {
-                throw new ArgumentNullException(nameof(appLifetime));
-            }
-
             ConfigureIoC(app);
-            ConfigureAppStart(app);
-            ConfigureAppDispose(app, appLifetime);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
