@@ -5,7 +5,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 {
-    internal class LibraryLoaderFactory
+    internal sealed class LibraryLoaderFactory
         : ILibraryLoaderFactory
     {
         public ILibraryLoader Create(

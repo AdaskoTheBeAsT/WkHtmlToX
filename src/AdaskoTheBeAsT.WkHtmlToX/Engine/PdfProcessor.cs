@@ -10,21 +10,19 @@ using AdaskoTheBeAsT.WkHtmlToX.Utils;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Engine
 {
-    internal class PdfProcessor
+    internal sealed class PdfProcessor
         : ProcessorBase,
             IPdfProcessor
     {
-        private readonly IWkHtmlToPdfModule _wkHtmlToPdfModule;
-
         public PdfProcessor(
             WkHtmlToXConfiguration configuration,
             IWkHtmlToPdfModule wkHtmlToPdfModule)
             : base(configuration)
         {
-            _wkHtmlToPdfModule = wkHtmlToPdfModule ?? throw new ArgumentNullException(nameof(wkHtmlToPdfModule));
+            WkHtmlToPdfModule = wkHtmlToPdfModule ?? throw new ArgumentNullException(nameof(wkHtmlToPdfModule));
         }
 
-        public IWkHtmlToPdfModule WkHtmlToPdfModule => _wkHtmlToPdfModule;
+        public IWkHtmlToPdfModule WkHtmlToPdfModule { get; }
 
         public bool Convert(IHtmlToPdfDocument document, Func<int, Stream> createStreamFunc)
         {
@@ -52,11 +50,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
 
             try
             {
-                var converted = _wkHtmlToPdfModule.Convert(converterPtr);
+                var converted = WkHtmlToPdfModule.Convert(converterPtr);
 
                 if (converted)
                 {
-                    _wkHtmlToPdfModule.GetOutput(converterPtr, createStreamFunc);
+                    WkHtmlToPdfModule.GetOutput(converterPtr, createStreamFunc);
                 }
 
                 return converted;
@@ -65,11 +63,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
             {
                 for (int i = objectSettingsPtrs.Count - 1; i >= 0; i--)
                 {
-                    _wkHtmlToPdfModule.DestroyObjectSetting(objectSettingsPtrs[i]);
+                    WkHtmlToPdfModule.DestroyObjectSetting(objectSettingsPtrs[i]);
                 }
 
-                _wkHtmlToPdfModule.DestroyGlobalSetting(globalSettingsPtr);
-                _wkHtmlToPdfModule.DestroyConverter(converterPtr);
+                WkHtmlToPdfModule.DestroyGlobalSetting(globalSettingsPtr);
+                WkHtmlToPdfModule.DestroyConverter(converterPtr);
 
                 ProcessingDocument = null;
             }
@@ -83,9 +81,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
                 throw new ArgumentNullException(nameof(document));
             }
 
-            var globalSettings = _wkHtmlToPdfModule.CreateGlobalSettings();
+            var globalSettings = WkHtmlToPdfModule.CreateGlobalSettings();
             ApplyConfig(globalSettings, document.GlobalSettings, isGlobal: true);
-            var converter = _wkHtmlToPdfModule.CreateConverter(globalSettings);
+            var converter = WkHtmlToPdfModule.CreateConverter(globalSettings);
             var objectSettingsPtr = new List<IntPtr>();
             foreach (var obj in document.ObjectSettings)
             {
@@ -94,7 +92,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
                     continue;
                 }
 
-                var objectSettings = _wkHtmlToPdfModule.CreateObjectSettings();
+                var objectSettings = WkHtmlToPdfModule.CreateObjectSettings();
                 objectSettingsPtr.Add(objectSettings);
 
                 ApplyConfig(objectSettings, obj, isGlobal: false);
@@ -109,49 +107,49 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
         {
             if (isGlobal)
             {
-                return _wkHtmlToPdfModule.SetGlobalSetting;
+                return WkHtmlToPdfModule.SetGlobalSetting;
             }
 
-            return _wkHtmlToPdfModule.SetObjectSetting;
+            return WkHtmlToPdfModule.SetObjectSetting;
         }
 
         protected internal override int GetCurrentPhase(IntPtr converter) =>
-            _wkHtmlToPdfModule.GetCurrentPhase(converter);
+            WkHtmlToPdfModule.GetCurrentPhase(converter);
 
-        protected internal override int GetPhaseCount(IntPtr converter) => _wkHtmlToPdfModule.GetPhaseCount(converter);
+        protected internal override int GetPhaseCount(IntPtr converter) => WkHtmlToPdfModule.GetPhaseCount(converter);
 
         protected internal override string GetPhaseDescription(
             IntPtr converter,
             int phase) =>
-            _wkHtmlToPdfModule.GetPhaseDescription(converter, phase);
+            WkHtmlToPdfModule.GetPhaseDescription(converter, phase);
 
         protected internal override string GetProgressDescription(IntPtr converter) =>
-            _wkHtmlToPdfModule.GetProgressDescription(converter);
+            WkHtmlToPdfModule.GetProgressDescription(converter);
 
         protected internal override int SetWarningCallback(
             IntPtr converter,
             StringCallback callback) =>
-            _wkHtmlToPdfModule.SetWarningCallback(converter, callback);
+            WkHtmlToPdfModule.SetWarningCallback(converter, callback);
 
         protected internal override int SetErrorCallback(
             IntPtr converter,
             StringCallback callback) =>
-            _wkHtmlToPdfModule.SetErrorCallback(converter, callback);
+            WkHtmlToPdfModule.SetErrorCallback(converter, callback);
 
         protected internal override int SetPhaseChangedCallback(
             IntPtr converter,
             VoidCallback callback) =>
-            _wkHtmlToPdfModule.SetPhaseChangedCallback(converter, callback);
+            WkHtmlToPdfModule.SetPhaseChangedCallback(converter, callback);
 
         protected internal override int SetProgressChangedCallback(
             IntPtr converter,
             VoidCallback callback) =>
-            _wkHtmlToPdfModule.SetProgressChangedCallback(converter, callback);
+            WkHtmlToPdfModule.SetProgressChangedCallback(converter, callback);
 
         protected internal override int SetFinishedCallback(
             IntPtr converter,
             IntCallback callback) =>
-            _wkHtmlToPdfModule.SetFinishedCallback(converter, callback);
+            WkHtmlToPdfModule.SetFinishedCallback(converter, callback);
 
         protected internal void AddContent(
             IntPtr converter,
@@ -207,7 +205,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
             {
                 encoding.GetBytes(
                     pdfObjectSettings.HtmlContent ?? string.Empty, 0, pdfObjectSettings.HtmlContent!.Length, buffer, 0);
-                _wkHtmlToPdfModule.AddObject(converter, objectSettings, buffer);
+                WkHtmlToPdfModule.AddObject(converter, objectSettings, buffer);
             }
             finally
             {
@@ -220,7 +218,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
             IntPtr objectSettings,
             byte[] htmlContentByteArray)
         {
-            _wkHtmlToPdfModule.AddObject(converter, objectSettings, htmlContentByteArray);
+            WkHtmlToPdfModule.AddObject(converter, objectSettings, htmlContentByteArray);
         }
 
         protected internal void AddContentStream(
@@ -245,7 +243,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
             try
             {
                 _ = htmlContentStream.Read(buffer, 0, len);
-                _wkHtmlToPdfModule.AddObject(converter, objectSettings, buffer);
+                WkHtmlToPdfModule.AddObject(converter, objectSettings, buffer);
             }
             finally
             {

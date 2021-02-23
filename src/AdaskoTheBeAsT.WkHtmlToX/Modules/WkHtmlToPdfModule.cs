@@ -111,10 +111,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
             var buffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             try
             {
-                var retVal = GetObjectSettingImpl(
+                var retVal = NativeMethodsPdf.wkhtmltopdf_get_object_setting(
                     settings,
                     name,
-                    buffer);
+                    buffer,
+                    buffer.Length);
 
                 if (retVal != 1)
                 {
@@ -175,22 +176,5 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Modules
         protected override IntPtr GetProgressStringImpl(
             IntPtr converter) =>
             NativeMethodsPdf.wkhtmltopdf_progress_string(converter);
-
-        private int GetObjectSettingImpl(
-            IntPtr settings,
-            string name,
-            byte[] buffer)
-        {
-            if (buffer == null)
-            {
-                throw new ArgumentNullException(nameof(buffer));
-            }
-
-            return NativeMethodsPdf.wkhtmltopdf_get_object_setting(
-                settings,
-                name,
-                buffer,
-                buffer.Length);
-        }
     }
 }
