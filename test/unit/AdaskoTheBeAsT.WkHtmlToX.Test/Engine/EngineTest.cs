@@ -195,8 +195,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             _imageProcessorMock
                 .Setup(p => p.Convert(It.IsAny<HtmlToImageDocument>(), It.IsAny<Func<int, Stream>>()))
                 .Returns(true);
-            var pdfConvertWorkItem = new PdfConvertWorkItem(new HtmlToPdfDocument(), i => Stream.Null);
-            var imageConvertWorkItem = new ImageConvertWorkItem(new HtmlToImageDocument(), i => Stream.Null);
+            var pdfConvertWorkItem = new PdfConvertWorkItem(new HtmlToPdfDocument(), _ => Stream.Null);
+            var imageConvertWorkItem = new ImageConvertWorkItem(new HtmlToImageDocument(), _ => Stream.Null);
 
             // Act
             _sut.AddConvertWorkItem(pdfConvertWorkItem, CancellationToken.None);
@@ -237,8 +237,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             _imageProcessorMock
                 .Setup(p => p.Convert(It.IsAny<HtmlToImageDocument>(), It.IsAny<Func<int, Stream>>()))
                 .Throws<ArgumentOutOfRangeException>();
-            var pdfConvertWorkItem = new PdfConvertWorkItem(new HtmlToPdfDocument(), i => Stream.Null);
-            var imageConvertWorkItem = new ImageConvertWorkItem(new HtmlToImageDocument(), i => Stream.Null);
+            var pdfConvertWorkItem = new PdfConvertWorkItem(new HtmlToPdfDocument(), _ => Stream.Null);
+            var imageConvertWorkItem = new ImageConvertWorkItem(new HtmlToImageDocument(), _ => Stream.Null);
 
             // Act
             _sut.AddConvertWorkItem(pdfConvertWorkItem, CancellationToken.None);
