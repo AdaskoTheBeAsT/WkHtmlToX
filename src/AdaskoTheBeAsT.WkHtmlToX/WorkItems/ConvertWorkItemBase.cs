@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using AdaskoTheBeAsT.WkHtmlToX.EventDefinitions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.WorkItems
 {
@@ -12,8 +11,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WorkItems
             StreamFunc = streamFunc ?? throw new ArgumentNullException(nameof(streamFunc));
             TaskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
-
-        public Action<PhaseChangedEventArgs>? PhaseChanged { get; set; }
 
         public TaskCompletionSource<bool> TaskCompletionSource { get; }
 

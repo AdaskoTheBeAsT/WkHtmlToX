@@ -6,23 +6,23 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Exceptions
 {
     [ExcludeFromCodeCoverage]
     [Serializable]
-    public class LibraryLoaderFactoryIsNullException : Exception
+    public class ImageModuleInitializationException : Exception
     {
-        public LibraryLoaderFactoryIsNullException()
+        public ImageModuleInitializationException()
         {
         }
 
-        public LibraryLoaderFactoryIsNullException(string message)
+        public ImageModuleInitializationException(string message)
             : base(message)
         {
         }
 
-        public LibraryLoaderFactoryIsNullException(string message, Exception innerException)
+        public ImageModuleInitializationException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
 
-        protected LibraryLoaderFactoryIsNullException(SerializationInfo info, StreamingContext context)
+        protected ImageModuleInitializationException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }

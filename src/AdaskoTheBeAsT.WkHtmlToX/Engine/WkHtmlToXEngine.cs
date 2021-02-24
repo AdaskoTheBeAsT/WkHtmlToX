@@ -17,7 +17,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
         private static readonly object SyncLock = new();
         private readonly BlockingCollection<ConvertWorkItemBase> _blockingCollection = new();
         private readonly CancellationTokenSource _cancellationTokenSource = new();
-        private readonly ILibraryLoaderFactory? _libraryLoaderFactory;
+        private readonly ILibraryLoaderFactory _libraryLoaderFactory;
         private readonly IPdfProcessor _pdfProcessor;
         private readonly IImageProcessor _imageProcessor;
         private readonly WkHtmlToXConfiguration? _configuration;
@@ -42,9 +42,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
             IImageProcessor imageProcessor)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _libraryLoaderFactory = libraryLoaderFactory;
-            _pdfProcessor = pdfProcessor;
-            _imageProcessor = imageProcessor;
+            _libraryLoaderFactory = libraryLoaderFactory ?? throw new ArgumentNullException(nameof(libraryLoaderFactory));
+            _pdfProcessor = pdfProcessor ?? throw new ArgumentNullException(nameof(pdfProcessor));
+            _imageProcessor = imageProcessor ?? throw new ArgumentNullException(nameof(imageProcessor));
         }
 
 #pragma warning disable MA0055 // Do not use destructor
@@ -84,7 +84,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
             }
         }
 
-        void IWkHtmlToXEngine.AddConvertWorkItem(
+        public void AddConvertWorkItem(
             ConvertWorkItemBase item,
             CancellationToken cancellationToken)
         {
@@ -126,7 +126,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
 
 #pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable S108 // Nested blocks of code should not be left empty
-        private void Process(object? obj)
+        internal void Process(object? obj)
         {
             if (obj is null)
             {
@@ -154,6 +154,26 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
 #pragma warning restore S108 // Nested blocks of code should not be left empty
 #pragma warning restore CA1031 // Do not catch general exception types
 
+        internal void InitializeInProcessingThread()
+        {
+#pragma warning disable IDISP003 // Dispose previous before re-assigning.
+            _libraryLoader = _libraryLoaderFactory.Create(_configuration!);
+#pragma warning restore IDISP003 // Dispose previous before re-assigning.
+            _libraryLoader.Load();
+
+            var wkHtmlToPdfModuleLoaded = _pdfProcessor.WkHtmlToPdfModule.Initialize(0) == 1;
+            if (!wkHtmlToPdfModuleLoaded)
+            {
+                throw new PdfModuleInitializationException("Pdf module not loaded");
+            }
+
+            var wkHtmlToImageModuleLoaded = _imageProcessor.WkHtmlToImageModule.Initialize(0) == 1;
+            if (!wkHtmlToImageModuleLoaded)
+            {
+                throw new ImageModuleInitializationException("Image module not loaded");
+            }
+        }
+
         private void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -168,31 +188,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
                 }
 
                 _disposed = true;
-            }
-        }
-
-        private void InitializeInProcessingThread()
-        {
-            if (_libraryLoaderFactory is null)
-            {
-                throw new LibraryLoaderFactoryIsNullException();
-            }
-
-#pragma warning disable IDISP003 // Dispose previous before re-assigning.
-            _libraryLoader = _libraryLoaderFactory.Create(_configuration!);
-#pragma warning restore IDISP003 // Dispose previous before re-assigning.
-            _libraryLoader.Load();
-
-            var wkHtmlToPdfModuleLoaded = _pdfProcessor.WkHtmlToPdfModule.Initialize(0) == 1;
-            if (!wkHtmlToPdfModuleLoaded)
-            {
-                throw new ArgumentException("Pdf module not loaded");
-            }
-
-            var wkHtmlToImageModuleLoaded = _imageProcessor.WkHtmlToImageModule.Initialize(0) == 1;
-            if (!wkHtmlToImageModuleLoaded)
-            {
-                throw new ArgumentException("Image module not loaded");
             }
         }
     }
