@@ -36,34 +36,34 @@
     <PackageReference Include="ConcurrencyLab.ParallelChecker" Version="1.8.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="IDisposableAnalyzers" Version="3.4.11" >
+    <PackageReference Include="IDisposableAnalyzers" Version="3.4.13" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.646" >
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.647" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" >
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.9.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.8.0" >
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.9.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0" >
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.8.0" >
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.9.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0" >
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.9.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.8.0" >
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.9.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <!--<PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.2.12-alpha">
@@ -87,7 +87,7 @@
     <PackageReference Include="SerilogAnalyzer" Version="0.15.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.18.0.27296" >
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.19.0.28253" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.321" >
