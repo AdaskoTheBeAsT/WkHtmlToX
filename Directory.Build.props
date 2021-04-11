@@ -39,7 +39,7 @@
     <PackageReference Include="IDisposableAnalyzers" Version="3.4.13" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.647" >
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.654" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.9.0" >
@@ -81,16 +81,16 @@
     <PackageReference Include="Roslynator.Formatting.Analyzers" Version="1.1.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="SecurityCodeScan.VS2019" Version="5.0.0" >
+    <PackageReference Include="SecurityCodeScan.VS2019" Version="5.1.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="SerilogAnalyzer" Version="0.15.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.19.0.28253" >
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.20.0.28934" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.321" >
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.333" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
 
