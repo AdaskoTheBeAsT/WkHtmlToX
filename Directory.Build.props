@@ -39,7 +39,7 @@
     <PackageReference Include="IDisposableAnalyzers" Version="3.4.13" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.654" >
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.660" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.9.0" >
@@ -87,7 +87,7 @@
     <PackageReference Include="SerilogAnalyzer" Version="0.15.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.20.0.28934" >
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.21.0.30542" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.333" >

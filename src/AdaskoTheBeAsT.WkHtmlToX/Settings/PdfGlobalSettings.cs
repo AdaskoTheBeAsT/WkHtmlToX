@@ -27,6 +27,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         /// What dpi should we use when printing. Default = 96.
         /// </summary>
         [WkHtml("dpi")]
+        // ReSharper disable once InconsistentNaming
         public int? DPI { get; set; }
 
         /// <summary>
@@ -89,6 +90,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         /// The maximal DPI to use for images in the pdf document. Default = 600.
         /// </summary>
         [WkHtml("imageDPI")]
+        // ReSharper disable once InconsistentNaming
         public int? ImageDPI { get; set; }
 
         /// <summary>

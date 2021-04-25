@@ -24,6 +24,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Settings
         /// The mount of time in milliseconds to wait after a page has done loading until it is actually printed. E.g. "1200". We will wait this amount of time or until, javascript calls window.print(). Default = 200.
         /// </summary>
         [WkHtml("load.jsdelay")]
+        // ReSharper disable once InconsistentNaming
         public int? JSDelay { get; set; }
 
         /// <summary>
