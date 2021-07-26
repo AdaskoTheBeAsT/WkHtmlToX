@@ -30,7 +30,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest
 
         [DotMemoryUnit(SavingStrategy = SavingStrategy.OnAnyFail)]
         [Fact]
-        public async Task ShouldNotLeaveAnyObjectsSurvived()
+        public async Task ShouldNotLeaveAnyObjectsSurvivedAsync()
         {
             var htmlToPdfGenerator = new HtmlToPdfDocumentGenerator(new SmallHtmlGenerator());
             var memoryCheckPoint = dotMemory.Check();

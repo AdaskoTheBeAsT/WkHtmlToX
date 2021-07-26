@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Documents;
@@ -59,7 +60,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
         }
 
         [When("I convert html to pdf (.*) times")]
-        public async Task WhenIConvertHtmlToPdfTimes(int count)
+        public async Task WhenIConvertHtmlToPdfTimesAsync(int count)
         {
             for (int i = 0; i < count; i++)
             {

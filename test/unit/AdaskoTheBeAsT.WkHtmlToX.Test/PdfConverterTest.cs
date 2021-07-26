@@ -27,7 +27,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         }
 
         [Fact]
-        public async Task ConvertAsyncShouldReturnNullStreamWhenNotConverted()
+        public async Task ConvertAsyncShouldReturnNullStreamWhenNotConvertedAsync()
         {
             // Arrange
             _engineMock.Setup(e => e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()))
@@ -65,7 +65,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         }
 
         [Fact]
-        public async Task ConvertAsyncShouldReturnStreamWhenConverted()
+        public async Task ConvertAsyncShouldReturnStreamWhenConvertedAsync()
         {
             // Arrange
             _engineMock.Setup(

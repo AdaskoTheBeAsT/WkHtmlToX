@@ -9,6 +9,13 @@
 
   <ItemGroup>
     <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.native.win.x64" Version="0.12.6" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'net5.0' ">
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.1.3" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' OR '$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net47' OR '$(TargetFramework)' == 'net471' OR '$(TargetFramework)' == 'net472' OR '$(TargetFramework)' == 'net48' ">
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.0.0" />
   </ItemGroup>
 
@@ -40,34 +47,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <!--https://stackoverflow.com/questions/14267938/msbuild-how-to-set-environment-variables-->
-  <UsingTask TaskName="SetEnvironmentVariableTask" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
-
-    <ParameterGroup>
-      <Name ParameterType="System.String" Required="true" />
-      <Value ParameterType="System.String" Required="true" />
-    </ParameterGroup>
-
-    <Task>
-      <Using Namespace="System" />
-      <Code Type="Fragment" Language="cs">
-        <![CDATA[
-        Environment.SetEnvironmentVariable(Name, Value);
-      ]]>
-      </Code>
-    </Task>
-
-  </UsingTask>
-
-  <!--
-  .NET Core SDK 3.1.200 and specflow issue workaround
-  https://github.com/SpecFlowOSS/SpecFlow/issues/1912
-  -->
-  <Target Name="CustomBeforeBuild" BeforeTargets="CoreBuild">
-    <Message Text="Environment change applied 1" />
-    <!--<SetEnvironmentVariableTask Name="MSBUILDSINGLELOADCONTEXT" Value="1" />
-    <Message Text="Environment change applied 2" />-->
-  </Target>
 
 </Project>

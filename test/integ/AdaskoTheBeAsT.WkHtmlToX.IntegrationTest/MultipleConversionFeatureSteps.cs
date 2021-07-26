@@ -43,13 +43,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
         }
 
         [When(@"I convert first time")]
-        public async Task WhenIConvertFirstTime()
+        public async Task WhenIConvertFirstTimeAsync()
         {
             _content1 = await GenerateContentAsync().ConfigureAwait(false);
         }
 
         [When(@"I convert same html second time")]
-        public async Task WhenIConvertSameHtmlSecondTime()
+        public async Task WhenIConvertSameHtmlSecondTimeAsync()
         {
             _content2 = await GenerateContentAsync().ConfigureAwait(false);
         }
