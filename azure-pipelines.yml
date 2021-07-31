@@ -46,7 +46,7 @@ steps:
 - task: SonarCloudPrepare@1
   displayName: 'Prepare analysis on SonarCloud'
   inputs:
-    scannerMode: 'MSBuild'    
+    scannerMode: 'MSBuild'
     SonarCloud: 'Sonar.AdaskoTheBeAsT.WkHtmlToX'
     organization: 'adaskothebeast-github'
     projectKey: 'AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX'
@@ -61,7 +61,7 @@ steps:
   displayName: 'Clear nuget staging directory'
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)/nuget'
-    Contents: '**/*' 
+    Contents: '**/*'
 
 - task: CopyFiles@2
   displayName: 'Copy nuget packages'
@@ -115,7 +115,7 @@ steps:
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)/nuget'
     contents: '**/*'
-    targetFolder: '$(Build.ArtifactStagingDirectory)'    
+    targetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: CopyFiles@2
   displayName: 'Copy test results'
