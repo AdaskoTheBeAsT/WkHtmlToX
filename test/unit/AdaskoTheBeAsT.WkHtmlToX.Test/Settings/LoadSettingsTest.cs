@@ -48,7 +48,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
             var cookies = _fixture.Create<Dictionary<string, string>>();
             var debugJavascript = _fixture.Create<bool>();
             var customHeaders = _fixture.Create<Dictionary<string, string>>();
-            var jsDelay = _fixture.Create<int>();
+            var jasvaScriptDelay = _fixture.Create<int>();
             var loadErrorHandling = _fixture.Create<ContentErrorHandling>();
             var password = _fixture.Create<string>();
             var proxy = _fixture.Create<string>();
@@ -64,7 +64,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
                 Cookies = cookies,
                 DebugJavascript = debugJavascript,
                 CustomHeaders = customHeaders,
-                JSDelay = jsDelay,
+                JSDelay = jasvaScriptDelay,
                 LoadErrorHandling = loadErrorHandling,
                 Password = password,
                 Proxy = proxy,
@@ -81,7 +81,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
                 sut.Cookies.Should().BeEquivalentTo(cookies);
                 sut.CustomHeaders.Should().BeEquivalentTo(customHeaders);
                 sut.DebugJavascript.Should().Be(debugJavascript);
-                sut.JSDelay.Should().Be(jsDelay);
+                sut.JSDelay.Should().Be(jasvaScriptDelay);
                 sut.LoadErrorHandling.Should().Be(loadErrorHandling);
                 sut.Password.Should().Be(password);
                 sut.Proxy.Should().Be(proxy);
