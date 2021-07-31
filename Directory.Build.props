@@ -75,13 +75,13 @@
     <PackageReference Include="Puma.Security.Rules" Version="2.4.7" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.Analyzers" Version="3.2.0" >
+    <PackageReference Include="Roslynator.Analyzers" Version="3.1.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="1.1.0" >
+    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="1.0.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="1.2.1" >
+    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="1.1.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="SecurityCodeScan.VS2019" Version="5.2.1" >
