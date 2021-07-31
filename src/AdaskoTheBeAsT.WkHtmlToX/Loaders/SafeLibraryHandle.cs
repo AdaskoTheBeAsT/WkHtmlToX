@@ -28,7 +28,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 
         protected override bool ReleaseHandle()
         {
-            return NativeMethodsSystemWindows.FreeLibrary(handle);
+            return SystemWindowsNativeMethods.FreeLibrary(handle);
         }
     }
 

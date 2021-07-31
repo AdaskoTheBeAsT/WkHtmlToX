@@ -41,11 +41,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 
                 if (File.Exists(path))
                 {
-                    NativeMethodsSystemPosix.dlerror();
-                    var libPtr = NativeMethodsSystemPosix.dlopen(path, NativeMethodsSystemPosix.RTLD_NOW);
+                    SystemPosixNativeMethods.dlerror();
+                    var libPtr = SystemPosixNativeMethods.dlopen(path, SystemPosixNativeMethods.RTLD_NOW);
                     if (libPtr == IntPtr.Zero)
                     {
-                        var errorPtr = NativeMethodsSystemPosix.dlerror();
+                        var errorPtr = SystemPosixNativeMethods.dlerror();
                         if (errorPtr != IntPtr.Zero)
                         {
                             var error = Marshal.PtrToStringAnsi(errorPtr);
@@ -68,10 +68,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
                 return;
             }
 
-            var retVal = NativeMethodsSystemPosix.dlclose(_libraryHandle);
+            var retVal = SystemPosixNativeMethods.dlclose(_libraryHandle);
             if (retVal != 0)
             {
-                var errorPtr = NativeMethodsSystemPosix.dlerror();
+                var errorPtr = SystemPosixNativeMethods.dlerror();
                 if (errorPtr != IntPtr.Zero)
                 {
                     var error = Marshal.PtrToStringAnsi(errorPtr);

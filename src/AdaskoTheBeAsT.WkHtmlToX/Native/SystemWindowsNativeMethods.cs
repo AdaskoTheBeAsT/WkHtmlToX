@@ -10,7 +10,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Loaders;
 namespace AdaskoTheBeAsT.WkHtmlToX.Native
 {
 #pragma warning disable CA1060 // Move pinvokes to native methods class
-    internal static class NativeMethodsSystemWindows
+    internal static class SystemWindowsNativeMethods
     {
         private const string KernelLib = "kernel32";
 

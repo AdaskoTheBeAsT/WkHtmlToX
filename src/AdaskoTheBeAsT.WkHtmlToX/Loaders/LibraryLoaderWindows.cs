@@ -39,7 +39,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 
                 if (File.Exists(path))
                 {
-                    var libHandle = NativeMethodsSystemWindows.LoadLibraryEx(
+                    var libHandle = SystemWindowsNativeMethods.LoadLibraryEx(
                         path,
                         IntPtr.Zero,
                         LoadLibraryFlags.LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LoadLibraryFlags.LOAD_LIBRARY_SEARCH_SYSTEM32);

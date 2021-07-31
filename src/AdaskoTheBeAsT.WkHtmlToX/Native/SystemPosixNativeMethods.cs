@@ -7,7 +7,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable SA1310 // Field names should not contain underscore
 #pragma warning disable IDE1006 // Naming Styles
-    internal static class NativeMethodsSystemPosix
+    internal static class SystemPosixNativeMethods
     {
         // ReSharper disable once InconsistentNaming
         internal const int RTLD_NOW = 2;

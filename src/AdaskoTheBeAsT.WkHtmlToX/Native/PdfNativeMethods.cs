@@ -10,7 +10,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
 #pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable SA1300 // Element should begin with upper-case letter
-    internal static class NativeMethodsPdf
+    internal static class PdfNativeMethods
     {
         /// <summary>
         /// wkhtmltopdf_init.
