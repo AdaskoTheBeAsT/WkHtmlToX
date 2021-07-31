@@ -31,13 +31,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
         {
             // Arrange
             _engineMock.Setup(e => e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()))
-                .Callback<ConvertWorkItemBase, CancellationToken>(
-                    (
-                        i,
-                        _) =>
-                    {
-                        i.TaskCompletionSource.SetResult(false);
-                    });
+                .Callback<ConvertWorkItemBase, CancellationToken>((i, _) => i.TaskCompletionSource.SetResult(false));
 
             var document = new HtmlToPdfDocument();
             var documentTitle = _fixture.Create<string>();
@@ -71,13 +65,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             _engineMock.Setup(
                     e =>
                         e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()))
-                .Callback<ConvertWorkItemBase, CancellationToken>(
-                    (
-                        i,
-                        _) =>
-                    {
-                        i.TaskCompletionSource.SetResult(true);
-                    });
+                .Callback<ConvertWorkItemBase, CancellationToken>((i, _) => i.TaskCompletionSource.SetResult(true));
             using var memoryStream = new MemoryStream();
 
             var document = new HtmlToPdfDocument();

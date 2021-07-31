@@ -154,15 +154,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
                     continue;
                 }
 
-                var wkHtmlAttribute = prop.GetCustomAttribute<WkHtmlAttribute>();
-                if (wkHtmlAttribute != null
+                var attribute = prop.GetCustomAttribute<WkHtmlAttribute>();
+                if (attribute != null
                     && propValue is ISettings propSettings)
                 {
-                    ApplyConfig(config, propSettings, useGlobal, wkHtmlAttribute.Name);
+                    ApplyConfig(config, propSettings, useGlobal, attribute.Name);
                 }
-                else if (wkHtmlAttribute != null)
+                else if (attribute != null)
                 {
-                    Apply(config, prefix, wkHtmlAttribute.Name, propValue, useGlobal);
+                    Apply(config, prefix, attribute.Name, propValue, useGlobal);
                 }
                 else if (propValue is ISettings propSettings2)
                 {
