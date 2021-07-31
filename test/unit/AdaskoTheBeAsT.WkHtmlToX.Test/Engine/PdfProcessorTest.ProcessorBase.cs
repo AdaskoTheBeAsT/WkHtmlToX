@@ -487,12 +487,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void ApplyConfigShouldNotThrowExceptionWhenNullPassedAsSettings(bool isGlobal)
+        public void ApplyConfigShouldNotThrowExceptionWhenNullPassedAsSettings(bool useGlobal)
         {
             // Arrange
             var intPtr = new IntPtr(_fixture.Create<int>());
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.ApplyConfig(intPtr, settings: null, isGlobal);
+            Action action = () => _sut.ApplyConfig(intPtr, settings: null, useGlobal);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // Act & Assert
@@ -502,10 +502,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void ApplyConfigShouldSetValuesBasedOnSettings(bool isGlobal)
+        public void ApplyConfigShouldSetValuesBasedOnSettings(bool useGlobal)
         {
             // Arrange
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             }
@@ -523,10 +523,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             };
 
             // Act
-            _sut.ApplyConfig(intPtr, settings, isGlobal);
+            _sut.ApplyConfig(intPtr, settings, useGlobal);
 
             // Assert
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Verify(
                     m =>
@@ -549,10 +549,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void ApplyConfigShouldNotSetValueIfNullInSettings(bool isGlobal)
+        public void ApplyConfigShouldNotSetValueIfNullInSettings(bool useGlobal)
         {
             // Arrange
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             }
@@ -571,10 +571,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             };
 
             // Act
-            _sut.ApplyConfig(intPtr, settings, isGlobal);
+            _sut.ApplyConfig(intPtr, settings, useGlobal);
 
             // Assert
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Verify(
                     m =>
@@ -599,10 +599,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void ApplyConfigShouldSetValuesBasedOnHierarchicalSettings(bool isGlobal)
+        public void ApplyConfigShouldSetValuesBasedOnHierarchicalSettings(bool useGlobal)
         {
             // Arrange
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             }
@@ -624,10 +624,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             };
 
             // Act
-            _sut.ApplyConfig(intPtr, globalSettings, isGlobal);
+            _sut.ApplyConfig(intPtr, globalSettings, useGlobal);
 
             // Assert
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Verify(
                     m =>
@@ -654,7 +654,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var intPtr = new IntPtr(_fixture.Create<int>());
             var name = _fixture.Create<string>();
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.Apply(intPtr, string.Empty, name, value: null, isGlobal: true);
+            Action action = () => _sut.Apply(intPtr, string.Empty, name, value: null, useGlobal: true);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // Act & Assert
@@ -667,12 +667,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         [InlineData(true, true, "true")]
         [InlineData(true, false, "false")]
         public void ApplyShouldSetProperBooleanValueInConfig(
-            bool isGlobal,
+            bool useGlobal,
             bool value,
             string expected)
         {
             // Arrange
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             }
@@ -685,10 +685,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var name = _fixture.Create<string>();
 
             // Act
-            _sut.Apply(intPtr, string.Empty, name, value, isGlobal);
+            _sut.Apply(intPtr, string.Empty, name, value, useGlobal);
 
             // Assert
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Verify(
                     m =>
@@ -714,12 +714,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         [InlineData(true, true, "true")]
         [InlineData(true, false, "false")]
         public void ApplyShouldSetProperBooleanValueInConfigWithPrefix(
-            bool isGlobal,
+            bool useGlobal,
             bool value,
             string expected)
         {
             // Arrange
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             }
@@ -734,10 +734,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var nameWithPrefix = $"{prefix}.{name}";
 
             // Act
-            _sut.Apply(intPtr, prefix, name, value, isGlobal);
+            _sut.Apply(intPtr, prefix, name, value, useGlobal);
 
             // Assert
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Verify(
                     m =>
@@ -767,12 +767,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         [InlineData(true, 1.2345, "1.23")]
         [InlineData(true, 1.2378, "1.24")]
         public void ApplyShouldSetProperDoubleValueInConfig(
-            bool isGlobal,
+            bool useGlobal,
             double value,
             string expected)
         {
             // Arrange
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             }
@@ -785,10 +785,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var name = _fixture.Create<string>();
 
             // Act
-            _sut.Apply(intPtr, string.Empty, name, value, isGlobal);
+            _sut.Apply(intPtr, string.Empty, name, value, useGlobal);
 
             // Assert
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Verify(
                     m =>
@@ -814,12 +814,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         [InlineData(true, 2, "2")]
         [InlineData(true, 7, "7")]
         public void ApplyShouldSetProperIntValueInConfig(
-            bool isGlobal,
+            bool useGlobal,
             int value,
             string expected)
         {
             // Arrange
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             }
@@ -832,10 +832,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var name = _fixture.Create<string>();
 
             // Act
-            _sut.Apply(intPtr, string.Empty, name, value, isGlobal);
+            _sut.Apply(intPtr, string.Empty, name, value, useGlobal);
 
             // Assert
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Verify(
                     m =>
@@ -858,10 +858,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void ApplyShouldSetProperDictionaryValueInConfig(bool isGlobal)
+        public void ApplyShouldSetProperDictionaryValueInConfig(bool useGlobal)
         {
             // Arrange
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             }
@@ -881,10 +881,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             };
 
             // Act
-            _sut.Apply(intPtr, string.Empty, name, dictionary, isGlobal);
+            _sut.Apply(intPtr, string.Empty, name, dictionary, useGlobal);
 
             // Assert
-            if (isGlobal)
+            if (useGlobal)
             {
                 _module.Verify(
                     m =>

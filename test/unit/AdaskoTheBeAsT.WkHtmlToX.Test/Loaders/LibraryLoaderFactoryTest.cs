@@ -73,11 +73,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders
         public void GetModuleShouldThrowWhenNotKnownPlatformIdPassed()
         {
             // Arrange
-            var wkHtmlToXConfiguration = new WkHtmlToXConfiguration(12345, null);
+            var configuration = new WkHtmlToXConfiguration(12345, null);
 
             // ReSharper disable once AssignmentIsFullyDiscarded
 #pragma warning disable IDISP004 // Don't ignore created IDisposable.
-            Action action = () => _ = _sut.Create(wkHtmlToXConfiguration);
+            Action action = () => _ = _sut.Create(configuration);
 #pragma warning restore IDISP004 // Don't ignore created IDisposable.
 
             // Act & Assert
@@ -88,11 +88,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders
         public void GetModuleShouldThrowWhenLinuxPlatformIdAndNotKnownRuntimeIdentifierPassed()
         {
             // Arrange
-            var wkHtmlToXConfiguration = new WkHtmlToXConfiguration((int)PlatformID.Unix, null);
+            var configuration = new WkHtmlToXConfiguration((int)PlatformID.Unix, null);
 
             // ReSharper disable once AssignmentIsFullyDiscarded
 #pragma warning disable IDISP004 // Don't ignore created IDisposable.
-            Action action = () => _ = _sut.Create(wkHtmlToXConfiguration);
+            Action action = () => _ = _sut.Create(configuration);
 #pragma warning restore IDISP004 // Don't ignore created IDisposable.
 
             // Act & Assert
@@ -107,10 +107,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders
             Type type)
         {
             // Arrange
-            var wkHtmlToXConfiguration = new WkHtmlToXConfiguration(platformId, runtimeIdentifier);
+            var configuration = new WkHtmlToXConfiguration(platformId, runtimeIdentifier);
 
             // Act
-            using var result = _sut.Create(wkHtmlToXConfiguration);
+            using var result = _sut.Create(configuration);
 
             // Assert
             result.Should().BeOfType(type);

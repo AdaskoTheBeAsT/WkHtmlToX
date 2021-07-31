@@ -5,7 +5,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
 {
     internal interface IImageProcessor
     {
-        IWkHtmlToImageModule WkHtmlToImageModule { get; }
+        IWkHtmlToImageModule ImageModule { get; }
 
         ISettings? ProcessingDocument { get; }
 

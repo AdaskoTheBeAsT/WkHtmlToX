@@ -161,14 +161,14 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
 #pragma warning restore IDISP003 // Dispose previous before re-assigning.
             _libraryLoader.Load();
 
-            var wkHtmlToPdfModuleLoaded = _pdfProcessor.WkHtmlToPdfModule.Initialize(0) == 1;
-            if (!wkHtmlToPdfModuleLoaded)
+            var pdfModuleLoaded = _pdfProcessor.PdfModule.Initialize(0) == 1;
+            if (!pdfModuleLoaded)
             {
                 throw new PdfModuleInitializationException("Pdf module not loaded");
             }
 
-            var wkHtmlToImageModuleLoaded = _imageProcessor.WkHtmlToImageModule.Initialize(0) == 1;
-            if (!wkHtmlToImageModuleLoaded)
+            var imageModuleLoaded = _imageProcessor.ImageModule.Initialize(0) == 1;
+            if (!imageModuleLoaded)
             {
                 throw new ImageModuleInitializationException("Image module not loaded");
             }

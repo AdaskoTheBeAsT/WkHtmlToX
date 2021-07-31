@@ -135,7 +135,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
             _configuration.WarningAction?.Invoke(eventArgs);
         }
 
-        protected internal void ApplyConfig(IntPtr config, ISettings? settings, bool isGlobal, string? prefix = null)
+        protected internal void ApplyConfig(IntPtr config, ISettings? settings, bool useGlobal, string? prefix = null)
         {
             if (settings is null)
             {
@@ -158,20 +158,20 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
                 if (wkHtmlAttribute != null
                     && propValue is ISettings propSettings)
                 {
-                    ApplyConfig(config, propSettings, isGlobal, wkHtmlAttribute.Name);
+                    ApplyConfig(config, propSettings, useGlobal, wkHtmlAttribute.Name);
                 }
                 else if (wkHtmlAttribute != null)
                 {
-                    Apply(config, prefix, wkHtmlAttribute.Name, propValue, isGlobal);
+                    Apply(config, prefix, wkHtmlAttribute.Name, propValue, useGlobal);
                 }
                 else if (propValue is ISettings propSettings2)
                 {
-                    ApplyConfig(config, propSettings2, isGlobal);
+                    ApplyConfig(config, propSettings2, useGlobal);
                 }
             }
         }
 
-        protected internal void Apply(IntPtr config, string? prefix, string name, object value, bool isGlobal)
+        protected internal void Apply(IntPtr config, string? prefix, string name, object value, bool useGlobal)
         {
             if (value is null)
             {
@@ -180,7 +180,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
 
             var type = value.GetType();
 
-            var applySetting = GetApplySettingFunc(isGlobal);
+            var applySetting = GetApplySettingFunc(useGlobal);
             var localName = string.IsNullOrEmpty(prefix) ? name : $"{prefix}.{name}";
 
             if (typeof(bool) == type)
@@ -216,7 +216,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
             }
         }
 
-        protected internal abstract Func<IntPtr, string, string?, int> GetApplySettingFunc(bool isGlobal);
+        protected internal abstract Func<IntPtr, string, string?, int> GetApplySettingFunc(bool useGlobal);
 
         protected internal abstract int GetCurrentPhase(IntPtr converter);
 

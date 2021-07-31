@@ -9,21 +9,21 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
         : ILibraryLoaderFactory
     {
         public ILibraryLoader Create(
-            WkHtmlToXConfiguration wkHtmlToXConfiguration)
+            WkHtmlToXConfiguration configuration)
         {
-            switch (wkHtmlToXConfiguration.PlatformId)
+            switch (configuration.PlatformId)
             {
                 case (int)PlatformID.MacOSX:
                     return new LibraryLoaderOsx();
                 case (int)PlatformID.Unix:
                 // Legacy mono value. See https://www.mono-project.com/docs/faq/technical/
                 case 128:
-                    if (!wkHtmlToXConfiguration.RuntimeIdentifier.HasValue)
+                    if (!configuration.RuntimeIdentifier.HasValue)
                     {
                         throw new InvalidLinuxRuntimeIdentifierException();
                     }
 
-                    return new LibraryLoaderLinux(wkHtmlToXConfiguration.RuntimeIdentifier.Value);
+                    return new LibraryLoaderLinux(configuration.RuntimeIdentifier.Value);
                 case (int)PlatformID.Win32NT:
                 case (int)PlatformID.Win32S:
                 case (int)PlatformID.Win32Windows:

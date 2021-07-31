@@ -4,6 +4,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
 {
     internal interface ILibraryLoaderFactory
     {
-        ILibraryLoader Create(WkHtmlToXConfiguration wkHtmlToXConfiguration);
+        ILibraryLoader Create(WkHtmlToXConfiguration configuration);
     }
 }

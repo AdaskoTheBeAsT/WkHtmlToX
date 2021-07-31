@@ -5,7 +5,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
 {
     internal interface IPdfProcessor
     {
-        IWkHtmlToPdfModule WkHtmlToPdfModule { get; }
+        IWkHtmlToPdfModule PdfModule { get; }
 
         ISettings? ProcessingDocument { get; }
 

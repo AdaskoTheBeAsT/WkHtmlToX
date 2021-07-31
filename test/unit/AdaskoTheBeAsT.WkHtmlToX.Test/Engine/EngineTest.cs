@@ -37,12 +37,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 
             _pdfModuleMock = new Mock<IWkHtmlToPdfModule>();
             _pdfProcessorMock = new Mock<IPdfProcessor>();
-            _pdfProcessorMock.SetupGet(p => p.WkHtmlToPdfModule)
+            _pdfProcessorMock.SetupGet(p => p.PdfModule)
                 .Returns(_pdfModuleMock.Object);
 
             _imageModuleMock = new Mock<IWkHtmlToImageModule>();
             _imageProcessorMock = new Mock<IImageProcessor>();
-            _imageProcessorMock.SetupGet(p => p.WkHtmlToImageModule)
+            _imageProcessorMock.SetupGet(p => p.ImageModule)
                 .Returns(_imageModuleMock.Object);
 
             _sut = new WkHtmlToXEngine(
