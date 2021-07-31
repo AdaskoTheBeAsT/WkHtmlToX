@@ -9,7 +9,7 @@ trigger:
 
 pool:
   vmImage: 'windows-2019'
-  
+
 variables:
   buildConfiguration: 'Release'
   unitTestProjects: '**/test/unit/**/*.csproj'
@@ -30,19 +30,19 @@ steps:
     packageType: 'sdk'
     version: 3.1.x
     installationPath: $(Agent.ToolsDirectory)/dotnet
-  
+
 - task: UseDotNet@2
   displayName: "Use .NET Core SDK from global.json"
   inputs:
     packageType: "sdk"
     useGlobalJson: true
- 
+
 - task: DotNetCoreCLI@2
   displayName: Restore
   inputs:
     command: restore
     arguments: AdaskoTheBeAsT.WkHtmlToX.sln
-  
+
 - task: SonarCloudPrepare@1
   displayName: 'Prepare analysis on SonarCloud'
   inputs:
@@ -51,8 +51,7 @@ steps:
     organization: 'adaskothebeast-github'
     projectKey: 'AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX'
     projectName: AdaskoTheBeAsT.WkHtmlToX
-    
-  
+
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
@@ -76,7 +75,7 @@ steps:
   inputs:
     SourceFolder: '$(testResultsDirectory)'
     Contents: '**/*'
-  
+
 - task: DotNetCoreCLI@2
   displayName: Test
   inputs:
@@ -89,7 +88,7 @@ steps:
   inputs:
     solutionOrProjectPath: 'AdaskoTheBeAsT.WkHtmlToX.sln'
     failBuildLevelSelector: 'Warning'
-  
+
 - task: SonarCloudAnalyze@1
   displayName: Sonar Cloud analyze
 
@@ -110,7 +109,7 @@ steps:
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)'
     Contents: '**/*'
-    
+
 - task: CopyFiles@2
   displayName: 'Copy nuget packages'
   inputs:
