@@ -91,6 +91,7 @@ For linux you can set it using second parameter in config.
 ## Badges
 
 [![CodeFactor](https://www.codefactor.io/repository/github/adaskothebeast/wkhtmltox/badge/master)](https://www.codefactor.io/repository/github/adaskothebeast/wkhtmltox/overview/master)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/AdaskoTheBeAsT/WkHtmlToX.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/AdaskoTheBeAsT/WkHtmlToX/alerts/)
 [![Build Status](https://adaskothebeast.visualstudio.com/AdaskoTheBeAsT.WkHtmlToX/_apis/build/status/AdaskoTheBeAsT.WkHtmlToX?branchName=master)](https://adaskothebeast.visualstudio.com/AdaskoTheBeAsT.WkHtmlToX/_build/latest?definitionId=8&branchName=master)
 ![Azure DevOps tests](https://img.shields.io/azure-devops/tests/AdaskoTheBeAsT/AdaskoTheBeAsT.WkHtmlToX/18)
 ![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/AdaskoTheBeAsT/AdaskoTheBeAsT.WkHtmlToX/18?style=plastic)
