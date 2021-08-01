@@ -44,7 +44,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiFull.Controllers
 #pragma warning restore IDISP003 // Dispose previous before re-assigning.
                     return stream;
                 },
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
                 CancellationToken.None).GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
             stream!.Position = 0;
             var httpResponseMessage = Request.CreateResponse(HttpStatusCode.OK);
             httpResponseMessage.Content = new ByteArrayContent(stream.ToArray());

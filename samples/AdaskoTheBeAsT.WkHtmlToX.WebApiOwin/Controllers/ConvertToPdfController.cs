@@ -29,7 +29,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin.Controllers
         }
 
         [HttpPost]
+#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods
         public async Task<IHttpActionResult> Post()
+#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
         {
             var doc = _htmlToPdfDocumentGenerator.Generate();
             MemoryStream? stream = null;

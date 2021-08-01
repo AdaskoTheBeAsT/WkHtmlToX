@@ -7,7 +7,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin.Handlers
 {
     public static class CacheControlMiddleware
     {
-        public static Task Middleware(IOwinContext context, Func<Task> next)
+        public static Task MiddlewareAsync(IOwinContext context, Func<Task> next)
         {
             if (context is null)
             {
@@ -31,7 +31,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin.Handlers
 
         public static void PreventResponseCaching(this IAppBuilder app)
         {
-            app.Use(Middleware);
+            app.Use(MiddlewareAsync);
         }
     }
 }
