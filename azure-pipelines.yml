@@ -86,7 +86,8 @@ steps:
       command: test
       projects: "$(unitTestProjects)"
       publishTestResults: false
-      arguments: '--configuration $(buildConfiguration) --collect:"Code Coverage" /t:rebuild /p:ContinuousIntegrationBuild=false /p:CollectCoverage=true "/p:CoverletOutputFormat=\"opencover,cobertura\"" /p:CoverletOutput=$(testResultsDirectory)/coverage  --logger:"trx" --results-directory $(testResultsDirectory)'
+      nobuild: true
+      arguments: '--configuration $(buildConfiguration) --collect:"Code Coverage" /t:rebuild /p:ContinuousIntegrationBuild=false /p:CollectCoverage=true "/p:CoverletOutputFormat=\"opencover,cobertura\"" /p:CoverletOutput=$(testResultsDirectory)/coverage  --logger:"trx" --results-directory $(testResultsDirectory) --no-restore'
 
   - task: ResharperCli@2
     inputs:
@@ -138,7 +139,7 @@ steps:
     displayName: "Clear JetBrains folder"
     inputs:
       SourceFolder: "$(Build.ArtifactStagingDirectory)/"
-      Contents: "JetBrains*/**/*"
+      Contents: "JetBrains*/*"
 
   - task: PublishBuildArtifacts@1
     inputs:
