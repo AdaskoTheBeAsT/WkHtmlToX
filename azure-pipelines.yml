@@ -93,6 +93,7 @@ steps:
       solutionOrProjectPath: "AdaskoTheBeAsT.WkHtmlToX.sln"
       failBuildLevelSelector: "Warning"
       resultsOutputFilePath: "$(Build.SourcesDirectory)/CodeQualityResults.xml"
+      additionalArguments: "--no-build"
 
   - task: SonarCloudAnalyze@1
     displayName: Sonar Cloud analyze
