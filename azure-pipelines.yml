@@ -131,7 +131,7 @@ steps:
     displayName: "Copy nuget packages"
     inputs:
       sourceFolder: "$(Build.SourcesDirectory)/nuget"
-      contents: "**/*"
+      contents: "**/AdaskoTheBeAsT*"
       targetFolder: "$(Build.ArtifactStagingDirectory)"
 
   - task: PublishBuildArtifacts@1
