@@ -4,143 +4,152 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- master
-- refs/tags/v*
+  - master
+  - refs/tags/v*
 
 pool:
-  vmImage: 'windows-2019'
+  vmImage: "windows-2019"
 
 variables:
-  buildConfiguration: 'Release'
-  unitTestProjects: '**/test/unit/**/*.csproj'
-  testResultsDirectory: 'd:/a/1/TestResults'
+  buildConfiguration: "Release"
+  unitTestProjects: "**/test/unit/**/*.csproj"
+  testResultsDirectory: "d:/a/1/TestResults"
   MSBUILDSINGLELOADCONTEXT: 1
+  disable.coverage.autogenerate: "true"
 
 steps:
-- task: UseDotNet@2
-  displayName: 'Use .NET Core SDK 2.1.x'
-  inputs:
-    packageType: 'sdk'
-    version: 2.1.x
-    installationPath: $(Agent.ToolsDirectory)/dotnet
+  - task: UseDotNet@2
+    displayName: "Use .NET Core SDK 2.1.x"
+    inputs:
+      packageType: "sdk"
+      version: 2.1.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
 
-- task: UseDotNet@2
-  displayName: 'Use .NET Core SDK 3.1.x'
-  inputs:
-    packageType: 'sdk'
-    version: 3.1.x
-    installationPath: $(Agent.ToolsDirectory)/dotnet
+  - task: UseDotNet@2
+    displayName: "Use .NET Core SDK 3.1.x"
+    inputs:
+      packageType: "sdk"
+      version: 3.1.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
 
-- task: UseDotNet@2
-  displayName: "Use .NET Core SDK from global.json"
-  inputs:
-    packageType: "sdk"
-    useGlobalJson: true
+  - task: UseDotNet@2
+    displayName: "Use .NET Core SDK from global.json"
+    inputs:
+      packageType: "sdk"
+      useGlobalJson: true
 
-- task: DotNetCoreCLI@2
-  displayName: Restore
-  inputs:
-    command: restore
-    arguments: AdaskoTheBeAsT.WkHtmlToX.sln
+  - task: DotNetCoreCLI@2
+    displayName: Restore
+    inputs:
+      command: restore
+      arguments: AdaskoTheBeAsT.WkHtmlToX.sln
 
-- task: SonarCloudPrepare@1
-  displayName: 'Prepare analysis on SonarCloud'
-  inputs:
-    scannerMode: 'MSBuild'
-    SonarCloud: 'Sonar.AdaskoTheBeAsT.WkHtmlToX'
-    organization: 'adaskothebeast-github'
-    projectKey: 'AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX'
-    projectName: AdaskoTheBeAsT.WkHtmlToX
+  - task: SonarCloudPrepare@1
+    displayName: "Prepare analysis on SonarCloud"
+    inputs:
+      scannerMode: "MSBuild"
+      SonarCloud: "Sonar.AdaskoTheBeAsT.WkHtmlToX"
+      organization: "adaskothebeast-github"
+      projectKey: "AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX"
+      projectName: AdaskoTheBeAsT.WkHtmlToX
+      extraProperties: |
+        sonar.resharper.cs.reportPath=$(Build.SourcesDirectory)/CodeQualityResults.xml
+        sonar.cs.opencover.reportsPaths=$(testResultsDirectory)/coverage.net461.opencover.xml,$(testResultsDirectory)/coverage.netcoreapp3.1.opencover.xml
 
-- task: DotNetCoreCLI@2
-  displayName: Build
-  inputs:
-    arguments: 'AdaskoTheBeAsT.WkHtmlToX.sln --configuration $(buildConfiguration)'
+  - task: DotNetCoreCLI@2
+    displayName: Build
+    inputs:
+      arguments: "AdaskoTheBeAsT.WkHtmlToX.sln --configuration $(buildConfiguration)"
 
-- task: DeleteFiles@1
-  displayName: 'Clear nuget staging directory'
-  inputs:
-    SourceFolder: '$(Build.SourcesDirectory)/nuget'
-    Contents: '**/*'
+  - task: DeleteFiles@1
+    displayName: "Clear nuget staging directory"
+    inputs:
+      SourceFolder: "$(Build.SourcesDirectory)/nuget"
+      Contents: "**/*"
 
-- task: CopyFiles@2
-  displayName: 'Copy nuget packages'
-  inputs:
-    sourceFolder: '$(Build.SourcesDirectory)'
-    contents: '**/$(BuildConfiguration)/**/?(AdaskoTheBeAsT.WkHtmlToX.*.nupkg|AdaskoTheBeAsT.WkHtmlToX.*.snupkg)'
-    targetFolder: '$(Build.SourcesDirectory)/nuget'
+  - task: CopyFiles@2
+    displayName: "Copy nuget packages"
+    inputs:
+      sourceFolder: "$(Build.SourcesDirectory)"
+      contents: "**/$(BuildConfiguration)/**/?(AdaskoTheBeAsT.WkHtmlToX.*.nupkg|AdaskoTheBeAsT.WkHtmlToX.*.snupkg)"
+      targetFolder: "$(Build.SourcesDirectory)/nuget"
 
-- task: DeleteFiles@1
-  displayName: 'Clear test results'
-  inputs:
-    SourceFolder: '$(testResultsDirectory)'
-    Contents: '**/*'
+  - task: DeleteFiles@1
+    displayName: "Clear test results"
+    inputs:
+      SourceFolder: "$(testResultsDirectory)"
+      Contents: "**/*"
 
-- task: DotNetCoreCLI@2
-  displayName: Test
-  inputs:
-    command: test
-    projects: '$(unitTestProjects)'
-    publishTestResults: false
-    arguments: '--configuration $(buildConfiguration) /t:rebuild /p:ContinuousIntegrationBuild=false --collect:"Code Coverage" --logger:"trx" --results-directory $(testResultsDirectory)'
+  - task: DotNetCoreCLI@2
+    displayName: Test
+    inputs:
+      command: test
+      projects: "$(unitTestProjects)"
+      publishTestResults: false
+      arguments: '--configuration $(buildConfiguration) --collect:"Code Coverage" /t:rebuild /p:ContinuousIntegrationBuild=false /p:CollectCoverage=true "/p:CoverletOutputFormat=\"opencover,cobertura\"" /p:CoverletOutput=$(testResultsDirectory)/coverage  --logger:"trx" --results-directory $(testResultsDirectory)'
 
-- task: ResharperCli@2
-  inputs:
-    solutionOrProjectPath: 'AdaskoTheBeAsT.WkHtmlToX.sln'
-    failBuildLevelSelector: 'Warning'
+  - task: ResharperCli@2
+    inputs:
+      solutionOrProjectPath: "AdaskoTheBeAsT.WkHtmlToX.sln"
+      failBuildLevelSelector: "Warning"
+      resultsOutputFilePath: "$(Build.SourcesDirectory)/CodeQualityResults.xml"
 
-- task: SonarCloudAnalyze@1
-  displayName: Sonar Cloud analyze
+  - task: SonarCloudAnalyze@1
+    displayName: Sonar Cloud analyze
 
-- task: SonarCloudPublish@1
-  displayName: Sonar Cloud publish
-  inputs:
-    pollingTimeoutSec: '300'
+  - task: SonarCloudPublish@1
+    displayName: Sonar Cloud publish
+    inputs:
+      pollingTimeoutSec: "300"
 
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results'
-  inputs:
-    testResultsFormat: 'VSTest'
-    testResultsFiles: '*.trx'
-    searchFolder: '$(testResultsDirectory)'
+  - task: DeleteFiles@1
+    displayName: "Clear coverage files"
+    inputs:
+      SourceFolder: "$(testResultsDirectory)"
+      Contents: "**/*.coverage"
 
-- task: DeleteFiles@1
-  displayName: 'Clear staging directory'
-  inputs:
-    SourceFolder: '$(Build.ArtifactStagingDirectory)'
-    Contents: '**/*'
+  - task: PublishTestResults@2
+    displayName: "Publish Test Results"
+    inputs:
+      testResultsFormat: "VSTest"
+      testResultsFiles: "*.trx"
+      searchFolder: "$(testResultsDirectory)"
 
-- task: CopyFiles@2
-  displayName: 'Copy nuget packages'
-  inputs:
-    sourceFolder: '$(Build.SourcesDirectory)/nuget'
-    contents: '**/*'
-    targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: reportgenerator@4
+    inputs:
+      reports: "$(testResultsDirectory)/coverage.*.cobertura.xml"
+      targetdir: "$(testResultsDirectory)/coverage"
 
-- task: CopyFiles@2
-  displayName: 'Copy test results'
-  inputs:
-    sourceFolder: '$(testResultsDirectory)'
-    contents: '**/*'
-    targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: "Cobertura"
+      summaryFileLocation: "$(testResultsDirectory)/coverage.*.cobertura.xml"
+      reportDirectory: "$(testResultsDirectory)/coverage"
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)'
-    artifactName: NugetPackages
+  - task: CopyFiles@2
+    displayName: "Copy nuget packages"
+    inputs:
+      sourceFolder: "$(Build.SourcesDirectory)/nuget"
+      contents: "**/*"
+      targetFolder: "$(Build.ArtifactStagingDirectory)"
 
-- task: NuGetToolInstaller@1
-  displayName: 'Install nuget'
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-  inputs:
-    versionSpec:
-    checkLatest: true
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: "$(Build.ArtifactStagingDirectory)"
+      artifactName: NugetPackages
 
-- task: NuGetCommand@2
-  displayName: 'Publish to nuget'
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-  inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.snupkg'
-    nuGetFeedType: 'external'
-    publishFeedCredentials: 'Nuget'
+  - task: NuGetToolInstaller@1
+    displayName: "Install nuget"
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+    inputs:
+      versionSpec:
+      checkLatest: true
+
+  - task: NuGetCommand@2
+    displayName: "Publish to nuget"
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+    inputs:
+      command: "push"
+      packagesToPush: "$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.snupkg"
+      nuGetFeedType: "external"
+      publishFeedCredentials: "Nuget"
