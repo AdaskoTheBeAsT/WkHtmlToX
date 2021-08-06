@@ -138,7 +138,7 @@ steps:
     displayName: "Clear JetBrains folder"
     inputs:
       SourceFolder: "$(Build.ArtifactStagingDirectory)/"
-      Contents: "JetBrains*/**/*.*"
+      Contents: "JetBrains*/**/*"
 
   - task: PublishBuildArtifacts@1
     inputs:
