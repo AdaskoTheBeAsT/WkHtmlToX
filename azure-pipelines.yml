@@ -61,18 +61,14 @@ steps:
     inputs:
       arguments: "AdaskoTheBeAsT.WkHtmlToX.sln --configuration $(buildConfiguration)"
 
-  - task: DeleteFiles@1
-    displayName: "Clear nuget staging directory"
-    inputs:
-      SourceFolder: "$(Build.SourcesDirectory)/nuget"
-      Contents: "**/*"
-
   - task: CopyFiles@2
     displayName: "Copy nuget packages"
     inputs:
       sourceFolder: "$(Build.SourcesDirectory)"
-      contents: "**/$(BuildConfiguration)/**/?(AdaskoTheBeAsT.WkHtmlToX.*.nupkg|AdaskoTheBeAsT.WkHtmlToX.*.snupkg)"
+      contents: "**/$(BuildConfiguration)/**/?(AdaskoTheBeAsT.*.nupkg|AdaskoTheBeAsT.*.snupkg)"
       targetFolder: "$(Build.SourcesDirectory)/nuget"
+      CleanTargetFolder: true
+      flattenFolders: true
 
   - task: DeleteFiles@1
     displayName: "Clear test results"
@@ -133,12 +129,7 @@ steps:
       sourceFolder: "$(Build.SourcesDirectory)/nuget"
       contents: "**/AdaskoTheBeAsT*"
       targetFolder: "$(Build.ArtifactStagingDirectory)"
-
-  - task: DeleteFiles@1
-    displayName: "Clear JetBrains folder"
-    inputs:
-      SourceFolder: "$(Build.ArtifactStagingDirectory)/"
-      Contents: "JetBrains*/*"
+      CleanTargetFolder: true
 
   - task: PublishBuildArtifacts@1
     inputs:
