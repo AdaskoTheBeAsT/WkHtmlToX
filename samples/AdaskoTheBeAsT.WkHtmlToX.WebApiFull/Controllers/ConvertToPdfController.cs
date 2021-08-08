@@ -32,20 +32,22 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiFull.Controllers
         {
             var doc = _htmlToPdfDocumentGenerator.Generate();
             MemoryStream? stream = null;
+
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
+#pragma warning disable IDISP003 // Dispose previous before re-assigning.
             _ = _pdfConverter.ConvertAsync(
                 doc,
                 length =>
                 {
-#pragma warning disable IDISP003 // Dispose previous before re-assigning.
                     stream = _recyclableMemoryStreamManager.GetStream(
                         Guid.NewGuid(),
                         "wkhtmltox",
                         length);
-#pragma warning restore IDISP003 // Dispose previous before re-assigning.
+
                     return stream;
                 },
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
                 CancellationToken.None).GetAwaiter().GetResult();
+#pragma warning restore IDISP003 // Dispose previous before re-assigning.
 #pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
             stream!.Position = 0;
             var httpResponseMessage = Request.CreateResponse(HttpStatusCode.OK);
