@@ -15,7 +15,6 @@ C# wrapper for wkhtmltopdf.org Html to Pdf and Image library.
 ![Sonar Test Execution Time](https://img.shields.io/sonar/test_execution_time/AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX?server=https%3A%2F%2Fsonarcloud.io)
 ![Sonar Coverage](https://img.shields.io/sonar/coverage/AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX?server=https%3A%2F%2Fsonarcloud.io&style=plastic)
 ![Nuget](https://img.shields.io/nuget/dt/AdaskoTheBeAsT.WkHtmlToX)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FAdaskoTheBeAsT%2FWkHtmlToX.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FAdaskoTheBeAsT%2FWkHtmlToX?ref=badge_shield)
 
 ## Usage
 
