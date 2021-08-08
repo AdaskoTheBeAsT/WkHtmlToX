@@ -108,7 +108,3 @@ For linux you can set it using second parameter in config.
 
 Library is based on wrapper (DinkToPdf)[https://github.com/rdvojmoc/DinkToPdf].
 Interoperability was totally reworked and now it is under tests to see if leaking memory can be avoided.
-
-
-## License
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FAdaskoTheBeAsT%2FWkHtmlToX.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FAdaskoTheBeAsT%2FWkHtmlToX?ref=badge_large)
