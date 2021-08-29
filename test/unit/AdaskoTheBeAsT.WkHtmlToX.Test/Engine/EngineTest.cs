@@ -218,7 +218,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         }
 
         [Fact]
-        public void ProcessShouldConsumeItemsFromQueueAndThrowException()
+        public async Task ProcessShouldConsumeItemsFromQueueAndThrowExceptionAsync()
         {
             // Arrange
             _libraryLoaderFactoryMock
@@ -259,8 +259,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                     p => p.Convert(It.IsAny<HtmlToPdfDocument>(), It.IsAny<Func<int, Stream>>()), Times.Once);
                 _imageProcessorMock.Verify(
                     p => p.Convert(It.IsAny<HtmlToImageDocument>(), It.IsAny<Func<int, Stream>>()), Times.Once);
-                action1.Should().Throw<ArgumentOutOfRangeException>();
-                action2.Should().Throw<ArgumentOutOfRangeException>();
+                await action1.Should().ThrowAsync<ArgumentOutOfRangeException>().ConfigureAwait(false);
+                await action2.Should().ThrowAsync<ArgumentOutOfRangeException>().ConfigureAwait(false);
             }
         }
 

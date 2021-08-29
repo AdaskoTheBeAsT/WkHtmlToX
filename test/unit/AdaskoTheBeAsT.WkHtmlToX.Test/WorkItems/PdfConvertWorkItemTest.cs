@@ -57,8 +57,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.WorkItems
                 sut.Document.Should().Be(documentMock);
                 sut.StreamFunc.Should().NotBeNull();
                 using var streamCreated = sut.StreamFunc(0);
-                streamCreated.Should().Be(stream);
-                sut.TaskCompletionSource.Should().NotBeNull();
+                streamCreated.Should().BeSameAs(stream);
             }
         }
     }
