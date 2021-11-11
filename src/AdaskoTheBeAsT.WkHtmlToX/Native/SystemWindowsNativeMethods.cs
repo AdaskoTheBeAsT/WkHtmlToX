@@ -15,11 +15,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         private const string KernelLib = "kernel32";
 
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(KernelLib, CharSet = CharSet.Auto, BestFitMapping = false, SetLastError = true)]
+        [DllImport(KernelLib, CharSet = CharSet.Unicode, BestFitMapping = false, SetLastError = true)]
         internal static extern SafeLibraryHandle LoadLibrary(string fileName);
 
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(KernelLib, CharSet = CharSet.Auto, BestFitMapping = false, SetLastError = true)]
+        [DllImport(KernelLib, CharSet = CharSet.Unicode, BestFitMapping = false, SetLastError = true)]
         internal static extern SafeLibraryHandle LoadLibraryEx(
             string fileName,
             IntPtr hFile,
@@ -35,7 +35,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native
         internal static extern bool FreeLibrary(IntPtr hModule);
 
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(KernelLib, CharSet = CharSet.Ansi, ExactSpelling = true, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        [DllImport(KernelLib, CharSet = CharSet.Unicode, ExactSpelling = true, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern IntPtr GetProcAddress(SafeLibraryHandle hModule, string procname);
     }
 #pragma warning restore CA1060 // Move pinvokes to native methods class

@@ -8,7 +8,7 @@ trigger:
   - refs/tags/v*
 
 pool:
-  vmImage: "windows-2019"
+  vmImage: "windows-2022"
 
 variables:
   buildConfiguration: "Release"
@@ -19,17 +19,17 @@ variables:
 
 steps:
   - task: UseDotNet@2
-    displayName: "Use .NET Core SDK 2.1.x"
-    inputs:
-      packageType: "sdk"
-      version: 2.1.x
-      installationPath: $(Agent.ToolsDirectory)/dotnet
-
-  - task: UseDotNet@2
     displayName: "Use .NET Core SDK 3.1.x"
     inputs:
       packageType: "sdk"
       version: 3.1.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
+  - task: UseDotNet@2
+    displayName: "Use .NET Core SDK 5.0.x"
+    inputs:
+      packageType: "sdk"
+      version: 5.0.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: UseDotNet@2
