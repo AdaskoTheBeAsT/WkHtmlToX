@@ -31,7 +31,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin.Handlers
 
         public static void PreventResponseCaching(this IAppBuilder app)
         {
-            app.Use(MiddlewareAsync);
+            app.Use((context, func) => MiddlewareAsync(context, func));
         }
     }
 }
