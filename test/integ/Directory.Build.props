@@ -2,14 +2,14 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
   <ItemGroup>
     
-    <PackageReference Include="SpecFlow" Version="3.9.40" />
-    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.9.40" />
-    <PackageReference Include="SpecFlow.xUnit" Version="3.9.40" />
+    <PackageReference Include="SpecFlow" Version="3.9.50" />
+    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.9.50" />
+    <PackageReference Include="SpecFlow.xUnit" Version="3.9.50" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
-    <PackageReference Include="Alba" Version="6.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.1" />
+    <PackageReference Include="Alba" Version="6.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.2" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
