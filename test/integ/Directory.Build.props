@@ -2,24 +2,24 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
   <ItemGroup>
     
-    <PackageReference Include="SpecFlow" Version="3.9.69" />
-    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.9.69" />
-    <PackageReference Include="SpecFlow.xUnit" Version="3.9.69" />
+    <PackageReference Include="SpecFlow" Version="3.9.74" />
+    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.9.74" />
+    <PackageReference Include="SpecFlow.xUnit" Version="3.9.74" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
     <PackageReference Include="Alba" Version="6.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.5" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
     <PackageReference Include="Alba" Version="5.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="5.0.16" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="5.0.17" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
     <PackageReference Include="Alba" Version="4.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.24" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.25" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
