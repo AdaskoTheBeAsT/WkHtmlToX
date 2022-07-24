@@ -57,11 +57,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
 
         public void Initialize()
         {
-            if (_initialized)
-            {
-                return;
-            }
-
             lock (SyncLock)
             {
                 if (_initialized)
