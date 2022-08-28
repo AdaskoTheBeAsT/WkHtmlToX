@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29806.167
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.WkHtmlToX.BusinessLogic", "AdaskoTheBeAsT.WkHtmlToX.BusinessLogic\AdaskoTheBeAsT.WkHtmlToX.BusinessLogic.csproj", "{25C67717-0F65-4FA9-A0BD-503B18CC099D}"
 EndProject
@@ -29,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".props", ".props", "{88424B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.WkHtmlToX", "..\src\AdaskoTheBeAsT.WkHtmlToX\AdaskoTheBeAsT.WkHtmlToX.csproj", "{D4842FD1-D8B6-432C-98AB-EBF7E839A3D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaskoTheBeAsT.WkHtmlToX.WebApi", "AdaskoTheBeAsT.WkHtmlToX.WebApi\AdaskoTheBeAsT.WkHtmlToX.WebApi.csproj", "{7DBF80CC-B67A-46DF-8800-284E9897A08C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.WkHtmlToX.WebApi", "AdaskoTheBeAsT.WkHtmlToX.WebApi\AdaskoTheBeAsT.WkHtmlToX.WebApi.csproj", "{7DBF80CC-B67A-46DF-8800-284E9897A08C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

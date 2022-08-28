@@ -20,6 +20,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
+	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -87,16 +88,16 @@
       <Version>0.12.6</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNet.WebApi">
-      <Version>5.2.7</Version>
+      <Version>5.2.9</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNet.WebApi.Client">
-      <Version>5.2.7</Version>
+      <Version>5.2.9</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNet.WebApi.Core">
-      <Version>5.2.7</Version>
+      <Version>5.2.9</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNet.WebApi.WebHost">
-      <Version>5.2.7</Version>
+      <Version>5.2.9</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
       <Version>3.6.0</Version>
