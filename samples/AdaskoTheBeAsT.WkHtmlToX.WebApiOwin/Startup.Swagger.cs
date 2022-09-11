@@ -15,18 +15,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
                 c =>
                 {
                     var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                    var commentsFileName = $"bin\\{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                    var commentsFile = Path.Combine(baseDirectory, commentsFileName);
+                    var commentsFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                    var commentsFile = Path.Combine(baseDirectory, "bin", commentsFileName);
                     c.SingleApiVersion("v1", "owin api");
+                    c.PrettyPrint();
                     c.IncludeXmlComments(commentsFile);
                     c.RootUrl(
-                        req =>
-                        {
-                            var url = string.Concat(
+                        req => string.Concat(
                                 req.RequestUri.GetLeftPart(UriPartial.Authority),
-                                req.GetRequestContext().VirtualPathRoot.TrimEnd('/'));
-                            return url;
-                        });
+                                req.GetRequestContext().VirtualPathRoot.TrimEnd('/')));
                 }).EnableSwaggerUi();
         }
     }

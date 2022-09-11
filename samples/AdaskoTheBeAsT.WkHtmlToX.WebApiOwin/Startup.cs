@@ -1,6 +1,9 @@
 using System;
+using System.IO;
+using System.Web;
 using System.Web.Http;
 using AdaskoTheBeAsT.WkHtmlToX.WebApiOwin.Handlers;
+using DotNetEnv;
 using Microsoft.Owin;
 using Microsoft.Owin.Extensions;
 using Owin;
@@ -18,22 +21,27 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
                 throw new ArgumentNullException(nameof(app));
             }
 
+            var envFilePath = Path.Combine(HttpRuntime.AppDomainAppPath, ".env");
+            if (File.Exists(envFilePath))
+            {
+                Env.Load(envFilePath);
+            }
+
+            var corsOptions = ConfigureCors(Settings.AllowedOrigins);
+            app.UseCors(corsOptions);
+
 #pragma warning disable CA2000 // Dispose objects before losing scope
 #pragma warning disable IDISP001 // Dispose created.
             var httpConfiguration = new HttpConfiguration();
 #pragma warning restore IDISP001 // Dispose created.
 #pragma warning restore CA2000 // Dispose objects before losing scope
 
-            ConfigureSwagger(httpConfiguration);
+            httpConfiguration.Filters.Add(new ExceptionSpecialFilterAttribute());
 
-            // Configure Web API Routes:
-            // - Enable Attribute Mapping
-            // - Enable Default routes at /api.
-            httpConfiguration.MapHttpAttributeRoutes();
-            httpConfiguration.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional });
+            ConfigureFormatter(httpConfiguration);
+            ConfigureSwagger(httpConfiguration);
+            ConfigureRoute(httpConfiguration);
+            ConfigureLogger(httpConfiguration);
 
 #pragma warning disable CA2000 // Dispose objects before losing scope
 #pragma warning disable IDISP001 // Dispose created.
@@ -42,6 +50,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
 #pragma warning restore CA2000 // Dispose objects before losing scope
             container.Verify();
             app.PreventResponseCaching();
+            UseAuthentication(app);
             app.UseWebApi(httpConfiguration);
             httpConfiguration.EnsureInitialized();
 
