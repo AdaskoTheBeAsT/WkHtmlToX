@@ -57,13 +57,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
 
         [Theory]
         [InlineData(Unit.Millimeters, null, null)]
-        [InlineData(Unit.Millimeters, 1, "1mm")]
+        [InlineData(Unit.Millimeters, 1.0, "1mm")]
         [InlineData(Unit.Millimeters, 1.234, "1.23mm")]
         [InlineData(Unit.Millimeters, 1.236, "1.24mm")]
-        [InlineData(Unit.Inches, 1, "1in")]
+        [InlineData(Unit.Inches, 1.0, "1in")]
         [InlineData(Unit.Inches, 1.234, "1.23in")]
         [InlineData(Unit.Inches, 1.236, "1.24in")]
-        [InlineData(Unit.Centimeters, 1, "1cm")]
+        [InlineData(Unit.Centimeters, 1.0, "1cm")]
         [InlineData(Unit.Centimeters, 1.234, "1.23cm")]
         [InlineData(Unit.Centimeters, 1.236, "1.24cm")]
         public void ShouldReturnProperStringWhenInvokingGetMarginValue(
