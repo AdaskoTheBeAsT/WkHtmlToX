@@ -13,7 +13,7 @@
   <!-- Based on article https://www.thomaslevesque.com/2017/09/18/common-msbuild-properties-and-items-with-directory-build-props/ -->
   <PropertyGroup>
     <!-- Common ruleset shared by all projects -->
-    <CodeAnalysisRuleset>$(MSBuildThisFileDirectory)AdaskoTheBeAsT.WkHtmlToX.ruleset</CodeAnalysisRuleset>
+    <CodeAnalysisRuleset>$(MSBuildThisFileDirectory)AdaskoTheBeAsT.ruleset</CodeAnalysisRuleset>
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

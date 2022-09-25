@@ -347,7 +347,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
             _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
             _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
-            ////_module.Setup(m => m.Terminate());
             _module.Setup(m =>
                     m.CreateObjectSettings())
                 .Returns(objectSettingsPtr);
@@ -395,7 +394,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                 _module.Verify(m => m.DestroyObjectSetting(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.DestroyConverter(It.IsAny<IntPtr>()), Times.Once);
-                ////_module.Verify(m => m.Terminate(), Times.Once);
                 result.Should().BeTrue();
             }
         }
@@ -579,7 +577,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
             _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
             _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
-            ////_module.Setup(m => m.Terminate());
             _module.Setup(m =>
                     m.CreateObjectSettings())
                 .Returns(objectSettingsPtr);
@@ -624,7 +621,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                 _module.Verify(m => m.DestroyObjectSetting(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.DestroyConverter(It.IsAny<IntPtr>()), Times.Once);
-                ////_module.Verify(m => m.Terminate(), Times.Once);
                 result.Should().BeFalse();
             }
         }
@@ -655,7 +651,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
             _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
             _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
-            ////_module.Setup(m => m.Terminate());
             _module.Setup(m =>
                     m.CreateObjectSettings())
                 .Returns(objectSettingsPtr);
@@ -701,7 +696,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                 _module.Verify(m => m.DestroyObjectSetting(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Once);
                 _module.Verify(m => m.DestroyConverter(It.IsAny<IntPtr>()), Times.Once);
-                ////_module.Verify(m => m.Terminate(), Times.Once);
                 result.Should().BeTrue();
             }
         }
