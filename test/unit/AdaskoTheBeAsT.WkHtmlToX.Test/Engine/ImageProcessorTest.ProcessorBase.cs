@@ -49,14 +49,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var name = _fixture.Create<string>();
             var value = _fixture.Create<string>();
 
-            int SetGlobalSetting(
-                IntPtr ptr,
-                string n,
-                string? v) =>
-                intVal;
+            // ReSharper disable once ConvertToLocalFunction
+            Func<IntPtr, string, string?, int> setGlobalSetting = (_, _, _) => intVal;
 
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns((Func<IntPtr, string, string?, int>)SetGlobalSetting);
+                .Returns(setGlobalSetting);
 
             // Act
             var resultFunc = _sut.GetApplySettingFunc(useGlobal: true);
@@ -78,14 +75,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var name = _fixture.Create<string>();
             var value = _fixture.Create<string>();
 
-            int SetGlobalSetting(
-                IntPtr ptr,
-                string n,
-                string? v) =>
-                intVal;
+            // ReSharper disable once ConvertToLocalFunction
+            Func<IntPtr, string, string?, int> setGlobalSetting = (_, _, _) => intVal;
 
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns((Func<IntPtr, string, string?, int>)SetGlobalSetting);
+                .Returns(setGlobalSetting);
 
             // Act
             var resultFunc = _sut.GetApplySettingFunc(useGlobal: false);

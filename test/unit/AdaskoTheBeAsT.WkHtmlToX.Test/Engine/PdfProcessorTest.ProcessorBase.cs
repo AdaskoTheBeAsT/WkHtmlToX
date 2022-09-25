@@ -37,7 +37,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 #pragma warning disable IDISP004 // Don't ignore created IDisposable.
             Action action = () => _ = new PdfProcessor(
                 new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null),
-pdfModule: null);
+                pdfModule: null);
 #pragma warning restore IDISP004 // Don't ignore created IDisposable.
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 

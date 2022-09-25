@@ -55,22 +55,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var name = _fixture.Create<string>();
             var value = _fixture.Create<string>();
 
-            int SetGlobalSetting(
-                IntPtr ptr,
-                string n,
-                string? v) =>
-                intVal1;
+            // ReSharper disable once ConvertToLocalFunction
+            Func<IntPtr, string, string?, int> setGlobalSetting = (_, _, _) => intVal1;
 
-            int SetObjectSetting(
-                IntPtr ptr,
-                string n,
-                string? v) =>
-                intVal2;
+            // ReSharper disable once ConvertToLocalFunction
+            Func<IntPtr, string, string?, int> setObjectSetting = (_, _, _) => intVal2;
 
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                    .Returns((Func<IntPtr, string, string?, int>)SetGlobalSetting);
+                    .Returns(setGlobalSetting);
             _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns((Func<IntPtr, string, string?, int>)SetObjectSetting);
+                .Returns(setObjectSetting);
 
             // Act
             var resultFunc = _sut.GetApplySettingFunc(useGlobal: true);
@@ -95,22 +89,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var name = _fixture.Create<string>();
             var value = _fixture.Create<string>();
 
-            int SetGlobalSetting(
-                IntPtr ptr,
-                string n,
-                string? v) =>
-                intVal1;
+            // ReSharper disable once ConvertToLocalFunction
+            Func<IntPtr, string, string?, int> setGlobalSetting = (_, _, _) => intVal1;
 
-            int SetObjectSetting(
-                IntPtr ptr,
-                string n,
-                string? v) =>
-                intVal2;
+            // ReSharper disable once ConvertToLocalFunction
+            Func<IntPtr, string, string?, int> setObjectSetting = (_, _, _) => intVal2;
 
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns((Func<IntPtr, string, string?, int>)SetGlobalSetting);
+                .Returns(setGlobalSetting);
             _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns((Func<IntPtr, string, string?, int>)SetObjectSetting);
+                .Returns(setObjectSetting);
 
             // Act
             var resultFunc = _sut.GetApplySettingFunc(useGlobal: false);
