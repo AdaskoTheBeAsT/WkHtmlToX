@@ -12,7 +12,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
         [BeforeTestRun]
         public static void Initialize()
         {
-            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
+            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null);
 #pragma warning disable IDISP007 // Don't dispose injected
             Engine?.Dispose();
 #pragma warning restore IDISP007 // Don't dispose injected

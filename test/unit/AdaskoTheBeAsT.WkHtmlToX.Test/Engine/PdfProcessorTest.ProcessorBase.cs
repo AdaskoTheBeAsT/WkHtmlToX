@@ -23,7 +23,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             _fixture = new Fixture();
             _module = new Mock<IWkHtmlToPdfModule>();
             _sut = new PdfProcessor(
-                new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null),
+                new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null),
                 _module.Object);
         }
 
@@ -36,12 +36,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 #pragma warning disable IDISP004 // Don't ignore created IDisposable.
             Action action = () => _ = new PdfProcessor(
-                new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null),
-                null);
+                new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null),
+pdfModule: null);
 #pragma warning restore IDISP004 // Don't ignore created IDisposable.
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentNullException>();
         }
 
@@ -64,7 +64,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             // Arrange
             Action action = () => _sut.RegisterEvents(IntPtr.Zero);
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentException>();
         }
 
@@ -264,7 +264,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var errorMessage = _fixture.Create<string>();
             Action action = () => _sut.OnError(new IntPtr(1), errorMessage);
 
-            // Act & Assert
+            // Act and Assert
             action.Should().NotThrow();
         }
 
@@ -278,10 +278,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 
             var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
             {
-                ErrorAction = eventArgs =>
-                {
-                    result = eventArgs;
-                },
+                ErrorAction = eventArgs => result = eventArgs,
             };
 
             var sut = new PdfProcessor(configuration, _module.Object)
@@ -307,7 +304,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var errorMessage = _fixture.Create<string>();
             Action action = () => _sut.OnWarning(new IntPtr(1), errorMessage);
 
-            // Act & Assert
+            // Act and Assert
             action.Should().NotThrow();
         }
 
@@ -321,10 +318,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 
             var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
             {
-                WarningAction = eventArgs =>
-                {
-                    result = eventArgs;
-                },
+                WarningAction = eventArgs => result = eventArgs,
             };
 
             var sut = new PdfProcessor(configuration, _module.Object)
@@ -350,7 +344,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var code = _fixture.Create<int>();
             Action action = () => _sut.OnFinished(new IntPtr(1), code);
 
-            // Act & Assert
+            // Act and Assert
             action.Should().NotThrow();
         }
 
@@ -364,10 +358,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 
             var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
             {
-                FinishedAction = eventArgs =>
-                {
-                    result = eventArgs;
-                },
+                FinishedAction = eventArgs => result = eventArgs,
             };
 
             var sut = new PdfProcessor(configuration, _module.Object)
@@ -392,7 +383,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             // Arrange
             Action action = () => _sut.OnPhaseChanged(new IntPtr(1));
 
-            // Act & Assert
+            // Act and Assert
             action.Should().NotThrow();
         }
 
@@ -415,10 +406,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 
             var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
             {
-                PhaseChangedAction = eventArgs =>
-                {
-                    result = eventArgs;
-                },
+                PhaseChangedAction = eventArgs => result = eventArgs,
             };
 
             var sut = new PdfProcessor(configuration, _module.Object)
@@ -445,7 +433,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             // Arrange
             Action action = () => _sut.OnProgressChanged(new IntPtr(1));
 
-            // Act & Assert
+            // Act and Assert
             action.Should().NotThrow();
         }
 
@@ -462,10 +450,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 
             var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
             {
-                ProgressChangedAction = eventArgs =>
-                {
-                    result = eventArgs;
-                },
+                ProgressChangedAction = eventArgs => result = eventArgs,
             };
 
             var sut = new PdfProcessor(configuration, _module.Object)
@@ -495,7 +480,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             Action action = () => _sut.ApplyConfig(intPtr, settings: null, useGlobal);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            // Act & Assert
+            // Act and Assert
             action.Should().NotThrow();
         }
 
@@ -657,7 +642,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             Action action = () => _sut.Apply(intPtr, string.Empty, name, value: null, useGlobal: true);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentNullException>();
         }
 

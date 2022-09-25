@@ -26,13 +26,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
             _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
         }
 
-        [Given(@"I have SynchronizedPdfConverter")]
+        [Given("I have SynchronizedPdfConverter")]
         public void GivenIHaveSynchronizedPdfConverter()
         {
             _sut = new PdfConverter(GlobalInitializer.Engine!);
         }
 
-        [Given(@"I have complex html")]
+        [Given("I have complex html")]
         public void GivenIHaveComplexHtml()
         {
 #pragma warning disable SCS0018 // Path traversal: injection possible in {1} argument passed to '{0}'
@@ -42,19 +42,19 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
 #pragma warning restore SCS0018 // Path traversal: injection possible in {1} argument passed to '{0}'
         }
 
-        [When(@"I convert first time")]
+        [When("I convert first time")]
         public async Task WhenIConvertFirstTimeAsync()
         {
             _content1 = await GenerateContentAsync().ConfigureAwait(false);
         }
 
-        [When(@"I convert same html second time")]
+        [When("I convert same html second time")]
         public async Task WhenIConvertSameHtmlSecondTimeAsync()
         {
             _content2 = await GenerateContentAsync().ConfigureAwait(false);
         }
 
-        [Then(@"I should obtain files with same length")]
+        [Then("I should obtain files with same length")]
         public void ThenIShouldObtainFilesWithSameLength()
         {
             _content1.Should().HaveCount(_content2?.Length ?? 0);

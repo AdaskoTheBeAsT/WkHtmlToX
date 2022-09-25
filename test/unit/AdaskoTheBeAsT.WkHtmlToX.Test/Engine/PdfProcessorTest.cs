@@ -73,7 +73,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                 .Returns((Func<IntPtr, string, string?, int>)SetObjectSetting);
 
             // Act
-            var resultFunc = _sut.GetApplySettingFunc(true);
+            var resultFunc = _sut.GetApplySettingFunc(useGlobal: true);
             var result = resultFunc(new IntPtr(1), name, value);
 
             // Assert
@@ -113,7 +113,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                 .Returns((Func<IntPtr, string, string?, int>)SetObjectSetting);
 
             // Act
-            var resultFunc = _sut.GetApplySettingFunc(false);
+            var resultFunc = _sut.GetApplySettingFunc(useGlobal: false);
             var result = resultFunc(new IntPtr(1), name, value);
 
             // Assert
@@ -131,10 +131,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // ReSharper disable once AssignmentIsFullyDiscarded
-            Action action = () => _ = _sut.CreateConverter(null);
+            Action action = () => _ = _sut.CreateConverter(document: null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentNullException>();
         }
 
@@ -264,7 +264,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var captionText = _fixture.Create<string>();
             document.GlobalSettings.DocumentTitle = documentTitle;
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            document.ObjectSettings.Add(null);
+            document.ObjectSettings.Add(item: null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             document.ObjectSettings.Add(
                 new PdfObjectSettings
@@ -311,7 +311,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var document = new HtmlToPdfDocument();
             Action action = () => _sut.Convert(document, _ => Stream.Null);
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentException>();
         }
 
@@ -326,7 +326,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 
             Action action = () => _sut.Convert(document, _ => Stream.Null);
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<HtmlContentEmptyException>();
         }
 
@@ -355,7 +355,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                 m =>
                     m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
-                .Returns(true);
+                .Returns(value: true);
             _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
             _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
             _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
@@ -420,10 +420,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var converterPtr = new IntPtr(_fixture.Create<int>());
             var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.AddContent(converterPtr, objectSettingsPtr, null);
+            Action action = () => _sut.AddContent(converterPtr, objectSettingsPtr, pdfObjectSettings: null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentNullException>();
         }
 
@@ -441,7 +441,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 
             Action action = () => _sut.AddContent(converterPtr, objectSettingsPtr, pdfObjectSettings);
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<HtmlContentEmptyException>();
         }
 
@@ -453,10 +453,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.AddContentString(converterPtr, objectSettingsPtr, null);
+            Action action = () => _sut.AddContentString(converterPtr, objectSettingsPtr, pdfObjectSettings: null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentNullException>();
         }
 
@@ -474,7 +474,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 
             Action action = () => _sut.AddContentString(converterPtr, objectSettingsPtr, pdfObjectSettings);
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentException>();
         }
 
@@ -486,10 +486,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, null);
+            Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, htmlContentStream: null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentNullException>();
         }
 
@@ -519,7 +519,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, memoryStream);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            // Act & Assert
+            // Act and Assert
             action.Should().NotThrow();
         }
 
@@ -537,7 +537,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, streamMock.Object);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<HtmlContentStreamTooLargeException>();
         }
 
@@ -546,10 +546,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         {
             // Arrange
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.Convert(null, _ => Stream.Null);
+            Action action = () => _sut.Convert(document: null, _ => Stream.Null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentNullException>();
         }
 
@@ -560,10 +560,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             var document = new HtmlToPdfDocument();
             document.ObjectSettings.Add(new PdfObjectSettings());
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Action action = () => _sut.Convert(document, null);
+            Action action = () => _sut.Convert(document, createStreamFunc: null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentNullException>();
         }
 
@@ -587,7 +587,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                 m =>
                     m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
-                .Returns(false);
+                .Returns(value: false);
             _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
             _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
             _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
@@ -663,7 +663,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                 m =>
                     m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
             _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
-                .Returns(true);
+                .Returns(value: true);
             _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
             _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
             _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));

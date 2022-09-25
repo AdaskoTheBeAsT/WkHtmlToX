@@ -28,7 +28,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 
         public EngineTest()
         {
-            _configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
+            _configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null);
             _libraryLoaderMock = new Mock<ILibraryLoader>();
             _libraryLoaderFactoryMock = new Mock<ILibraryLoaderFactory>();
             _libraryLoaderFactoryMock
@@ -67,7 +67,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                     new Mock<IImageProcessor>().Object);
             };
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentNullException>();
         }
 
@@ -75,7 +75,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         public void ShouldThrowExceptionWhenNullLibraryLoaderFactoryPassed()
         {
             // Arrange
-            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
+            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null);
             Action action = () =>
             {
                 using var engine = new WkHtmlToXEngine(
@@ -85,7 +85,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                     new Mock<IImageProcessor>().Object);
             };
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentNullException>();
         }
 
@@ -93,7 +93,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         public void ShouldThrowExceptionWhenNullPdfProcessorPassed()
         {
             // Arrange
-            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
+            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null);
             Action action = () =>
             {
                 using var engine = new WkHtmlToXEngine(
@@ -103,7 +103,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                     new Mock<IImageProcessor>().Object);
             };
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentNullException>();
         }
 
@@ -111,7 +111,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         public void ShouldThrowExceptionWhenNullImageProcessorPassed()
         {
             // Arrange
-            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
+            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null);
             Action action = () =>
             {
                 using var engine = new WkHtmlToXEngine(
@@ -121,7 +121,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                     null!);
             };
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentNullException>();
         }
 
@@ -129,9 +129,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         public void ProcessShouldThrowExceptionWhenNullCancellationTokenPassed()
         {
             // Arrange
-            Action action = () => _sut.Process(null);
+            Action action = () => _sut.Process(obj: null);
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentNullException>();
         }
 
@@ -141,7 +141,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             // Arrange
             Action action = () => _sut.Process(new object());
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<Exception>();
         }
 
@@ -191,10 +191,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 
             _pdfProcessorMock
                 .Setup(p => p.Convert(It.IsAny<HtmlToPdfDocument>(), It.IsAny<Func<int, Stream>>()))
-                .Returns(true);
+                .Returns(value: true);
             _imageProcessorMock
                 .Setup(p => p.Convert(It.IsAny<HtmlToImageDocument>(), It.IsAny<Func<int, Stream>>()))
-                .Returns(true);
+                .Returns(value: true);
             var pdfConvertWorkItem = new PdfConvertWorkItem(new HtmlToPdfDocument(), _ => Stream.Null);
             var imageConvertWorkItem = new ImageConvertWorkItem(new HtmlToImageDocument(), _ => Stream.Null);
 

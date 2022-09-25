@@ -73,14 +73,14 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders
         public void GetModuleShouldThrowWhenNotKnownPlatformIdPassed()
         {
             // Arrange
-            var configuration = new WkHtmlToXConfiguration(12345, null);
+            var configuration = new WkHtmlToXConfiguration(12345, runtimeIdentifier: null);
 
             // ReSharper disable once AssignmentIsFullyDiscarded
 #pragma warning disable IDISP004 // Don't ignore created IDisposable.
             Action action = () => _ = _sut.Create(configuration);
 #pragma warning restore IDISP004 // Don't ignore created IDisposable.
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<InvalidPlatformIdentifierException>();
         }
 
@@ -88,14 +88,14 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders
         public void GetModuleShouldThrowWhenLinuxPlatformIdAndNotKnownRuntimeIdentifierPassed()
         {
             // Arrange
-            var configuration = new WkHtmlToXConfiguration((int)PlatformID.Unix, null);
+            var configuration = new WkHtmlToXConfiguration((int)PlatformID.Unix, runtimeIdentifier: null);
 
             // ReSharper disable once AssignmentIsFullyDiscarded
 #pragma warning disable IDISP004 // Don't ignore created IDisposable.
             Action action = () => _ = _sut.Create(configuration);
 #pragma warning restore IDISP004 // Don't ignore created IDisposable.
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<InvalidLinuxRuntimeIdentifierException>();
         }
 

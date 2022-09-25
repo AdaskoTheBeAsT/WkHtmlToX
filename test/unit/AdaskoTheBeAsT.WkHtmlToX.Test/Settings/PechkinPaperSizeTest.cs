@@ -17,7 +17,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
             // ReSharper disable once AssignmentIsFullyDiscarded
             Action action = () => _ = PechkinPaperSize.FromPaperKind(PaperKind.Custom);
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentOutOfRangeException>();
         }
 
@@ -30,7 +30,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
                 .Cast<PaperKind>()
                 .Where(pk => pk != PaperKind.Custom);
 
-            // Act & Assert
+            // Act and Assert
             using (new AssertionScope())
             {
                 foreach (var paperKind in paperKinds)
@@ -56,7 +56,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
 #pragma warning restore S1481 // Unused local variables should be removed
             };
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentOutOfRangeException>();
         }
 
@@ -69,7 +69,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
                     .Cast<PaperKind>()
                     .Where(pk => pk != PaperKind.Custom);
 
-            // Act & Assert
+            // Act and Assert
             using (new AssertionScope())
             {
                 foreach (var paperKind in paperKinds)

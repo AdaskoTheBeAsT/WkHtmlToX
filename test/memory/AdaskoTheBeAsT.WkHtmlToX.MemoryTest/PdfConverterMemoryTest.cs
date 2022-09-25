@@ -22,7 +22,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest
         {
             _output = output ?? throw new ArgumentNullException(nameof(output));
             DotMemoryUnitTestOutput.SetOutputMethod(_output.WriteLine);
-            _engine = new WkHtmlToXEngine(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null));
+            _engine = new WkHtmlToXEngine(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null));
             _engine.Initialize();
         }
 
@@ -44,7 +44,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest
             var converter = new PdfConverter(_engine);
 #pragma warning disable SEC0112 // Path Tampering Unvalidated File Path
 #pragma warning disable SCS0018 // Potential Path Traversal vulnerability was found where '{0}' in '{1}' may be tainted by user-controlled data from '{2}' in method '{3}'.
-            using var stream = new FileStream(
+            await using var stream = new FileStream(
                 Path.Combine(
                     "Files",
                     $"{DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture)}.pdf"),

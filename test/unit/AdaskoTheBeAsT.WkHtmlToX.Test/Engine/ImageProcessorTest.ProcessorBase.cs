@@ -19,14 +19,14 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
         {
             _fixture = new Fixture();
             _module = new Mock<IWkHtmlToImageModule>();
-            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
+            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null);
             _sut = new ImageProcessor(configuration, _module.Object);
         }
 
         [Fact]
         public void ShouldThrowExceptionWhenNullPassedInModuleConstructor()
         {
-            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
+            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null);
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
             // ReSharper disable once AssignmentIsFullyDiscarded
@@ -37,7 +37,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 #pragma warning restore MA0003 // Name parameter
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-            // Act & Assert
+            // Act and Assert
             action.Should().Throw<ArgumentNullException>();
         }
 
@@ -59,7 +59,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                 .Returns((Func<IntPtr, string, string?, int>)SetGlobalSetting);
 
             // Act
-            var resultFunc = _sut.GetApplySettingFunc(true);
+            var resultFunc = _sut.GetApplySettingFunc(useGlobal: true);
             var result = resultFunc(new IntPtr(1), name, value);
 
             // Assert
@@ -88,7 +88,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                 .Returns((Func<IntPtr, string, string?, int>)SetGlobalSetting);
 
             // Act
-            var resultFunc = _sut.GetApplySettingFunc(false);
+            var resultFunc = _sut.GetApplySettingFunc(useGlobal: false);
             var result = resultFunc(new IntPtr(1), name, value);
 
             // Assert
