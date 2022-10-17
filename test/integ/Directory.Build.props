@@ -9,12 +9,12 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
     <PackageReference Include="Alba" Version="6.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.10" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
     <PackageReference Include="Alba" Version="4.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.29" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.30" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' OR '$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net47' OR '$(TargetFramework)' == 'net471' OR '$(TargetFramework)' == 'net472' OR '$(TargetFramework)' == 'net48'  OR '$(TargetFramework)' == 'net481' ">
