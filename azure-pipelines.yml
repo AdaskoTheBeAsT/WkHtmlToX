@@ -112,7 +112,7 @@ steps:
       testResultsFiles: "*.trx"
       searchFolder: "$(testResultsDirectory)"
 
-  - task: reportgenerator@4
+  - task: reportgenerator@5
     inputs:
       reports: "$(testResultsDirectory)/coverage.*.cobertura.xml"
       targetdir: "$(testResultsDirectory)/coverage"
