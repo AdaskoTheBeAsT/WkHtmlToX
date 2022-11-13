@@ -1,8 +1,11 @@
 using System;
+using System.Net.Http;
 using System.Web.Http;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.BusinessLogic;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
+using AdaskoTheBeAsT.WkHtmlToX.WebApiOwin.Handlers;
+using Microsoft.Owin;
 using Owin;
 using SimpleInjector;
 using SimpleInjector.Integration.WebApi;
@@ -29,6 +32,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
             });
 
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+            container.Register(
+                () =>
+                    container.GetInstance<CurrentRequest>().Value.GetOwinContext(),
+                Lifestyle.Scoped);
             container.RegisterSingleton<IHtmlGenerator, SmallHtmlGenerator>();
             container.RegisterSingleton<IHtmlToPdfDocumentGenerator, HtmlToPdfDocumentGenerator>();
             var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);

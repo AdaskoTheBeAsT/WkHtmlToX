@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http.Formatting;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -14,9 +15,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
                 throw new ArgumentNullException(nameof(config));
             }
 
-            config.Formatters.Remove(config.Formatters.XmlFormatter);
+            config.Formatters.Clear();
 
-            config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings
+            var settings = new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 DefaultValueHandling = DefaultValueHandling.Include,
@@ -28,6 +29,12 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             };
+
+            JsonConvert.DefaultSettings = () => settings;
+
+            config.Formatters.Add(new JsonMediaTypeFormatter());
+
+            config.Formatters.JsonFormatter.SerializerSettings = settings;
 
             config.Formatters.JsonFormatter.UseDataContractJsonSerializer = false;
         }

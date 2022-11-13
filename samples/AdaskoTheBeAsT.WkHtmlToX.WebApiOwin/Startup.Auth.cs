@@ -16,7 +16,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
             app.UseJsonWebToken(
                 issuer: Settings.Auth.Issuer,
                 audience: Settings.Auth.Audience,
-                signingKey: Settings.Auth.IssuerCertificate);
+                signingKey: Settings.Auth.GetIssuerCertificate());
         }
     }
 }
