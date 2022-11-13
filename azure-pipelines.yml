@@ -54,7 +54,6 @@ steps:
       projectName: AdaskoTheBeAsT.WkHtmlToX
       extraProperties: |
         sonar.resharper.cs.reportPath=$(Build.SourcesDirectory)/CodeQualityResults.xml
-        sonar.cs.opencover.reportsPaths=$(testResultsDirectory)/coverage.net461.opencover.xml,$(testResultsDirectory)/coverage.netcoreapp3.1.opencover.xml
 
   - task: DotNetCoreCLI@2
     displayName: Build
@@ -82,7 +81,7 @@ steps:
       command: test
       projects: "$(unitTestProjects)"
       publishTestResults: false
-      arguments: '--configuration $(buildConfiguration) --collect:"Code Coverage" /t:rebuild /p:ContinuousIntegrationBuild=false /p:CollectCoverage=true "/p:CoverletOutputFormat=\"opencover,cobertura\"" /p:CoverletOutput=$(testResultsDirectory)/coverage  --logger:"trx" --results-directory $(testResultsDirectory)'
+      arguments: '--configuration $(buildConfiguration) --collect:"Code Coverage" --collect:"XPlat Code Coverage" --logger:"trx" --results-directory $(testResultsDirectory)'
 
   - task: ResharperCli@2
     inputs:
@@ -114,13 +113,13 @@ steps:
 
   - task: reportgenerator@5
     inputs:
-      reports: "$(testResultsDirectory)/coverage.*.cobertura.xml"
+      reports: "$(testResultsDirectory)/**/coverage.cobertura.xml"
       targetdir: "$(testResultsDirectory)/coverage"
 
   - task: PublishCodeCoverageResults@1
     inputs:
       codeCoverageTool: "Cobertura"
-      summaryFileLocation: "$(testResultsDirectory)/coverage.*.cobertura.xml"
+      summaryFileLocation: "$(testResultsDirectory)/**/coverage.cobertura.xml"
       reportDirectory: "$(testResultsDirectory)/coverage"
 
   - task: CopyFiles@2
