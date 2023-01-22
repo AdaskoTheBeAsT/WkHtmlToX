@@ -24,7 +24,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
 
         protected static string GetCurrentDir()
         {
+#if NET7_0_OR_GREATER
+            var uri = new Uri(Assembly.GetExecutingAssembly().Location);
+#else
             var uri = new Uri(Assembly.GetExecutingAssembly().GetName().CodeBase!);
+#endif
 
             return Path.GetDirectoryName(uri.LocalPath) ?? "./";
         }
