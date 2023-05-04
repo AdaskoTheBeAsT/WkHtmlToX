@@ -34,7 +34,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.ConsoleApp
 #pragma warning restore CC0022 // Should dispose object
 #pragma warning restore SCS0018 // Potential Path Traversal vulnerability was found where '{0}' in '{1}' may be tainted by user-controlled data from '{2}' in method '{3}'.
 #pragma warning restore SEC0112 // Path Tampering Unvalidated File Path
+#pragma warning disable IDISP011
                 var converted = await converter.ConvertAsync(doc, _ => stream, CancellationToken.None).ConfigureAwait(false);
+#pragma warning restore IDISP011
                 Console.WriteLine(converted);
             }
 

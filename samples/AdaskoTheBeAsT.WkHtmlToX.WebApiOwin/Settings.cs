@@ -39,7 +39,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
                         $"Your have to set up a '{Constants.Settings.Auth.CertThumbprint}' value in the web.config before using Settings.Auth.IssuerCertificate");
                 }
 
-                var signingCertificate = X509.LocalMachine.My.Thumbprint.Find(IssuerCertThumbprint).FirstOrDefault()!;
+                var signingCertificate = X509.LocalMachine.My.Thumbprint.Find(IssuerCertThumbprint).FirstOrDefault();
 
                 if (signingCertificate == null)
                 {
