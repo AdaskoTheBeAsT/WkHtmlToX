@@ -58,7 +58,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test
             var document = new HtmlToImageDocument();
 
             // Act
+#pragma warning disable IDISP011
             var result = await _sut.ConvertAsync(document, _ => memoryStream, CancellationToken.None);
+#pragma warning restore IDISP011
 
             // Assert
             using (new AssertionScope())

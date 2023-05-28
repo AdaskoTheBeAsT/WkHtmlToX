@@ -230,7 +230,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
 
             // Act
             // ReSharper disable once AccessToDisposedClosure
+#pragma warning disable IDISP011
             var result = _sut.Convert(document, _ => memoryStream);
+#pragma warning restore IDISP011
 
             // Assert
             using (new AssertionScope())
