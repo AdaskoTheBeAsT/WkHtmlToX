@@ -207,7 +207,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                     m =>
                         m.SetGlobalSetting(
                             It.Is<IntPtr>(v => v == globalSettingsPtr),
-                            It.Is<string>(v => v == "documentTitle"),
+                            It.Is<string>(v => v == nameof(documentTitle)),
                             It.Is<string?>(v => v == documentTitle)),
                     Times.Once);
                 _module.Verify(
@@ -272,7 +272,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                     m =>
                         m.SetGlobalSetting(
                             It.Is<IntPtr>(v => v == globalSettingsPtr),
-                            It.Is<string>(v => v == "documentTitle"),
+                            It.Is<string>(v => v == nameof(documentTitle)),
                             It.Is<string?>(v => v == documentTitle)),
                     Times.Once);
                 _module.Verify(m => m.CreateObjectSettings(), Times.Once);
@@ -381,7 +381,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                     m =>
                         m.SetGlobalSetting(
                             It.Is<IntPtr>(v => v == globalSettingsPtr),
-                            It.Is<string>(v => v == "documentTitle"),
+                            It.Is<string>(v => v == nameof(documentTitle)),
                             It.Is<string?>(v => v == documentTitle)),
                     Times.Once);
                 _module.Verify(m => m.CreateObjectSettings(), Times.Once);
@@ -608,7 +608,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                     m =>
                         m.SetGlobalSetting(
                             It.Is<IntPtr>(v => v == globalSettingsPtr),
-                            It.Is<string>(v => v == "documentTitle"),
+                            It.Is<string>(v => v == nameof(documentTitle)),
                             It.Is<string?>(v => v == documentTitle)),
                     Times.Once);
                 _module.Verify(m => m.CreateObjectSettings(), Times.Once);
@@ -685,7 +685,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                     m =>
                         m.SetGlobalSetting(
                             It.Is<IntPtr>(v => v == globalSettingsPtr),
-                            It.Is<string>(v => v == "documentTitle"),
+                            It.Is<string>(v => v == nameof(documentTitle)),
                             It.Is<string?>(v => v == documentTitle)),
                     Times.Once);
                 _module.Verify(m => m.CreateObjectSettings(), Times.Once);

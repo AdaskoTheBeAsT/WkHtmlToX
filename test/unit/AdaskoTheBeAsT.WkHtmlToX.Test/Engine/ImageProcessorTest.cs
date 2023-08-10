@@ -91,7 +91,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                     m =>
                         m.SetGlobalSetting(
                             It.Is<IntPtr>(v => v == globalSettingsPtr),
-                            It.Is<string>(v => v == "quality"),
+                            It.Is<string>(v => v == nameof(quality)),
                             It.Is<string?>(v => v == quality)),
                     Times.Once);
                 result.converterPtr.Should().Be(converterPtr);
@@ -191,7 +191,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                     m =>
                         m.SetGlobalSetting(
                             It.Is<IntPtr>(v => v == globalSettingsPtr),
-                            It.Is<string>(v => v == "quality"),
+                            It.Is<string>(v => v == nameof(quality)),
                             It.Is<string?>(v => v == quality)),
                     Times.Once);
                 _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()), Times.Never);
@@ -242,7 +242,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                     m =>
                         m.SetGlobalSetting(
                             It.Is<IntPtr>(v => v == globalSettingsPtr),
-                            It.Is<string>(v => v == "quality"),
+                            It.Is<string>(v => v == nameof(quality)),
                             It.Is<string?>(v => v == quality)),
                     Times.Once);
                 _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()), Times.Once);

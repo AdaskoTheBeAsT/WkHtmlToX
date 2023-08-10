@@ -35,7 +35,8 @@ steps:
     displayName: Restore
     inputs:
       command: restore
-      arguments: AdaskoTheBeAsT.WkHtmlToX.sln --verbosity quiet
+      verbosityRestore: Quiet
+      arguments: AdaskoTheBeAsT.WkHtmlToX.sln
 
   - task: SonarCloudPrepare@1
     displayName: "Prepare analysis on SonarCloud"
