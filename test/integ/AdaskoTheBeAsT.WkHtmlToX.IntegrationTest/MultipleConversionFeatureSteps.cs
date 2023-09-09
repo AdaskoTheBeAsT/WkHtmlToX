@@ -104,7 +104,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
             }
             finally
             {
-#if NETCOREAPP3_1 || NET
+#if NET6_0_OR_GREATER
                 if (stream != null)
                 {
                     await stream.DisposeAsync().ConfigureAwait(false);
@@ -113,7 +113,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
                 await ms.DisposeAsync().ConfigureAwait(false);
 #else
                 stream?.Dispose();
-                ms?.Dispose();
+                ms.Dispose();
 #endif
             }
         }
