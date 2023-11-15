@@ -246,8 +246,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
             using var source = new CancellationTokenSource(TimeSpan.FromSeconds(3));
             _sut.Process(source.Token);
 
-            Func<Task<bool>> action1 = async () => await pdfConvertWorkItem.TaskCompletionSource.Task.ConfigureAwait(false);
-            Func<Task<bool>> action2 = async () => await imageConvertWorkItem.TaskCompletionSource.Task.ConfigureAwait(false);
+            Func<Task<bool>> action1 = async () => await pdfConvertWorkItem.TaskCompletionSource.Task;
+            Func<Task<bool>> action2 = async () => await imageConvertWorkItem.TaskCompletionSource.Task;
 
             // Assert
             using (new AssertionScope())
@@ -259,8 +259,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                     p => p.Convert(It.IsAny<HtmlToPdfDocument>(), It.IsAny<Func<int, Stream>>()), Times.Once);
                 _imageProcessorMock.Verify(
                     p => p.Convert(It.IsAny<HtmlToImageDocument>(), It.IsAny<Func<int, Stream>>()), Times.Once);
-                await action1.Should().ThrowAsync<ArgumentOutOfRangeException>().ConfigureAwait(false);
-                await action2.Should().ThrowAsync<ArgumentOutOfRangeException>().ConfigureAwait(false);
+                await action1.Should().ThrowAsync<ArgumentOutOfRangeException>();
+                await action2.Should().ThrowAsync<ArgumentOutOfRangeException>();
             }
         }
 
