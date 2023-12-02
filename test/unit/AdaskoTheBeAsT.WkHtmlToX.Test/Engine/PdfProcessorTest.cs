@@ -286,7 +286,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine
                 result.converterPtr.Should().Be(converterPtr);
                 result.globalSettingsPtr.Should().Be(globalSettingsPtr);
                 result.objectSettingsPtrs.Should().NotBeNull();
-                result.objectSettingsPtrs.Should().HaveCount(1);
+                result.objectSettingsPtrs.Should().ContainSingle();
                 result.objectSettingsPtrs[0].Should().Be(objectSettingsPtr);
             }
         }

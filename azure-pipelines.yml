@@ -26,6 +26,13 @@ steps:
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: UseDotNet@2
+    displayName: "Use .NET Core SDK 7.0.x"
+    inputs:
+      packageType: "sdk"
+      version: 7.0.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
+  - task: UseDotNet@2
     displayName: "Use .NET Core SDK from global.json"
     inputs:
       packageType: "sdk"

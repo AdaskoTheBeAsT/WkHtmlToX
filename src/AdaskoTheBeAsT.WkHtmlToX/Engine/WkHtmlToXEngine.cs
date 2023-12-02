@@ -69,10 +69,19 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
                     IsBackground = true,
                 };
 
+#if NETSTANDARD2_0
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     thread.SetApartmentState(ApartmentState.STA);
                 }
+#endif
+
+#if NET6_0_OR_GREATER
+                if (OperatingSystem.IsWindows())
+                {
+                    thread.SetApartmentState(ApartmentState.STA);
+                }
+#endif
 
                 thread.Start(_cancellationTokenSource.Token);
                 _initialized = true;
@@ -123,10 +132,18 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine
 #pragma warning disable S108 // Nested blocks of code should not be left empty
         internal void Process(object? obj)
         {
+#if NETSTANDARD2_0
             if (obj is null)
             {
                 throw new ArgumentNullException(nameof(obj));
             }
+#endif
+
+#if NET6_0_OR_GREATER
+#pragma warning disable RCS1256 // Invalid argument null check.
+            ArgumentNullException.ThrowIfNull(obj);
+#pragma warning restore RCS1256 // Invalid argument null check.
+#endif
 
             var token = (CancellationToken)obj;
 
