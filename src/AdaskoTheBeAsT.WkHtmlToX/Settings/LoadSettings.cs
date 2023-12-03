@@ -1,4 +1,3 @@
-#nullable enable
 using System.Collections.Generic;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
