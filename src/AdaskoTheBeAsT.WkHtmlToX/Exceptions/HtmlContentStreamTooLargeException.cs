@@ -4,34 +4,33 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 #endif
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Exceptions
-{
-    [ExcludeFromCodeCoverage]
-    [Serializable]
+namespace AdaskoTheBeAsT.WkHtmlToX.Exceptions;
+
+[ExcludeFromCodeCoverage]
+[Serializable]
 #pragma warning disable S3925 // "ISerializable" should be implemented correctly
-    public class HtmlContentStreamTooLargeException
+public class HtmlContentStreamTooLargeException
 #pragma warning restore S3925 // "ISerializable" should be implemented correctly
-        : Exception
+    : Exception
+{
+    public HtmlContentStreamTooLargeException()
     {
-        public HtmlContentStreamTooLargeException()
-        {
-        }
+    }
 
-        public HtmlContentStreamTooLargeException(string message)
-            : base(message)
-        {
-        }
+    public HtmlContentStreamTooLargeException(string message)
+        : base(message)
+    {
+    }
 
-        public HtmlContentStreamTooLargeException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+    public HtmlContentStreamTooLargeException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
 
 #if NETSTANDARD2_0
-        protected HtmlContentStreamTooLargeException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-#endif
+    protected HtmlContentStreamTooLargeException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
+#endif
 }

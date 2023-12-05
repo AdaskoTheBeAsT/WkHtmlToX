@@ -2,21 +2,20 @@ using System;
 using System.IO;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.WorkItems
+namespace AdaskoTheBeAsT.WkHtmlToX.WorkItems;
+
+public sealed class PdfConvertWorkItem
+    : ConvertWorkItemBase
 {
-    public sealed class PdfConvertWorkItem
-        : ConvertWorkItemBase
+    public PdfConvertWorkItem(
+        IHtmlToPdfDocument document,
+        Func<int, Stream> streamFunc)
+        : base(streamFunc)
     {
-        public PdfConvertWorkItem(
-            IHtmlToPdfDocument document,
-            Func<int, Stream> streamFunc)
-            : base(streamFunc)
-        {
-            Document = document ?? throw new ArgumentNullException(nameof(document));
-        }
-
-        public IHtmlToPdfDocument Document { get; }
-
-        public override void Accept(IWorkItemVisitor visitor) => visitor.Visit(this);
+        Document = document ?? throw new ArgumentNullException(nameof(document));
     }
+
+    public IHtmlToPdfDocument Document { get; }
+
+    public override void Accept(IWorkItemVisitor visitor) => visitor.Visit(this);
 }

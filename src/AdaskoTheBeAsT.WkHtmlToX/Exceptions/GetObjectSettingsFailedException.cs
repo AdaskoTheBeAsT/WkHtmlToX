@@ -4,34 +4,33 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 #endif
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Exceptions
-{
-    [ExcludeFromCodeCoverage]
-    [Serializable]
+namespace AdaskoTheBeAsT.WkHtmlToX.Exceptions;
+
+[ExcludeFromCodeCoverage]
+[Serializable]
 #pragma warning disable S3925 // "ISerializable" should be implemented correctly
-    public class GetObjectSettingsFailedException
+public class GetObjectSettingsFailedException
 #pragma warning restore S3925 // "ISerializable" should be implemented correctly
-        : Exception
+    : Exception
+{
+    public GetObjectSettingsFailedException()
     {
-        public GetObjectSettingsFailedException()
-        {
-        }
+    }
 
-        public GetObjectSettingsFailedException(string message)
-            : base(message)
-        {
-        }
+    public GetObjectSettingsFailedException(string message)
+        : base(message)
+    {
+    }
 
-        public GetObjectSettingsFailedException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+    public GetObjectSettingsFailedException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
 
 #if NETSTANDARD2_0
-        protected GetObjectSettingsFailedException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-#endif
+    protected GetObjectSettingsFailedException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
+#endif
 }

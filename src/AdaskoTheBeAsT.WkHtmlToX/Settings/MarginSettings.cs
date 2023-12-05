@@ -1,52 +1,51 @@
 using System.Globalization;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Settings
+namespace AdaskoTheBeAsT.WkHtmlToX.Settings;
+
+public class MarginSettings
 {
-    public class MarginSettings
+    public MarginSettings()
     {
-        public MarginSettings()
+        Unit = Unit.Millimeters;
+    }
+
+    public MarginSettings(double top, double right, double bottom, double left)
+        : this()
+    {
+        Top = top;
+
+        Bottom = bottom;
+
+        Left = left;
+
+        Right = right;
+    }
+
+    public Unit Unit { get; set; }
+
+    public double? Top { get; set; }
+
+    public double? Bottom { get; set; }
+
+    public double? Left { get; set; }
+
+    public double? Right { get; set; }
+
+    public string? GetMarginValue(double? value)
+    {
+        if (!value.HasValue)
         {
-            Unit = Unit.Millimeters;
+            return null;
         }
 
-        public MarginSettings(double top, double right, double bottom, double left)
-            : this()
+        var strUnit = Unit switch
         {
-            Top = top;
+            Unit.Inches => "in",
+            Unit.Millimeters => "mm",
+            Unit.Centimeters => "cm",
+            _ => "in",
+        };
 
-            Bottom = bottom;
-
-            Left = left;
-
-            Right = right;
-        }
-
-        public Unit Unit { get; set; }
-
-        public double? Top { get; set; }
-
-        public double? Bottom { get; set; }
-
-        public double? Left { get; set; }
-
-        public double? Right { get; set; }
-
-        public string? GetMarginValue(double? value)
-        {
-            if (!value.HasValue)
-            {
-                return null;
-            }
-
-            var strUnit = Unit switch
-            {
-                Unit.Inches => "in",
-                Unit.Millimeters => "mm",
-                Unit.Centimeters => "cm",
-                _ => "in",
-            };
-
-            return $"{value.Value.ToString("0.##", CultureInfo.InvariantCulture)}{strUnit}";
-        }
+        return $"{value.Value.ToString("0.##", CultureInfo.InvariantCulture)}{strUnit}";
     }
 }

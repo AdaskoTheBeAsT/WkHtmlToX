@@ -7,36 +7,35 @@ using System.Runtime.InteropServices;
 using System.Security;
 using AdaskoTheBeAsT.WkHtmlToX.Loaders;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Native
-{
+namespace AdaskoTheBeAsT.WkHtmlToX.Native;
+
 #pragma warning disable CA1060 // Move pinvokes to native methods class
-    internal static class SystemWindowsNativeMethods
-    {
-        private const string KernelLib = "kernel32";
+internal static class SystemWindowsNativeMethods
+{
+    private const string KernelLib = "kernel32";
 
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport(KernelLib, CharSet = CharSet.Unicode, BestFitMapping = false, SetLastError = true)]
-        internal static extern SafeLibraryHandle LoadLibrary(string fileName);
+    [SuppressUnmanagedCodeSecurity]
+    [DllImport(KernelLib, CharSet = CharSet.Unicode, BestFitMapping = false, SetLastError = true)]
+    internal static extern SafeLibraryHandle LoadLibrary(string fileName);
 
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport(KernelLib, CharSet = CharSet.Unicode, BestFitMapping = false, SetLastError = true)]
-        internal static extern SafeLibraryHandle LoadLibraryEx(
-            string fileName,
-            IntPtr hFile,
-            [MarshalAs(UnmanagedType.U4)] LoadLibraryFlags dwFlags);
+    [SuppressUnmanagedCodeSecurity]
+    [DllImport(KernelLib, CharSet = CharSet.Unicode, BestFitMapping = false, SetLastError = true)]
+    internal static extern SafeLibraryHandle LoadLibraryEx(
+        string fileName,
+        IntPtr hFile,
+        [MarshalAs(UnmanagedType.U4)] LoadLibraryFlags dwFlags);
 
-        [SuppressUnmanagedCodeSecurity]
+    [SuppressUnmanagedCodeSecurity]
 #if NET
 #else
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+    [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
 #endif
-        [DllImport(KernelLib, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool FreeLibrary(IntPtr hModule);
+    [DllImport(KernelLib, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool FreeLibrary(IntPtr hModule);
 
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport(KernelLib, CharSet = CharSet.Unicode, ExactSpelling = true, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        internal static extern IntPtr GetProcAddress(SafeLibraryHandle hModule, string procname);
-    }
-#pragma warning restore CA1060 // Move pinvokes to native methods class
+    [SuppressUnmanagedCodeSecurity]
+    [DllImport(KernelLib, CharSet = CharSet.Unicode, ExactSpelling = true, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+    internal static extern IntPtr GetProcAddress(SafeLibraryHandle hModule, string procname);
 }
+#pragma warning restore CA1060 // Move pinvokes to native methods class

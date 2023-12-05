@@ -6,26 +6,25 @@ using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AdaskoTheBeAsT.WkHtmlToX.WorkItems;
 
-namespace AdaskoTheBeAsT.WkHtmlToX
+namespace AdaskoTheBeAsT.WkHtmlToX;
+
+public class ImageConverter
+    : IImageConverter
 {
-    public class ImageConverter
-        : IImageConverter
+    private readonly IWkHtmlToXEngine _engine;
+
+    public ImageConverter(IWkHtmlToXEngine engine)
     {
-        private readonly IWkHtmlToXEngine _engine;
+        _engine = engine;
+    }
 
-        public ImageConverter(IWkHtmlToXEngine engine)
-        {
-            _engine = engine;
-        }
-
-        public Task<bool> ConvertAsync(
-            IHtmlToImageDocument document,
-            Func<int, Stream> createStreamFunc,
-            CancellationToken token)
-        {
-            var item = new ImageConvertWorkItem(document, createStreamFunc);
-            _engine.AddConvertWorkItem(item, token);
-            return item.TaskCompletionSource.Task;
-        }
+    public Task<bool> ConvertAsync(
+        IHtmlToImageDocument document,
+        Func<int, Stream> createStreamFunc,
+        CancellationToken token)
+    {
+        var item = new ImageConvertWorkItem(document, createStreamFunc);
+        _engine.AddConvertWorkItem(item, token);
+        return item.TaskCompletionSource.Task;
     }
 }

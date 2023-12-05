@@ -4,34 +4,33 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 #endif
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Exceptions
-{
-    [ExcludeFromCodeCoverage]
-    [Serializable]
+namespace AdaskoTheBeAsT.WkHtmlToX.Exceptions;
+
+[ExcludeFromCodeCoverage]
+[Serializable]
 #pragma warning disable S3925 // "ISerializable" should be implemented correctly
-    public class DllUnloadFailedException
+public class DllUnloadFailedException
 #pragma warning restore S3925 // "ISerializable" should be implemented correctly
-        : Exception
+    : Exception
+{
+    public DllUnloadFailedException()
     {
-        public DllUnloadFailedException()
-        {
-        }
+    }
 
-        public DllUnloadFailedException(string message)
-            : base(message)
-        {
-        }
+    public DllUnloadFailedException(string message)
+        : base(message)
+    {
+    }
 
-        public DllUnloadFailedException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+    public DllUnloadFailedException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
 
 #if NETSTANDARD2_0
-        protected DllUnloadFailedException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-#endif
+    protected DllUnloadFailedException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
+#endif
 }

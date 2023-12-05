@@ -1,9 +1,9 @@
-namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest
+namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest;
+
+public class SmallHtmlGenerator
+    : IHtmlGenerator
 {
-    public class SmallHtmlGenerator
-        : IHtmlGenerator
-    {
-        public string Generate() => @"<p>
+    public string Generate() => @"<p>
 This paragraph
 contains a lot of lines
 in the source code,
@@ -22,5 +22,4 @@ ignores it.
 <p>
 The number of lines in a paragraph depends on the size of the browser window. If you resize the browser window, the number of lines in this paragraph will change.
 </p>";
-    }
 }

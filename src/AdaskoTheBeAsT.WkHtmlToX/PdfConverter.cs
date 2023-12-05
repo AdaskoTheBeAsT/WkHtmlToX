@@ -6,26 +6,25 @@ using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AdaskoTheBeAsT.WkHtmlToX.WorkItems;
 
-namespace AdaskoTheBeAsT.WkHtmlToX
+namespace AdaskoTheBeAsT.WkHtmlToX;
+
+public class PdfConverter
+    : IPdfConverter
 {
-    public class PdfConverter
-        : IPdfConverter
+    private readonly IWkHtmlToXEngine _engine;
+
+    public PdfConverter(IWkHtmlToXEngine engine)
     {
-        private readonly IWkHtmlToXEngine _engine;
+        _engine = engine;
+    }
 
-        public PdfConverter(IWkHtmlToXEngine engine)
-        {
-            _engine = engine;
-        }
-
-        public Task<bool> ConvertAsync(
-            IHtmlToPdfDocument document,
-            Func<int, Stream> createStreamFunc,
-            CancellationToken token)
-        {
-            var item = new PdfConvertWorkItem(document, createStreamFunc);
-            _engine.AddConvertWorkItem(item, token);
-            return item.TaskCompletionSource.Task;
-        }
+    public Task<bool> ConvertAsync(
+        IHtmlToPdfDocument document,
+        Func<int, Stream> createStreamFunc,
+        CancellationToken token)
+    {
+        var item = new PdfConvertWorkItem(document, createStreamFunc);
+        _engine.AddConvertWorkItem(item, token);
+        return item.TaskCompletionSource.Task;
     }
 }

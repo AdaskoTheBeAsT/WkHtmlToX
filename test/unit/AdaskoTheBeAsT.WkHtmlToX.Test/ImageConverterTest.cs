@@ -9,68 +9,67 @@ using FluentAssertions.Execution;
 using Moq;
 using Xunit;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Test
+namespace AdaskoTheBeAsT.WkHtmlToX.Test;
+
+public class ImageConverterTest
 {
-    public class ImageConverterTest
+    private readonly Mock<IWkHtmlToXEngine> _engineMock;
+    private readonly ImageConverter _sut;
+
+    public ImageConverterTest()
     {
-        private readonly Mock<IWkHtmlToXEngine> _engineMock;
-        private readonly ImageConverter _sut;
+        _engineMock = new Mock<IWkHtmlToXEngine>();
+        _sut = new ImageConverter(_engineMock.Object);
+    }
 
-        public ImageConverterTest()
+    [Fact]
+    public async Task ConvertAsyncShouldReturnNullStreamWhenNotConvertedAsync()
+    {
+        // Arrange
+        _engineMock.Setup(e => e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()))
+            .Callback<ConvertWorkItemBase, CancellationToken>((i, _) => i.TaskCompletionSource.SetResult(false));
+
+        var document = new HtmlToImageDocument();
+
+        // Act
+        var result = await _sut.ConvertAsync(document, _ => Stream.Null, CancellationToken.None);
+
+        // Assert
+        using (new AssertionScope())
         {
-            _engineMock = new Mock<IWkHtmlToXEngine>();
-            _sut = new ImageConverter(_engineMock.Object);
+            _engineMock.Verify(
+                e =>
+                    e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()),
+                Times.Once);
+            result.Should().BeFalse();
         }
+    }
 
-        [Fact]
-        public async Task ConvertAsyncShouldReturnNullStreamWhenNotConvertedAsync()
-        {
-            // Arrange
-            _engineMock.Setup(e => e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()))
-                .Callback<ConvertWorkItemBase, CancellationToken>((i, _) => i.TaskCompletionSource.SetResult(false));
+    [Fact]
+    public async Task ConvertAsyncShouldReturnStreamWhenConvertedAsync()
+    {
+        // Arrange
+        _engineMock.Setup(
+                e =>
+                    e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()))
+            .Callback<ConvertWorkItemBase, CancellationToken>((i, _) => i.TaskCompletionSource.SetResult(true));
+        using var memoryStream = new MemoryStream();
 
-            var document = new HtmlToImageDocument();
+        var document = new HtmlToImageDocument();
 
-            // Act
-            var result = await _sut.ConvertAsync(document, _ => Stream.Null, CancellationToken.None);
-
-            // Assert
-            using (new AssertionScope())
-            {
-                _engineMock.Verify(
-                    e =>
-                        e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()),
-                    Times.Once);
-                result.Should().BeFalse();
-            }
-        }
-
-        [Fact]
-        public async Task ConvertAsyncShouldReturnStreamWhenConvertedAsync()
-        {
-            // Arrange
-            _engineMock.Setup(
-                    e =>
-                        e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()))
-                .Callback<ConvertWorkItemBase, CancellationToken>((i, _) => i.TaskCompletionSource.SetResult(true));
-            using var memoryStream = new MemoryStream();
-
-            var document = new HtmlToImageDocument();
-
-            // Act
+        // Act
 #pragma warning disable IDISP011
-            var result = await _sut.ConvertAsync(document, _ => memoryStream, CancellationToken.None);
+        var result = await _sut.ConvertAsync(document, _ => memoryStream, CancellationToken.None);
 #pragma warning restore IDISP011
 
-            // Assert
-            using (new AssertionScope())
-            {
-                _engineMock.Verify(
-                    e =>
-                        e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()),
-                    Times.Once);
-                result.Should().BeTrue();
-            }
+        // Assert
+        using (new AssertionScope())
+        {
+            _engineMock.Verify(
+                e =>
+                    e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()),
+                Times.Once);
+            result.Should().BeTrue();
         }
     }
 }

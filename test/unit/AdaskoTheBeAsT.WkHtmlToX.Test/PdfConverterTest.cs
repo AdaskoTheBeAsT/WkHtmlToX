@@ -11,88 +11,87 @@ using FluentAssertions.Execution;
 using Moq;
 using Xunit;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Test
+namespace AdaskoTheBeAsT.WkHtmlToX.Test;
+
+public class PdfConverterTest
 {
-    public class PdfConverterTest
+    private readonly Fixture _fixture;
+    private readonly Mock<IWkHtmlToXEngine> _engineMock;
+    private readonly PdfConverter _sut;
+
+    public PdfConverterTest()
     {
-        private readonly Fixture _fixture;
-        private readonly Mock<IWkHtmlToXEngine> _engineMock;
-        private readonly PdfConverter _sut;
+        _fixture = new Fixture();
+        _engineMock = new Mock<IWkHtmlToXEngine>();
+        _sut = new PdfConverter(_engineMock.Object);
+    }
 
-        public PdfConverterTest()
-        {
-            _fixture = new Fixture();
-            _engineMock = new Mock<IWkHtmlToXEngine>();
-            _sut = new PdfConverter(_engineMock.Object);
-        }
+    [Fact]
+    public async Task ConvertAsyncShouldReturnNullStreamWhenNotConvertedAsync()
+    {
+        // Arrange
+        _engineMock.Setup(e => e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()))
+            .Callback<ConvertWorkItemBase, CancellationToken>((i, _) => i.TaskCompletionSource.SetResult(false));
 
-        [Fact]
-        public async Task ConvertAsyncShouldReturnNullStreamWhenNotConvertedAsync()
-        {
-            // Arrange
-            _engineMock.Setup(e => e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()))
-                .Callback<ConvertWorkItemBase, CancellationToken>((i, _) => i.TaskCompletionSource.SetResult(false));
-
-            var document = new HtmlToPdfDocument();
-            var documentTitle = _fixture.Create<string>();
-            var captionText = _fixture.Create<string>();
-            document.GlobalSettings.DocumentTitle = documentTitle;
-            document.ObjectSettings.Add(
-                new PdfObjectSettings
-                {
-                    CaptionText = captionText,
-                    HtmlContent = "<html><head><title>title</title></head><body></body></html>",
-                });
-
-            // Act
-            var result = await _sut.ConvertAsync(document, _ => Stream.Null, CancellationToken.None);
-
-            // Assert
-            using (new AssertionScope())
+        var document = new HtmlToPdfDocument();
+        var documentTitle = _fixture.Create<string>();
+        var captionText = _fixture.Create<string>();
+        document.GlobalSettings.DocumentTitle = documentTitle;
+        document.ObjectSettings.Add(
+            new PdfObjectSettings
             {
-                _engineMock.Verify(
-                    e =>
-                        e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()),
-                    Times.Once);
-                result.Should().BeFalse();
-            }
-        }
+                CaptionText = captionText,
+                HtmlContent = "<html><head><title>title</title></head><body></body></html>",
+            });
 
-        [Fact]
-        public async Task ConvertAsyncShouldReturnStreamWhenConvertedAsync()
+        // Act
+        var result = await _sut.ConvertAsync(document, _ => Stream.Null, CancellationToken.None);
+
+        // Assert
+        using (new AssertionScope())
         {
-            // Arrange
-            _engineMock.Setup(
-                    e =>
-                        e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()))
-                .Callback<ConvertWorkItemBase, CancellationToken>((i, _) => i.TaskCompletionSource.SetResult(true));
-            using var memoryStream = new MemoryStream();
+            _engineMock.Verify(
+                e =>
+                    e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()),
+                Times.Once);
+            result.Should().BeFalse();
+        }
+    }
 
-            var document = new HtmlToPdfDocument();
-            var documentTitle = _fixture.Create<string>();
-            var captionText = _fixture.Create<string>();
-            document.GlobalSettings.DocumentTitle = documentTitle;
-            document.ObjectSettings.Add(
-                new PdfObjectSettings
-                {
-                    CaptionText = captionText,
-                    HtmlContent = "<html><head><title>title</title></head><body></body></html>",
-                });
+    [Fact]
+    public async Task ConvertAsyncShouldReturnStreamWhenConvertedAsync()
+    {
+        // Arrange
+        _engineMock.Setup(
+                e =>
+                    e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()))
+            .Callback<ConvertWorkItemBase, CancellationToken>((i, _) => i.TaskCompletionSource.SetResult(true));
+        using var memoryStream = new MemoryStream();
 
-            // Act
+        var document = new HtmlToPdfDocument();
+        var documentTitle = _fixture.Create<string>();
+        var captionText = _fixture.Create<string>();
+        document.GlobalSettings.DocumentTitle = documentTitle;
+        document.ObjectSettings.Add(
+            new PdfObjectSettings
+            {
+                CaptionText = captionText,
+                HtmlContent = "<html><head><title>title</title></head><body></body></html>",
+            });
+
+        // Act
 #pragma warning disable IDISP011
-            var result = await _sut.ConvertAsync(document, _ => memoryStream, CancellationToken.None);
+        var result = await _sut.ConvertAsync(document, _ => memoryStream, CancellationToken.None);
 #pragma warning restore IDISP011
 
-            // Assert
-            using (new AssertionScope())
-            {
-                _engineMock.Verify(
-                    e =>
-                        e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()),
-                    Times.Once);
-                result.Should().BeTrue();
-            }
+        // Assert
+        using (new AssertionScope())
+        {
+            _engineMock.Verify(
+                e =>
+                    e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()),
+                Times.Once);
+            result.Should().BeTrue();
         }
     }
 }

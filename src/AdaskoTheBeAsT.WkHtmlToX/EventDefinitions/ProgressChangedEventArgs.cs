@@ -1,20 +1,19 @@
 using System;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.EventDefinitions
+namespace AdaskoTheBeAsT.WkHtmlToX.EventDefinitions;
+
+public class ProgressChangedEventArgs : EventArgs
 {
-    public class ProgressChangedEventArgs : EventArgs
+    public ProgressChangedEventArgs(
+        ISettings? document,
+        string description)
     {
-        public ProgressChangedEventArgs(
-            ISettings? document,
-            string description)
-        {
-            Document = document;
-            Description = description;
-        }
-
-        public ISettings? Document { get; }
-
-        public string Description { get; }
+        Document = document;
+        Description = description;
     }
+
+    public ISettings? Document { get; }
+
+    public string Description { get; }
 }

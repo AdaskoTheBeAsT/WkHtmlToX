@@ -1,8 +1,7 @@
-namespace AdaskoTheBeAsT.WkHtmlToX.Settings
+namespace AdaskoTheBeAsT.WkHtmlToX.Settings;
+
+public enum Orientation
 {
-    public enum Orientation
-    {
-        Landscape,
-        Portrait,
-    }
+    Landscape,
+    Portrait,
 }

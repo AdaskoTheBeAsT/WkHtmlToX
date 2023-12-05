@@ -2,53 +2,52 @@ using AdaskoTheBeAsT.WkHtmlToX.Documents;
 using AdaskoTheBeAsT.WkHtmlToX.Settings;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest
+namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest;
+
+public class HtmlToPdfDocumentGenerator
+    : IHtmlToPdfDocumentGenerator
 {
-    public class HtmlToPdfDocumentGenerator
-        : IHtmlToPdfDocumentGenerator
+    private readonly IHtmlGenerator _htmlGenerator;
+
+    public HtmlToPdfDocumentGenerator(
+        IHtmlGenerator htmlGenerator)
     {
-        private readonly IHtmlGenerator _htmlGenerator;
+        _htmlGenerator = htmlGenerator;
+    }
 
-        public HtmlToPdfDocumentGenerator(
-            IHtmlGenerator htmlGenerator)
+    public HtmlToPdfDocument Generate()
+    {
+        var doc = new HtmlToPdfDocument
         {
-            _htmlGenerator = htmlGenerator;
-        }
-
-        public HtmlToPdfDocument Generate()
-        {
-            var doc = new HtmlToPdfDocument
+            GlobalSettings =
             {
-                GlobalSettings =
+                ColorMode = ColorMode.Color,
+                Orientation = Orientation.Landscape,
+                PaperSize = PaperKind.A4,
+            },
+            ObjectSettings =
+            {
+                new PdfObjectSettings
                 {
-                    ColorMode = ColorMode.Color,
-                    Orientation = Orientation.Landscape,
-                    PaperSize = PaperKind.A4,
-                },
-                ObjectSettings =
-                {
-                    new PdfObjectSettings
+                    PagesCount = true,
+                    WebSettings =
                     {
-                        PagesCount = true,
-                        WebSettings =
-                        {
-                            DefaultEncoding = "utf-8",
-                        },
-                        HeaderSettings =
-                        {
-                            FontSize = 9, Right = "Page [page] of [toPage]", Line = true,
-                        },
-                        FooterSettings =
-                        {
-                            FontSize = 9, Right = "Page [page] of [toPage]",
-                        },
+                        DefaultEncoding = "utf-8",
+                    },
+                    HeaderSettings =
+                    {
+                        FontSize = 9, Right = "Page [page] of [toPage]", Line = true,
+                    },
+                    FooterSettings =
+                    {
+                        FontSize = 9, Right = "Page [page] of [toPage]",
                     },
                 },
-            };
+            },
+        };
 
-            doc.ObjectSettings[0].HtmlContent = _htmlGenerator.Generate();
+        doc.ObjectSettings[0].HtmlContent = _htmlGenerator.Generate();
 
-            return doc;
-        }
+        return doc;
     }
 }

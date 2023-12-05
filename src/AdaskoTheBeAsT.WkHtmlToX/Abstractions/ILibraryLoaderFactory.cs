@@ -1,9 +1,8 @@
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
+namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions;
+
+internal interface ILibraryLoaderFactory
 {
-    internal interface ILibraryLoaderFactory
-    {
-        ILibraryLoader Create(WkHtmlToXConfiguration configuration);
-    }
+    ILibraryLoader Create(WkHtmlToXConfiguration configuration);
 }

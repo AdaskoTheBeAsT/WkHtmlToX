@@ -1,14 +1,13 @@
 using System;
 using System.IO;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
+namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions;
+
+internal interface IImageProcessor
 {
-    internal interface IImageProcessor
-    {
-        IWkHtmlToImageModule ImageModule { get; }
+    IWkHtmlToImageModule ImageModule { get; }
 
-        ISettings? ProcessingDocument { get; }
+    ISettings? ProcessingDocument { get; }
 
-        bool Convert(IHtmlToImageDocument? document, Func<int, Stream> createStreamFunc);
-    }
+    bool Convert(IHtmlToImageDocument? document, Func<int, Stream> createStreamFunc);
 }

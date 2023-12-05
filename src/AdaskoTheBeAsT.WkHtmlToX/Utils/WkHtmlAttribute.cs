@@ -1,20 +1,19 @@
 using System;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Utils
-{
-    [AttributeUsage(AttributeTargets.Property)]
-    internal sealed class WkHtmlAttribute : Attribute
-    {
-        public WkHtmlAttribute(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+namespace AdaskoTheBeAsT.WkHtmlToX.Utils;
 
-            Name = name;
+[AttributeUsage(AttributeTargets.Property)]
+internal sealed class WkHtmlAttribute : Attribute
+{
+    public WkHtmlAttribute(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            throw new ArgumentNullException(nameof(name));
         }
 
-        public string Name { get; }
+        Name = name;
     }
+
+    public string Name { get; }
 }

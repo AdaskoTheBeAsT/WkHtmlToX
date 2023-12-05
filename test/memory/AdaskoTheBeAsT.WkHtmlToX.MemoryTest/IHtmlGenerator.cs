@@ -1,7 +1,6 @@
-namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest
+namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest;
+
+public interface IHtmlGenerator
 {
-    public interface IHtmlGenerator
-    {
-        string Generate();
-    }
+    string Generate();
 }

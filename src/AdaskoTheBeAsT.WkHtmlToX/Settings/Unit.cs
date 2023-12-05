@@ -1,9 +1,8 @@
-﻿namespace AdaskoTheBeAsT.WkHtmlToX.Settings
+﻿namespace AdaskoTheBeAsT.WkHtmlToX.Settings;
+
+public enum Unit
 {
-    public enum Unit
-    {
-        Inches,
-        Millimeters,
-        Centimeters,
-    }
+    Inches,
+    Millimeters,
+    Centimeters,
 }

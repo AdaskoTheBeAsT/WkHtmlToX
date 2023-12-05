@@ -1,7 +1,4 @@
-namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
-{
-    internal interface IWkHtmlToImageModule
-        : IWkHtmlToXModule
-    {
-    }
-}
+namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions;
+
+internal interface IWkHtmlToImageModule
+    : IWkHtmlToXModule;

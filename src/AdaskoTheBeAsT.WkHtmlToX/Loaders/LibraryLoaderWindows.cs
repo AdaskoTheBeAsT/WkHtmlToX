@@ -3,59 +3,76 @@ using System.IO;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 using AdaskoTheBeAsT.WkHtmlToX.Native;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
+namespace AdaskoTheBeAsT.WkHtmlToX.Loaders;
+
+internal sealed class LibraryLoaderWindows
+    : LibraryLoaderBase
 {
-    internal sealed class LibraryLoaderWindows
-        : LibraryLoaderBase
+    private const string LibraryName = "wkhtmltox.dll";
+
+    private SafeLibraryHandle? _libraryHandle;
+
+    public override void Load()
     {
-        private const string LibraryName = "wkhtmltox.dll";
+        // https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+        var runtimeIdentifier = $"win-{GetProcessorArchitecture()}";
 
-        private SafeLibraryHandle? _libraryHandle;
+        var rootDirectory = GetCurrentDir();
 
-        public override void Load()
+        // Search a few different locations for our native assembly
+        var paths = new[]
         {
-            // https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
-            var runtimeIdentifier = $"win-{GetProcessorArchitecture()}";
+            // This is where native libraries in our nupkg should end up
+            GetRuntimeLibraryPath(rootDirectory, runtimeIdentifier, LibraryName),
 
-            var rootDirectory = GetCurrentDir();
+            // The build output folder
+            GetCurrentDirectoryLibraryPath(rootDirectory, LibraryName),
+        };
 
-            // Search a few different locations for our native assembly
-            var paths = new[]
+        foreach (var path in paths)
+        {
+            if (string.IsNullOrEmpty(path))
             {
-                // This is where native libraries in our nupkg should end up
-                GetRuntimeLibraryPath(rootDirectory, runtimeIdentifier, LibraryName),
-
-                // The build output folder
-                GetCurrentDirectoryLibraryPath(rootDirectory, LibraryName),
-            };
-
-            foreach (var path in paths)
-            {
-                if (string.IsNullOrEmpty(path))
-                {
-                    continue;
-                }
-
-                if (File.Exists(path))
-                {
-                    var libHandle = SystemWindowsNativeMethods.LoadLibraryEx(
-                        path,
-                        IntPtr.Zero,
-                        LoadLibraryFlags.LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LoadLibraryFlags.LOAD_LIBRARY_SEARCH_SYSTEM32);
-                    if (libHandle.IsInvalid)
-                    {
-                        throw new DllNotLoadedException($"LoadLibrary failed: {path}");
-                    }
-
-                    _libraryHandle = libHandle;
-                    return;
-                }
+                continue;
             }
 
-            throw new DllNotLoadedException();
+            if (File.Exists(path))
+            {
+                var libHandle = SystemWindowsNativeMethods.LoadLibraryEx(
+                    path,
+                    IntPtr.Zero,
+                    LoadLibraryFlags.LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LoadLibraryFlags.LOAD_LIBRARY_SEARCH_SYSTEM32);
+                if (libHandle.IsInvalid)
+                {
+                    throw new DllNotLoadedException($"LoadLibrary failed: {path}");
+                }
+
+                _libraryHandle = libHandle;
+                return;
+            }
         }
 
-        public override void Release()
+        throw new DllNotLoadedException();
+    }
+
+    public override void Release()
+    {
+        if (_libraryHandle == null)
+        {
+            return;
+        }
+
+        if (!_libraryHandle.IsClosed)
+        {
+            _libraryHandle.Dispose();
+        }
+
+        _libraryHandle = null;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
         {
             if (_libraryHandle == null)
             {
@@ -68,24 +85,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Loaders
             }
 
             _libraryHandle = null;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_libraryHandle == null)
-                {
-                    return;
-                }
-
-                if (!_libraryHandle.IsClosed)
-                {
-                    _libraryHandle.Dispose();
-                }
-
-                _libraryHandle = null;
-            }
         }
     }
 }

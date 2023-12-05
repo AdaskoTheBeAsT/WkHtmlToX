@@ -4,34 +4,33 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 #endif
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Exceptions
-{
-    [ExcludeFromCodeCoverage]
-    [Serializable]
+namespace AdaskoTheBeAsT.WkHtmlToX.Exceptions;
+
+[ExcludeFromCodeCoverage]
+[Serializable]
 #pragma warning disable S3925 // "ISerializable" should be implemented correctly
-    public class InvalidLinuxRuntimeIdentifierException
+public class InvalidLinuxRuntimeIdentifierException
 #pragma warning restore S3925 // "ISerializable" should be implemented correctly
-        : Exception
+    : Exception
+{
+    public InvalidLinuxRuntimeIdentifierException()
     {
-        public InvalidLinuxRuntimeIdentifierException()
-        {
-        }
+    }
 
-        public InvalidLinuxRuntimeIdentifierException(string message)
-            : base(message)
-        {
-        }
+    public InvalidLinuxRuntimeIdentifierException(string message)
+        : base(message)
+    {
+    }
 
-        public InvalidLinuxRuntimeIdentifierException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+    public InvalidLinuxRuntimeIdentifierException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
 
 #if NETSTANDARD2_0
-        protected InvalidLinuxRuntimeIdentifierException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-#endif
+    protected InvalidLinuxRuntimeIdentifierException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
+#endif
 }

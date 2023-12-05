@@ -1,8 +1,7 @@
-namespace AdaskoTheBeAsT.WkHtmlToX.Settings
+namespace AdaskoTheBeAsT.WkHtmlToX.Settings;
+
+public enum ColorMode
 {
-    public enum ColorMode
-    {
-        Color,
-        Grayscale,
-    }
+    Color,
+    Grayscale,
 }

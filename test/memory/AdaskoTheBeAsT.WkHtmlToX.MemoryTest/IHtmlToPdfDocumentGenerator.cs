@@ -1,9 +1,8 @@
 using AdaskoTheBeAsT.WkHtmlToX.Documents;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest
+namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest;
+
+public interface IHtmlToPdfDocumentGenerator
 {
-    public interface IHtmlToPdfDocumentGenerator
-    {
-        HtmlToPdfDocument Generate();
-    }
+    HtmlToPdfDocument Generate();
 }

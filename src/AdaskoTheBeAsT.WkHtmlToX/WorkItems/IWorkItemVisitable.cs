@@ -1,7 +1,6 @@
-namespace AdaskoTheBeAsT.WkHtmlToX.WorkItems
+namespace AdaskoTheBeAsT.WkHtmlToX.WorkItems;
+
+public interface IWorkItemVisitable
 {
-    public interface IWorkItemVisitable
-    {
-        void Accept(IWorkItemVisitor visitor);
-    }
+    void Accept(IWorkItemVisitor visitor);
 }

@@ -1,9 +1,8 @@
-namespace AdaskoTheBeAsT.WkHtmlToX.WorkItems
-{
-    public interface IWorkItemVisitor
-    {
-        void Visit(PdfConvertWorkItem item);
+namespace AdaskoTheBeAsT.WkHtmlToX.WorkItems;
 
-        void Visit(ImageConvertWorkItem item);
-    }
+public interface IWorkItemVisitor
+{
+    void Visit(PdfConvertWorkItem item);
+
+    void Visit(ImageConvertWorkItem item);
 }

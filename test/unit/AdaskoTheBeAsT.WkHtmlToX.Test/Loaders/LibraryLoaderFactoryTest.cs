@@ -6,114 +6,113 @@ using AdaskoTheBeAsT.WkHtmlToX.Loaders;
 using FluentAssertions;
 using Xunit;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders
+namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders;
+
+public sealed class LibraryLoaderFactoryTest
 {
-    public sealed class LibraryLoaderFactoryTest
+    private readonly LibraryLoaderFactory _sut;
+
+    public LibraryLoaderFactoryTest()
     {
-        private readonly LibraryLoaderFactory _sut;
+        _sut = new LibraryLoaderFactory();
+    }
 
-        public LibraryLoaderFactoryTest()
+    public static IEnumerable<object?[]> GetTestData()
+    {
+        yield return new object?[]
         {
-            _sut = new LibraryLoaderFactory();
-        }
-
-        public static IEnumerable<object?[]> GetTestData()
+            PlatformID.MacOSX,
+            WkHtmlToXRuntimeIdentifier.Ubuntu1804X64,
+            typeof(LibraryLoaderOsx),
+        };
+        yield return new object?[]
         {
-            yield return new object?[]
-            {
-                PlatformID.MacOSX,
-                WkHtmlToXRuntimeIdentifier.Ubuntu1804X64,
-                typeof(LibraryLoaderOsx),
-            };
-            yield return new object?[]
-            {
-                PlatformID.Unix,
-                WkHtmlToXRuntimeIdentifier.Ubuntu1804X64,
-                typeof(LibraryLoaderLinux),
-            };
-            yield return new object?[]
-            {
-                128,
-                WkHtmlToXRuntimeIdentifier.Ubuntu1804X64,
-                typeof(LibraryLoaderLinux),
-            };
-            yield return new object?[]
-            {
-                PlatformID.Win32NT,
-                null,
-                typeof(LibraryLoaderWindows),
-            };
-            yield return new object?[]
-            {
-                PlatformID.Win32S,
-                null,
-                typeof(LibraryLoaderWindows),
-            };
-            yield return new object?[]
-            {
-                PlatformID.Win32Windows,
-                null,
-                typeof(LibraryLoaderWindows),
-            };
-            yield return new object?[]
-            {
-                PlatformID.WinCE,
-                null,
-                typeof(LibraryLoaderWindows),
-            };
-            yield return new object?[]
-            {
-                PlatformID.Xbox,
-                null,
-                typeof(LibraryLoaderWindows),
-            };
-        }
-
-        [Fact]
-        public void GetModuleShouldThrowWhenNotKnownPlatformIdPassed()
+            PlatformID.Unix,
+            WkHtmlToXRuntimeIdentifier.Ubuntu1804X64,
+            typeof(LibraryLoaderLinux),
+        };
+        yield return new object?[]
         {
-            // Arrange
-            var configuration = new WkHtmlToXConfiguration(12345, runtimeIdentifier: null);
+            128,
+            WkHtmlToXRuntimeIdentifier.Ubuntu1804X64,
+            typeof(LibraryLoaderLinux),
+        };
+        yield return new object?[]
+        {
+            PlatformID.Win32NT,
+            null,
+            typeof(LibraryLoaderWindows),
+        };
+        yield return new object?[]
+        {
+            PlatformID.Win32S,
+            null,
+            typeof(LibraryLoaderWindows),
+        };
+        yield return new object?[]
+        {
+            PlatformID.Win32Windows,
+            null,
+            typeof(LibraryLoaderWindows),
+        };
+        yield return new object?[]
+        {
+            PlatformID.WinCE,
+            null,
+            typeof(LibraryLoaderWindows),
+        };
+        yield return new object?[]
+        {
+            PlatformID.Xbox,
+            null,
+            typeof(LibraryLoaderWindows),
+        };
+    }
 
-            // ReSharper disable once AssignmentIsFullyDiscarded
+    [Fact]
+    public void GetModuleShouldThrowWhenNotKnownPlatformIdPassed()
+    {
+        // Arrange
+        var configuration = new WkHtmlToXConfiguration(12345, runtimeIdentifier: null);
+
+        // ReSharper disable once AssignmentIsFullyDiscarded
 #pragma warning disable IDISP004 // Don't ignore created IDisposable.
-            Action action = () => _ = _sut.Create(configuration);
+        Action action = () => _ = _sut.Create(configuration);
 #pragma warning restore IDISP004 // Don't ignore created IDisposable.
 
-            // Act and Assert
-            action.Should().Throw<InvalidPlatformIdentifierException>();
-        }
+        // Act and Assert
+        action.Should().Throw<InvalidPlatformIdentifierException>();
+    }
 
-        [Fact]
-        public void GetModuleShouldThrowWhenLinuxPlatformIdAndNotKnownRuntimeIdentifierPassed()
-        {
-            // Arrange
-            var configuration = new WkHtmlToXConfiguration((int)PlatformID.Unix, runtimeIdentifier: null);
+    [Fact]
+    public void GetModuleShouldThrowWhenLinuxPlatformIdAndNotKnownRuntimeIdentifierPassed()
+    {
+        // Arrange
+        var configuration = new WkHtmlToXConfiguration((int)PlatformID.Unix, runtimeIdentifier: null);
 
-            // ReSharper disable once AssignmentIsFullyDiscarded
+        // ReSharper disable once AssignmentIsFullyDiscarded
 #pragma warning disable IDISP004 // Don't ignore created IDisposable.
-            Action action = () => _ = _sut.Create(configuration);
+        Action action = () => _ = _sut.Create(configuration);
 #pragma warning restore IDISP004 // Don't ignore created IDisposable.
 
-            // Act and Assert
-            action.Should().Throw<InvalidLinuxRuntimeIdentifierException>();
-        }
+        // Act and Assert
+        action.Should().Throw<InvalidLinuxRuntimeIdentifierException>();
+    }
 
-        [Theory]
-        [MemberData(nameof(GetTestData))]
-        public void CreateShouldReturnCorrectLoaderAndRuntimeIdentifierPassed(
-            int platformId,
-            WkHtmlToXRuntimeIdentifier? runtimeIdentifier,
-            Type type)
-        {
-            // Arrange
-            var configuration = new WkHtmlToXConfiguration(platformId, runtimeIdentifier);
+    [Theory]
+    [MemberData(nameof(GetTestData))]
+    public void CreateShouldReturnCorrectLoaderAndRuntimeIdentifierPassed(
+        int platformId,
+        WkHtmlToXRuntimeIdentifier? runtimeIdentifier,
+        Type type)
+    {
+        // Arrange
+        var configuration = new WkHtmlToXConfiguration(platformId, runtimeIdentifier);
 
-            // Act
-            using var result = _sut.Create(configuration);
+        // Act
+        using var result = _sut.Create(configuration);
 
-            // Assert
-            result.Should().BeOfType(type);
-        }
+        // Assert
+        result.Should().BeOfType(type);
     }
 }

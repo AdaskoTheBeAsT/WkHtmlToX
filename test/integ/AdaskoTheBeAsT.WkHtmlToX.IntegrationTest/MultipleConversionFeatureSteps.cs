@@ -8,114 +8,114 @@ using FluentAssertions;
 using Microsoft.IO;
 using TechTalk.SpecFlow;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
+namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest;
+
+[Binding]
+[Scope(Feature = "MultipleConversionFeature")]
+public sealed class MultipleConversionFeatureSteps
 {
-    [Binding]
-    [Scope(Feature = "MultipleConversionFeature")]
-    public sealed class MultipleConversionFeatureSteps
+    private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager;
+    private PdfConverter? _sut;
+    private string? _htmlContent;
+    private HtmlToPdfDocument? _htmlToPdfDocument;
+    private byte[]? _content1;
+    private byte[]? _content2;
+
+    public MultipleConversionFeatureSteps()
     {
-        private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager;
-        private PdfConverter? _sut;
-        private string? _htmlContent;
-        private HtmlToPdfDocument? _htmlToPdfDocument;
-        private byte[]? _content1;
-        private byte[]? _content2;
+        _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
+    }
 
-        public MultipleConversionFeatureSteps()
-        {
-            _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
-        }
+    [Given("I have SynchronizedPdfConverter")]
+    public void GivenIHaveSynchronizedPdfConverter()
+    {
+        _sut = new PdfConverter(GlobalInitializer.Engine!);
+    }
 
-        [Given("I have SynchronizedPdfConverter")]
-        public void GivenIHaveSynchronizedPdfConverter()
-        {
-            _sut = new PdfConverter(GlobalInitializer.Engine!);
-        }
-
-        [Given("I have complex html")]
-        public void GivenIHaveComplexHtml()
-        {
+    [Given("I have complex html")]
+    public void GivenIHaveComplexHtml()
+    {
 #pragma warning disable SCS0018 // Path traversal: injection possible in {1} argument passed to '{0}'
 #pragma warning disable SEC0116 // Path Tampering Unvalidated File Path
-            _htmlContent = File.ReadAllText("./HtmlSamples/Bug0002SameHtmlTwice.html");
+        _htmlContent = File.ReadAllText("./HtmlSamples/Bug0002SameHtmlTwice.html");
 #pragma warning restore SEC0116 // Path Tampering Unvalidated File Path
 #pragma warning restore SCS0018 // Path traversal: injection possible in {1} argument passed to '{0}'
-        }
+    }
 
-        [When("I convert first time")]
-        public async Task WhenIConvertFirstTimeAsync()
-        {
-            _content1 = await GenerateContentAsync().ConfigureAwait(false);
-        }
+    [When("I convert first time")]
+    public async Task WhenIConvertFirstTimeAsync()
+    {
+        _content1 = await GenerateContentAsync().ConfigureAwait(false);
+    }
 
-        [When("I convert same html second time")]
-        public async Task WhenIConvertSameHtmlSecondTimeAsync()
-        {
-            _content2 = await GenerateContentAsync().ConfigureAwait(false);
-        }
+    [When("I convert same html second time")]
+    public async Task WhenIConvertSameHtmlSecondTimeAsync()
+    {
+        _content2 = await GenerateContentAsync().ConfigureAwait(false);
+    }
 
-        [Then("I should obtain files with same length")]
-        public void ThenIShouldObtainFilesWithSameLength()
-        {
-            _content1.Should().HaveCount(_content2?.Length ?? 0);
-        }
+    [Then("I should obtain files with same length")]
+    public void ThenIShouldObtainFilesWithSameLength()
+    {
+        _content1.Should().HaveCount(_content2?.Length ?? 0);
+    }
 
-        private async Task<byte[]> GenerateContentAsync()
+    private async Task<byte[]> GenerateContentAsync()
+    {
+        _htmlToPdfDocument = new HtmlToPdfDocument
         {
-            _htmlToPdfDocument = new HtmlToPdfDocument
+            GlobalSettings = new PdfGlobalSettings
             {
-                GlobalSettings = new PdfGlobalSettings
+                DocumentTitle = "Sample",
+            },
+            ObjectSettings =
+            {
+                new PdfObjectSettings
                 {
-                    DocumentTitle = "Sample",
+                    HtmlContent = _htmlContent,
                 },
-                ObjectSettings =
-                {
-                    new PdfObjectSettings
-                    {
-                        HtmlContent = _htmlContent,
-                    },
-                },
-            };
+            },
+        };
 
-            Stream? stream = null;
+        Stream? stream = null;
 #pragma warning disable IDISP001 // Dispose created.
-            var ms = new MemoryStream();
+        var ms = new MemoryStream();
 #pragma warning restore IDISP001 // Dispose created.
 
-            try
-            {
-                await _sut!.ConvertAsync(
-                        _htmlToPdfDocument!,
-                        length =>
-                        {
-                            stream?.Dispose();
-                            stream = _recyclableMemoryStreamManager.GetStream(
-                                Guid.NewGuid(),
-                                "wkhtmltox",
-                                length);
-                            return stream;
-                        },
-                        CancellationToken.None)
-                    .ConfigureAwait(false);
+        try
+        {
+            await _sut!.ConvertAsync(
+                    _htmlToPdfDocument!,
+                    length =>
+                    {
+                        // ReSharper disable once AccessToDisposedClosure
+                        stream?.Dispose();
+                        stream = _recyclableMemoryStreamManager.GetStream(
+                            Guid.NewGuid(),
+                            "wkhtmltox",
+                            length);
+                        return stream;
+                    },
+                    CancellationToken.None)
+                .ConfigureAwait(false);
 
-                stream!.Position = 0;
-                await stream.CopyToAsync(ms).ConfigureAwait(false);
-                return ms.ToArray();
-            }
-            finally
-            {
+            stream!.Position = 0;
+            await stream.CopyToAsync(ms).ConfigureAwait(false);
+            return ms.ToArray();
+        }
+        finally
+        {
 #if NET6_0_OR_GREATER
-                if (stream != null)
-                {
-                    await stream.DisposeAsync().ConfigureAwait(false);
-                }
+            if (stream != null)
+            {
+                await stream.DisposeAsync().ConfigureAwait(false);
+            }
 
-                await ms.DisposeAsync().ConfigureAwait(false);
+            await ms.DisposeAsync().ConfigureAwait(false);
 #else
                 stream?.Dispose();
                 ms.Dispose();
 #endif
-            }
         }
     }
 }

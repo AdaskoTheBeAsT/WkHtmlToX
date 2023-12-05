@@ -1,9 +1,8 @@
-namespace AdaskoTheBeAsT.WkHtmlToX.Settings
+namespace AdaskoTheBeAsT.WkHtmlToX.Settings;
+
+public enum ContentErrorHandling
 {
-    public enum ContentErrorHandling
-    {
-        Abort,
-        Skip,
-        Ignore,
-    }
+    Abort,
+    Skip,
+    Ignore,
 }

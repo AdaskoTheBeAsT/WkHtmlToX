@@ -1,16 +1,15 @@
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Settings;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Documents
-{
-    public class HtmlToImageDocument
-        : IHtmlToImageDocument
-    {
-        public HtmlToImageDocument()
-        {
-            ImageSettings = new ImageSettings();
-        }
+namespace AdaskoTheBeAsT.WkHtmlToX.Documents;
 
-        public ImageSettings ImageSettings { get; set; }
+public class HtmlToImageDocument
+    : IHtmlToImageDocument
+{
+    public HtmlToImageDocument()
+    {
+        ImageSettings = new ImageSettings();
     }
+
+    public ImageSettings ImageSettings { get; set; }
 }

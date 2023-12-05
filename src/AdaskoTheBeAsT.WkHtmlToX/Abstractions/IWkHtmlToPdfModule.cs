@@ -1,31 +1,30 @@
 using System;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
+namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions;
+
+internal interface IWkHtmlToPdfModule
+    : IWkHtmlToXModule
 {
-    internal interface IWkHtmlToPdfModule
-        : IWkHtmlToXModule
-    {
-        IntPtr CreateObjectSettings();
+    IntPtr CreateObjectSettings();
 
-        int DestroyObjectSetting(IntPtr settings);
+    int DestroyObjectSetting(IntPtr settings);
 
-        int SetObjectSetting(
-            IntPtr settings,
-            string name,
-            string? value);
+    int SetObjectSetting(
+        IntPtr settings,
+        string name,
+        string? value);
 
-        string GetObjectSetting(
-            IntPtr settings,
-            string name);
+    string GetObjectSetting(
+        IntPtr settings,
+        string name);
 
-        void AddObject(
-            IntPtr converter,
-            IntPtr objectSettings,
-            byte[] data);
+    void AddObject(
+        IntPtr converter,
+        IntPtr objectSettings,
+        byte[] data);
 
-        void AddObject(
-            IntPtr converter,
-            IntPtr objectSettings,
-            string data);
-    }
+    void AddObject(
+        IntPtr converter,
+        IntPtr objectSettings,
+        string data);
 }

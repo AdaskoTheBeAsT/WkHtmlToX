@@ -1,10 +1,9 @@
 using AdaskoTheBeAsT.WkHtmlToX.Settings;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions
+namespace AdaskoTheBeAsT.WkHtmlToX.Abstractions;
+
+public interface IHtmlToImageDocument
+    : ISettings
 {
-    public interface IHtmlToImageDocument
-        : ISettings
-    {
-        ImageSettings ImageSettings { get; set; }
-    }
+    ImageSettings ImageSettings { get; set; }
 }

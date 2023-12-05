@@ -6,79 +6,78 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings
+namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings;
+
+public sealed class PechkinPaperSizeTest
 {
-    public sealed class PechkinPaperSizeTest
+    [Fact]
+    public void FromPaperKindShouldThrowExceptionWhenPaperKindUnknown()
     {
-        [Fact]
-        public void FromPaperKindShouldThrowExceptionWhenPaperKindUnknown()
-        {
-            // Arrange
-            // ReSharper disable once AssignmentIsFullyDiscarded
-            Action action = () => _ = PechkinPaperSize.FromPaperKind(PaperKind.Custom);
+        // Arrange
+        // ReSharper disable once AssignmentIsFullyDiscarded
+        Action action = () => _ = PechkinPaperSize.FromPaperKind(PaperKind.Custom);
 
-            // Act and Assert
-            action.Should().Throw<ArgumentOutOfRangeException>();
-        }
+        // Act and Assert
+        action.Should().Throw<ArgumentOutOfRangeException>();
+    }
 
-        [Fact]
-        public void FromPaperKindShouldReturnNonEmptyValueWhenPaperKindConvertible()
-        {
-            // Arrange
-            var paperKinds =
-                Enum.GetValues(typeof(PaperKind))
+    [Fact]
+    public void FromPaperKindShouldReturnNonEmptyValueWhenPaperKindConvertible()
+    {
+        // Arrange
+        var paperKinds =
+            Enum.GetValues(typeof(PaperKind))
                 .Cast<PaperKind>()
                 .Where(pk => pk != PaperKind.Custom);
 
-            // Act and Assert
-            using (new AssertionScope())
+        // Act and Assert
+        using (new AssertionScope())
+        {
+            foreach (var paperKind in paperKinds)
             {
-                foreach (var paperKind in paperKinds)
-                {
-                    var pechkinPaperSize = PechkinPaperSize.FromPaperKind(paperKind);
-                    pechkinPaperSize.Should().NotBeNull();
-                    pechkinPaperSize.Width.Should().NotBeNullOrWhiteSpace();
-                    pechkinPaperSize.Height.Should().NotBeNullOrWhiteSpace();
-                }
+                var pechkinPaperSize = PechkinPaperSize.FromPaperKind(paperKind);
+                pechkinPaperSize.Should().NotBeNull();
+                pechkinPaperSize.Width.Should().NotBeNullOrWhiteSpace();
+                pechkinPaperSize.Height.Should().NotBeNullOrWhiteSpace();
             }
         }
+    }
 
-        [Fact]
-        public void ImplicitCastShouldThrowExceptionWhenPaperKindUnknown()
+    [Fact]
+    public void ImplicitCastShouldThrowExceptionWhenPaperKindUnknown()
+    {
+        // Arrange
+        Action action = () =>
         {
-            // Arrange
-            Action action = () =>
-            {
 #pragma warning disable S1481 // Unused local variables should be removed
 #pragma warning disable 219
-                PechkinPaperSize pps = PaperKind.Custom;
+            PechkinPaperSize pps = PaperKind.Custom;
 #pragma warning restore 219
 #pragma warning restore S1481 // Unused local variables should be removed
-            };
+        };
 
-            // Act and Assert
-            action.Should().Throw<ArgumentOutOfRangeException>();
-        }
+        // Act and Assert
+        action.Should().Throw<ArgumentOutOfRangeException>();
+    }
 
-        [Fact]
-        public void ImplicitCastShouldReturnNonEmptyValueWhenPaperKindConvertible()
+    [Fact]
+    public void ImplicitCastShouldReturnNonEmptyValueWhenPaperKindConvertible()
+    {
+        // Arrange
+        var paperKinds =
+            Enum.GetValues(typeof(PaperKind))
+                .Cast<PaperKind>()
+                .Where(pk => pk != PaperKind.Custom);
+
+        // Act and Assert
+        using (new AssertionScope())
         {
-            // Arrange
-            var paperKinds =
-                Enum.GetValues(typeof(PaperKind))
-                    .Cast<PaperKind>()
-                    .Where(pk => pk != PaperKind.Custom);
-
-            // Act and Assert
-            using (new AssertionScope())
+            foreach (var paperKind in paperKinds)
             {
-                foreach (var paperKind in paperKinds)
-                {
-                    PechkinPaperSize pechkinPaperSize = paperKind;
-                    pechkinPaperSize.Should().NotBeNull();
-                    pechkinPaperSize.Width.Should().NotBeNullOrWhiteSpace();
-                    pechkinPaperSize.Height.Should().NotBeNullOrWhiteSpace();
-                }
+                PechkinPaperSize pechkinPaperSize = paperKind;
+                pechkinPaperSize.Should().NotBeNull();
+                pechkinPaperSize.Width.Should().NotBeNullOrWhiteSpace();
+                pechkinPaperSize.Height.Should().NotBeNullOrWhiteSpace();
             }
         }
     }
