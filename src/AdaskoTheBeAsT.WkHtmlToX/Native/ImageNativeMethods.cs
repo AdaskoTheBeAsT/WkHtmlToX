@@ -96,10 +96,11 @@ internal static class ImageNativeMethods
     /// wkhtmltoimage_create_converter.
     /// </summary>
     /// <param name="globalSettings"></param>
+    /// <param name="callBack"></param>
     /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
-    internal static extern IntPtr wkhtmltoimage_create_converter(IntPtr globalSettings);
+    internal static extern IntPtr wkhtmltoimage_create_converter(IntPtr globalSettings, IntPtr callBack);
 
     /// <summary>
     /// wkhtmltoimage_destroy_converter.
