@@ -36,7 +36,7 @@ internal sealed class WkHtmlToImageModule
 
     public override IntPtr CreateConverter(
         IntPtr globalSettings) =>
-        ImageNativeMethods.wkhtmltoimage_create_converter(globalSettings);
+        ImageNativeMethods.wkhtmltoimage_create_converter(globalSettings, IntPtr.Zero);
 
     public override void DestroyConverter(
         IntPtr converter) =>
