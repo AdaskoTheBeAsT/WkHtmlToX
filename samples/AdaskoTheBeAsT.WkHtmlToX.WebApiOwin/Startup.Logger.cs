@@ -12,7 +12,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
 {
     public partial class Startup
     {
+#pragma warning disable CC0091 // Use static method
         public void ConfigureLogger(HttpConfiguration config)
+#pragma warning restore CC0091 // Use static method
         {
             // Use Serilog for logging
             // More information can be found here https://github.com/serilog/serilog/wiki/Getting-Started

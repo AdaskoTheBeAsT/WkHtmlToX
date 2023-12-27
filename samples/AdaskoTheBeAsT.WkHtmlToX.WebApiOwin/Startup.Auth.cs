@@ -4,7 +4,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
 {
     public partial class Startup
     {
+#pragma warning disable CC0091 // Use static method
         public void UseAuthentication(IAppBuilder app)
+#pragma warning restore CC0091 // Use static method
         {
             if (string.IsNullOrWhiteSpace(Settings.Auth.Issuer)
                 || string.IsNullOrWhiteSpace(Settings.Auth.Audience)

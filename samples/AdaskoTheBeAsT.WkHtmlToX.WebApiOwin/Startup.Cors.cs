@@ -7,7 +7,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
 {
     public partial class Startup
     {
+#pragma warning disable CC0091 // Use static method
         public CorsOptions ConfigureCors(string origins)
+#pragma warning restore CC0091 // Use static method
         {
             if (string.IsNullOrWhiteSpace(origins))
             {

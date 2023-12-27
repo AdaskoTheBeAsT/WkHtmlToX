@@ -23,7 +23,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiFull
             GlobalConfiguration.Configuration
                 .EnableSwagger(c =>
                 {
-                    c.SingleApiVersion("v1", "WebApiFull");
+                    c.SingleApiVersion("v1", nameof(WebApiFull));
                     c.IncludeXmlComments(commentsFile);
                 })
                 .EnableSwaggerUi();

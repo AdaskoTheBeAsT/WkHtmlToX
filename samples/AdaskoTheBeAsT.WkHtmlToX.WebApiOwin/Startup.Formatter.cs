@@ -8,7 +8,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
 {
     public partial class Startup
     {
+#pragma warning disable CC0091 // Use static method
         public void ConfigureFormatter(HttpConfiguration config)
+#pragma warning restore CC0091 // Use static method
         {
             if (config == null)
             {

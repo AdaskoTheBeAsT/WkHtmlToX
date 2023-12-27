@@ -13,7 +13,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApi
         private const string RedocEndpoint = "/swagger/v1/swagger.json";
         private const string RedocRoutePrefix = "api-docs";
 
+#pragma warning disable CC0091 // Use static method
         public void ConfigureServicesSwagger(IServiceCollection services)
+#pragma warning restore CC0091 // Use static method
         {
             // Register the Swagger generator, defining one or more Swagger documents
             _ = services.AddSwaggerGen(c =>

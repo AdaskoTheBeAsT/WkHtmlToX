@@ -15,7 +15,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
 {
     public partial class Startup
     {
+#pragma warning disable CC0091 // Use static method
         private Container ConfigureIoC(IAppBuilder app, HttpConfiguration httpConfiguration)
+#pragma warning restore CC0091 // Use static method
         {
             var container = new Container();
 
