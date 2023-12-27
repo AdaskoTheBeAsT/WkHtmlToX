@@ -33,6 +33,7 @@ internal sealed class ImageProcessor
         ProcessingDocument = document;
 
 #pragma warning disable S1481 // Unused local variables should be removed
+        // ReSharper disable once UnusedVariable
         var (converterPtr, globalSettingsPtr) = CreateConverter(document);
 #pragma warning restore S1481 // Unused local variables should be removed
 
