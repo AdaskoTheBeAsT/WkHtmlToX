@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
+namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest.Features
 {
     using TechTalk.SpecFlow;
     using System;
@@ -19,7 +19,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class MultipleConversionFeatureFeature : object, Xunit.IClassFixture<MultipleConversionFeatureFeature.FixtureData>, System.IDisposable
+    public partial class ImageConverterFeatureFeature : object, Xunit.IClassFixture<ImageConverterFeatureFeature.FixtureData>, System.IDisposable
     {
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
@@ -28,10 +28,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
         
         private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
         
-#line 1 "MultipleConversionFeature.feature"
+#line 1 "ImageConverterFeature.feature"
 #line hidden
         
-        public MultipleConversionFeatureFeature(MultipleConversionFeatureFeature.FixtureData fixtureData, AdaskoTheBeAsT_WkHtmlToX_IntegrationTest_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public ImageConverterFeatureFeature(ImageConverterFeatureFeature.FixtureData fixtureData, AdaskoTheBeAsT_WkHtmlToX_IntegrationTest_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
             this.TestInitialize();
@@ -40,7 +40,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
         public static void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "", "MultipleConversionFeature", null, ProgrammingLanguage.CSharp, featureTags);
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "ImageConverterFeature", null, ProgrammingLanguage.CSharp, featureTags);
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -80,14 +80,20 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest
             this.TestTearDown();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Convert same html twice should give same results")]
-        [Xunit.TraitAttribute("FeatureTitle", "MultipleConversionFeature")]
-        [Xunit.TraitAttribute("Description", "Convert same html twice should give same results")]
-        public void ConvertSameHtmlTwiceShouldGiveSameResults()
+        [Xunit.SkippableTheoryAttribute(DisplayName="Convert Image")]
+        [Xunit.TraitAttribute("FeatureTitle", "ImageConverterFeature")]
+        [Xunit.TraitAttribute("Description", "Convert Image")]
+        [Xunit.InlineDataAttribute("Simple.html", "1", new string[0])]
+        [Xunit.InlineDataAttribute("Simple.html", "5", new string[0])]
+        [Xunit.InlineDataAttribute("Simple.html", "10", new string[0])]
+        [Xunit.InlineDataAttribute("Large.html", "10", new string[0])]
+        public void ConvertImage(string filename, string repetitions, string[] exampleTags)
         {
-            string[] tagsOfScenario = ((string[])(null));
+            string[] tagsOfScenario = exampleTags;
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Convert same html twice should give same results", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            argumentsOfScenario.Add("filename", filename);
+            argumentsOfScenario.Add("repetitions", repetitions);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Convert Image", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 3
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -99,19 +105,19 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 4
-    testRunner.Given("I have SynchronizedPdfConverter", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("I have SynchronizedImageConverter", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 5
-    testRunner.And("I have complex html", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And(string.Format("I have sample html to convert \'{0}\'", filename), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 6
-    testRunner.When("I convert first time", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+    testRunner.And("I created HtmlToImageDocument", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 7
-    testRunner.And("I convert same html second time", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.When(string.Format("I convert html to image {0} times", repetitions), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 8
-    testRunner.Then("I should obtain files with same length", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("proper image should be created", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -124,12 +130,12 @@ this.ScenarioInitialize(scenarioInfo);
             
             public FixtureData()
             {
-                MultipleConversionFeatureFeature.FeatureSetup();
+                ImageConverterFeatureFeature.FeatureSetup();
             }
             
             void System.IDisposable.Dispose()
             {
-                MultipleConversionFeatureFeature.FeatureTearDown();
+                ImageConverterFeatureFeature.FeatureTearDown();
             }
         }
     }

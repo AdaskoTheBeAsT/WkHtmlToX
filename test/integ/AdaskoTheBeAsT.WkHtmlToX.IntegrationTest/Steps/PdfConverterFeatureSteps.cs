@@ -7,7 +7,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Settings;
 using Microsoft.IO;
 using TechTalk.SpecFlow;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest;
+namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest.Steps;
 
 [Binding]
 [Scope(Feature = "PdfConverterFeature")]
@@ -61,7 +61,7 @@ public sealed class PdfConverterFeatureSteps
     [When("I convert html to pdf (.*) times")]
     public async Task WhenIConvertHtmlToPdfTimesAsync(int count)
     {
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
 #pragma warning disable RCS1212 // Remove redundant assignment.
             Stream? stream = null;

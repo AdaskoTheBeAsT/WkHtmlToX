@@ -8,7 +8,7 @@ using FluentAssertions;
 using Microsoft.IO;
 using TechTalk.SpecFlow;
 
-namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest;
+namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest.Steps;
 
 [Binding]
 [Scope(Feature = "MultipleConversionFeature")]
@@ -113,8 +113,8 @@ public sealed class MultipleConversionFeatureSteps
 
             await ms.DisposeAsync().ConfigureAwait(false);
 #else
-                stream?.Dispose();
-                ms.Dispose();
+            stream?.Dispose();
+            ms.Dispose();
 #endif
         }
     }

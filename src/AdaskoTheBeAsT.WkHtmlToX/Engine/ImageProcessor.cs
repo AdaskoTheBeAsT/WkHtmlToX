@@ -17,8 +17,6 @@ internal sealed class ImageProcessor
 
     public IWkHtmlToImageModule ImageModule { get; }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "<挂起>")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<挂起>")]
     public bool Convert(IHtmlToImageDocument? document, Func<int, Stream> createStreamFunc)
     {
         if (document?.ImageSettings == null)
@@ -34,7 +32,9 @@ internal sealed class ImageProcessor
 
         ProcessingDocument = document;
 
+#pragma warning disable S1481 // Unused local variables should be removed
         var (converterPtr, globalSettingsPtr) = CreateConverter(document);
+#pragma warning restore S1481 // Unused local variables should be removed
 
         RegisterEvents(converterPtr);
 
@@ -51,7 +51,6 @@ internal sealed class ImageProcessor
         }
         finally
         {
-            // ImageModule.DestroyGlobalSetting(globalSettingsPtr);
             ImageModule.DestroyConverter(converterPtr);
             ProcessingDocument = null;
         }

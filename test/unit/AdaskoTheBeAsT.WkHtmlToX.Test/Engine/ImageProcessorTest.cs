@@ -195,7 +195,7 @@ public partial class ImageProcessorTest
                         It.Is<string?>(v => v == quality)),
                 Times.Once);
             _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()), Times.Never);
-            _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Once);
+            _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Never);
             _module.Verify(m => m.DestroyConverter(It.IsAny<IntPtr>()), Times.Once);
             result.Should().BeFalse();
         }
@@ -246,7 +246,7 @@ public partial class ImageProcessorTest
                         It.Is<string?>(v => v == quality)),
                 Times.Once);
             _module.Verify(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()), Times.Once);
-            _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Once);
+            _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Never);
             _module.Verify(m => m.DestroyConverter(It.IsAny<IntPtr>()), Times.Once);
             result.Should().BeTrue();
         }
