@@ -173,11 +173,15 @@ internal abstract class ProcessorBase
 
     protected internal void Apply(IntPtr config, string? prefix, string name, object value, bool useGlobal)
     {
+#if NETSTANDARD2_0
         if (value is null)
         {
             throw new ArgumentNullException(nameof(value));
         }
-
+#endif
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(value);
+#endif
         var type = value.GetType();
 
         var applySetting = GetApplySettingFunc(useGlobal);

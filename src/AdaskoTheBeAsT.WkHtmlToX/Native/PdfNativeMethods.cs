@@ -9,6 +9,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Native;
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
 #pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable SA1300 // Element should begin with upper-case letter
+#pragma warning disable SYSLIB1054
 internal static class PdfNativeMethods
 {
     /// <summary>
@@ -306,6 +307,7 @@ internal static class PdfNativeMethods
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
     internal static extern int wkhtmltopdf_get_output(IntPtr converter, out IntPtr data);
 }
+#pragma warning restore SYSLIB1054
 #pragma warning restore SA1300 // Element should begin with upper-case letter
 #pragma warning restore IDE1006 // Naming Styles
 #pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments

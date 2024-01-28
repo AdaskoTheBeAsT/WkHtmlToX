@@ -10,6 +10,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Loaders;
 namespace AdaskoTheBeAsT.WkHtmlToX.Native;
 
 #pragma warning disable CA1060 // Move pinvokes to native methods class
+#pragma warning disable SYSLIB1054
 internal static class SystemWindowsNativeMethods
 {
     private const string KernelLib = "kernel32";
@@ -38,4 +39,5 @@ internal static class SystemWindowsNativeMethods
     [DllImport(KernelLib, CharSet = CharSet.Unicode, ExactSpelling = true, BestFitMapping = false, ThrowOnUnmappableChar = true)]
     internal static extern IntPtr GetProcAddress(SafeLibraryHandle hModule, string procname);
 }
+#pragma warning restore SYSLIB1054
 #pragma warning restore CA1060 // Move pinvokes to native methods class

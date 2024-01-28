@@ -122,11 +122,15 @@ internal abstract class WkHtmlToXModule
 
     public void GetOutput(IntPtr converter, Stream stream)
     {
-        if (stream == null)
+#if NETSTANDARD2_0
+        if (stream is null)
         {
             throw new ArgumentNullException(nameof(stream));
         }
-
+#endif
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(stream);
+#endif
         GetOutput(converter, _ => stream);
     }
 
@@ -134,11 +138,15 @@ internal abstract class WkHtmlToXModule
         IntPtr converter,
         Func<int, Stream> createStreamFunc)
     {
-        if (createStreamFunc == null)
+#if NETSTANDARD2_0
+        if (createStreamFunc is null)
         {
             throw new ArgumentNullException(nameof(createStreamFunc));
         }
-
+#endif
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(createStreamFunc);
+#endif
         var totalLength = GetOutputImpl(converter, out IntPtr data);
         if (totalLength == 0)
         {
@@ -146,12 +154,10 @@ internal abstract class WkHtmlToXModule
         }
 
 #pragma warning disable IDISP001 // Dispose created.
-        var stream = createStreamFunc(totalLength);
+#pragma warning disable CC0031 // Check for null before calling a delegate
+        var stream = createStreamFunc(totalLength) ?? throw new ArgumentException("Create stream returned null");
+#pragma warning restore CC0031 // Check for null before calling a delegate
 #pragma warning restore IDISP001 // Dispose created.
-        if (stream is null)
-        {
-            throw new ArgumentException("Create stream returned null");
-        }
 
         (totalLength, var length) = CopyBuffer(data, stream, totalLength);
 

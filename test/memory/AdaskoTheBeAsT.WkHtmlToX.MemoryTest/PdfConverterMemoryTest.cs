@@ -15,7 +15,7 @@ public sealed class PdfConverterMemoryTest
     : IDisposable
 {
     private readonly ITestOutputHelper _output;
-    private readonly IWkHtmlToXEngine _engine;
+    private readonly WkHtmlToXEngine _engine;
 
     public PdfConverterMemoryTest(
         ITestOutputHelper output)

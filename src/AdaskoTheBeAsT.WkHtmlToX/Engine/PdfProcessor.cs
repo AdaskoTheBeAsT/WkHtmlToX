@@ -26,15 +26,25 @@ internal sealed class PdfProcessor
 
     public bool Convert(IHtmlToPdfDocument document, Func<int, Stream> createStreamFunc)
     {
+#if NETSTANDARD2_0
         if (document is null)
         {
             throw new ArgumentNullException(nameof(document));
         }
+#endif
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(document);
+#endif
 
+#if NETSTANDARD2_0
         if (createStreamFunc is null)
         {
             throw new ArgumentNullException(nameof(createStreamFunc));
         }
+#endif
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(createStreamFunc);
+#endif
 
         if (document.ObjectSettings.Count == 0)
         {
@@ -76,10 +86,15 @@ internal sealed class PdfProcessor
     internal (IntPtr converterPtr, IntPtr globalSettingsPtr, List<IntPtr> objectSettingsPtrs) CreateConverter(
         IHtmlToPdfDocument document)
     {
+#if NETSTANDARD2_0
         if (document is null)
         {
             throw new ArgumentNullException(nameof(document));
         }
+#endif
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(document);
+#endif
 
         var globalSettings = PdfModule.CreateGlobalSettings();
         ApplyConfig(globalSettings, document.GlobalSettings, useGlobal: true);

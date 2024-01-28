@@ -148,11 +148,15 @@ internal sealed class WkHtmlToPdfModule
         string name,
         byte[] buffer)
     {
-        if (buffer == null)
+#if NETSTANDARD2_0
+        if (buffer is null)
         {
             throw new ArgumentNullException(nameof(buffer));
         }
-
+#endif
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(buffer);
+#endif
         return PdfNativeMethods.wkhtmltopdf_get_global_setting(
             settings,
             name,

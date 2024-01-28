@@ -53,7 +53,13 @@ public class ImageConverterTest
                 e =>
                     e.AddConvertWorkItem(It.IsAny<ConvertWorkItemBase>(), It.IsAny<CancellationToken>()))
             .Callback<ConvertWorkItemBase, CancellationToken>((i, _) => i.TaskCompletionSource.SetResult(true));
+
+#if NET462_OR_GREATER
         using var memoryStream = new MemoryStream();
+#endif
+#if NET6_0_OR_GREATER
+        await using var memoryStream = new MemoryStream();
+#endif
 
         var document = new HtmlToImageDocument();
 

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 using AdaskoTheBeAsT.WkHtmlToX.Loaders;
@@ -17,56 +16,41 @@ public sealed class LibraryLoaderFactoryTest
         _sut = new LibraryLoaderFactory();
     }
 
-    public static IEnumerable<object?[]> GetTestData()
+    public static TheoryData<CustomData> GetTestData()
     {
-        yield return new object?[]
-        {
-            PlatformID.MacOSX,
-            WkHtmlToXRuntimeIdentifier.Ubuntu1804X64,
-            typeof(LibraryLoaderOsx),
-        };
-        yield return new object?[]
-        {
-            PlatformID.Unix,
-            WkHtmlToXRuntimeIdentifier.Ubuntu1804X64,
-            typeof(LibraryLoaderLinux),
-        };
-        yield return new object?[]
-        {
-            128,
-            WkHtmlToXRuntimeIdentifier.Ubuntu1804X64,
-            typeof(LibraryLoaderLinux),
-        };
-        yield return new object?[]
-        {
-            PlatformID.Win32NT,
-            null,
-            typeof(LibraryLoaderWindows),
-        };
-        yield return new object?[]
-        {
-            PlatformID.Win32S,
-            null,
-            typeof(LibraryLoaderWindows),
-        };
-        yield return new object?[]
-        {
-            PlatformID.Win32Windows,
-            null,
-            typeof(LibraryLoaderWindows),
-        };
-        yield return new object?[]
-        {
-            PlatformID.WinCE,
-            null,
-            typeof(LibraryLoaderWindows),
-        };
-        yield return new object?[]
-        {
-            PlatformID.Xbox,
-            null,
-            typeof(LibraryLoaderWindows),
-        };
+        return new TheoryData<CustomData>(
+            new CustomData(
+                (int)PlatformID.MacOSX,
+                WkHtmlToXRuntimeIdentifier.Ubuntu1804X64,
+                typeof(LibraryLoaderOsx)),
+            new CustomData(
+                (int)PlatformID.Unix,
+                WkHtmlToXRuntimeIdentifier.Ubuntu1804X64,
+                typeof(LibraryLoaderLinux)),
+            new CustomData(
+                128,
+                WkHtmlToXRuntimeIdentifier.Ubuntu1804X64,
+                typeof(LibraryLoaderLinux)),
+            new CustomData(
+                (int)PlatformID.Win32NT,
+                null,
+                typeof(LibraryLoaderWindows)),
+            new CustomData(
+                (int)PlatformID.Win32S,
+                null,
+                typeof(LibraryLoaderWindows)),
+            new CustomData(
+                (int)PlatformID.Win32Windows,
+                null,
+                typeof(LibraryLoaderWindows)),
+            new CustomData(
+                (int)PlatformID.WinCE,
+                null,
+                typeof(LibraryLoaderWindows)),
+            new CustomData(
+                (int)PlatformID.Xbox,
+                null,
+                typeof(LibraryLoaderWindows)));
     }
 
     [Fact]
@@ -102,17 +86,27 @@ public sealed class LibraryLoaderFactoryTest
     [Theory]
     [MemberData(nameof(GetTestData))]
     public void CreateShouldReturnCorrectLoaderAndRuntimeIdentifierPassed(
-        int platformId,
-        WkHtmlToXRuntimeIdentifier? runtimeIdentifier,
-        Type type)
+        CustomData data)
     {
         // Arrange
-        var configuration = new WkHtmlToXConfiguration(platformId, runtimeIdentifier);
+        var configuration = new WkHtmlToXConfiguration(data.PlatformId, data.RuntimeIdentifier);
 
         // Act
         using var result = _sut.Create(configuration);
 
         // Assert
-        result.Should().BeOfType(type);
+        result.Should().BeOfType(data.Type);
+    }
+
+    public class CustomData(
+        int platformId,
+        WkHtmlToXRuntimeIdentifier? runtimeIdentifier,
+        Type type)
+    {
+        public int PlatformId { get; } = platformId;
+
+        public WkHtmlToXRuntimeIdentifier? RuntimeIdentifier { get; } = runtimeIdentifier;
+
+        public Type Type { get; } = type;
     }
 }

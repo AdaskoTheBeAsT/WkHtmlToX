@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using AdaskoTheBeAsT.WkHtmlToX.Documents;
@@ -15,33 +14,26 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine;
 
 public partial class PdfProcessorTest
 {
-    public static IEnumerable<object?[]> GetTestData()
+    public static TheoryData<CustomData> GetTestData()
     {
-        const string htmlContent = "<html><head><title>title</title></head><body></body></html>";
-        yield return new object?[]
-        {
-            htmlContent,
-            null,
-            null,
-        };
-
+        var htmlContent = "<html><head><title>title</title></head><body></body></html>";
         var htmlContentByteArray = Encoding.UTF8.GetBytes(htmlContent);
-        yield return new object?[]
-        {
-            null,
-            htmlContentByteArray,
-            null,
-        };
-
 #pragma warning disable IDISP001 // Dispose created.
         var stream = new MemoryStream(htmlContentByteArray);
 #pragma warning restore IDISP001 // Dispose created.
-        yield return new object?[]
-        {
-            null,
-            null,
-            stream,
-        };
+        return new TheoryData<CustomData>(
+            new CustomData(
+                htmlContent,
+                null,
+                null),
+            new CustomData(
+                null,
+                htmlContentByteArray,
+                null),
+            new CustomData(
+                null,
+                null,
+                stream));
     }
 
     [Fact]
@@ -287,7 +279,7 @@ public partial class PdfProcessorTest
             result.globalSettingsPtr.Should().Be(globalSettingsPtr);
             result.objectSettingsPtrs.Should().NotBeNull();
             result.objectSettingsPtrs.Should().ContainSingle();
-            result.objectSettingsPtrs[0].Should().Be(objectSettingsPtr);
+            result.objectSettingsPtrs.Should().HaveElementAt(0, objectSettingsPtr);
         }
     }
 #pragma warning restore MA0051 // Method is too long
@@ -322,9 +314,7 @@ public partial class PdfProcessorTest
     [Theory]
     [MemberData(nameof(GetTestData))]
     public void ConvertImplShouldReturnStreamWhenConverted(
-        string? htmlContent,
-        byte[]? htmlContentByteArray,
-        Stream? htmlContentStream)
+        CustomData data)
     {
         // Arrange
         using var memoryStream = new MemoryStream();
@@ -362,9 +352,9 @@ public partial class PdfProcessorTest
             new PdfObjectSettings
             {
                 CaptionText = captionText,
-                HtmlContent = htmlContent,
-                HtmlContentByteArray = htmlContentByteArray,
-                HtmlContentStream = htmlContentStream,
+                HtmlContent = data.HtmlContent,
+                HtmlContentByteArray = data.HtmlContentByteArray,
+                HtmlContentStream = data.HtmlContentStream,
             });
 
         // Act
@@ -704,4 +694,16 @@ public partial class PdfProcessorTest
         }
     }
 #pragma warning restore MA0051 // Method is too long
+
+    public class CustomData(
+        string? htmlContent,
+        byte[]? htmlContentByteArray,
+        Stream? htmlContentStream)
+    {
+        public string? HtmlContent { get; } = htmlContent;
+
+        public byte[]? HtmlContentByteArray { get; } = htmlContentByteArray;
+
+        public Stream? HtmlContentStream { get; } = htmlContentStream;
+    }
 }

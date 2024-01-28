@@ -23,20 +23,20 @@ public class ImageConverterFeatureStepDefinitions
         _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
     }
 
-    [Given(@"I have SynchronizedImageConverter")]
+    [Given("I have SynchronizedImageConverter")]
     public void GivenIHaveSynchronizedImageConverter()
     {
         _sut = new ImageConverter(GlobalInitializer.Engine!);
     }
 
-    [Given(@"I have sample html to convert '([^']*)'")]
+    [Given("I have sample html to convert '([^']*)'")]
     public void GivenIHaveSampleHtmlToConvert(string fileName)
     {
         _filePath = Path.Combine("./HtmlSamples", fileName);
         _outputFilePath = Path.Combine("./HtmlSamples", $"{Guid.NewGuid()}.png");
     }
 
-    [Given(@"I created HtmlToImageDocument")]
+    [Given("I created HtmlToImageDocument")]
     public void GivenICreatedHtmlToImageDocument()
     {
         _htmlToImageDocument = new HtmlToImageDocument
@@ -51,7 +51,7 @@ public class ImageConverterFeatureStepDefinitions
         };
     }
 
-    [When(@"I convert html to image (.*) times")]
+    [When("I convert html to image (.*) times")]
     public async Task WhenIConvertHtmlToImageTimesAsync(int count)
     {
         for (var i = 0; i < count; i++)
@@ -85,7 +85,7 @@ public class ImageConverterFeatureStepDefinitions
         }
     }
 
-    [Then(@"proper image should be created")]
+    [Then("proper image should be created")]
 #pragma warning disable MA0038 // Make method static
     public void ThenProperImageShouldBeCreated()
     {

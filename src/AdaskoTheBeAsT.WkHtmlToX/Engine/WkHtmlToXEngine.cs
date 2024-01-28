@@ -133,10 +133,12 @@ public sealed class WkHtmlToXEngine
     internal void Process(object? obj)
     {
 #if NETSTANDARD2_0
-        if (obj is null)
+#pragma warning disable RCS1256 // Invalid argument null check
+        if (obj == null)
         {
             throw new ArgumentNullException(nameof(obj));
         }
+#pragma warning restore RCS1256 // Invalid argument null check
 #endif
 
 #if NET6_0_OR_GREATER
