@@ -70,11 +70,15 @@ internal sealed class ImageProcessor
     internal (IntPtr converterPtr, IntPtr globalSettingsPtr) CreateConverter(
         IHtmlToImageDocument document)
     {
+#if NETSTANDARD2_0
         if (document is null)
         {
             throw new ArgumentNullException(nameof(document));
         }
-
+#endif
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(document);
+#endif
         var globalSettings = ImageModule.CreateGlobalSettings();
         ApplyConfig(globalSettings, document.ImageSettings, useGlobal: true);
         var converter = ImageModule.CreateConverter(globalSettings);

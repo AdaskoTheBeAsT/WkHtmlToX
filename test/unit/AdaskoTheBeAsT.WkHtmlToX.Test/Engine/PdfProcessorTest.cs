@@ -16,7 +16,7 @@ public partial class PdfProcessorTest
 {
     public static TheoryData<CustomData> GetTestData()
     {
-        var htmlContent = "<html><head><title>title</title></head><body></body></html>";
+        const string htmlContent = "<html><head><title>title</title></head><body></body></html>";
         var htmlContentByteArray = Encoding.UTF8.GetBytes(htmlContent);
 #pragma warning disable IDISP001 // Dispose created.
         var stream = new MemoryStream(htmlContentByteArray);
@@ -24,15 +24,15 @@ public partial class PdfProcessorTest
         return new TheoryData<CustomData>(
             new CustomData(
                 htmlContent,
-                null,
-                null),
+                htmlContentByteArray: null,
+                htmlContentStream: null),
             new CustomData(
-                null,
+                htmlContent: null,
                 htmlContentByteArray,
-                null),
+                htmlContentStream: null),
             new CustomData(
-                null,
-                null,
+                htmlContent: null,
+                htmlContentByteArray: null,
                 stream));
     }
 

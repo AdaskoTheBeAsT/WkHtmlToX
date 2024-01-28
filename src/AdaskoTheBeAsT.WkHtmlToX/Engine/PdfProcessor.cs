@@ -123,11 +123,15 @@ internal sealed class PdfProcessor
         IntPtr objectSettings,
         PdfObjectSettings pdfObjectSettings)
     {
+#if NETSTANDARD2_0
         if (pdfObjectSettings is null)
         {
             throw new ArgumentNullException(nameof(pdfObjectSettings));
         }
-
+#endif
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(pdfObjectSettings);
+#endif
         if (!string.IsNullOrEmpty(pdfObjectSettings.HtmlContent))
         {
             AddContentString(converter, objectSettings, pdfObjectSettings);
@@ -153,10 +157,15 @@ internal sealed class PdfProcessor
         IntPtr objectSettings,
         PdfObjectSettings pdfObjectSettings)
     {
+#if NETSTANDARD2_0
         if (pdfObjectSettings is null)
         {
             throw new ArgumentNullException(nameof(pdfObjectSettings));
         }
+#endif
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(pdfObjectSettings);
+#endif
 
         if (string.IsNullOrEmpty(pdfObjectSettings.HtmlContent))
         {
@@ -193,10 +202,15 @@ internal sealed class PdfProcessor
         IntPtr objectSettings,
         Stream htmlContentStream)
     {
+#if NETSTANDARD2_0
         if (htmlContentStream is null)
         {
             throw new ArgumentNullException(nameof(htmlContentStream));
         }
+#endif
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(htmlContentStream);
+#endif
 
         var length = htmlContentStream.Length;
         if (length > int.MaxValue)

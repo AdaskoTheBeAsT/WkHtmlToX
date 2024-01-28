@@ -33,23 +33,23 @@ public sealed class LibraryLoaderFactoryTest
                 typeof(LibraryLoaderLinux)),
             new CustomData(
                 (int)PlatformID.Win32NT,
-                null,
+                runtimeIdentifier: null,
                 typeof(LibraryLoaderWindows)),
             new CustomData(
                 (int)PlatformID.Win32S,
-                null,
+                runtimeIdentifier: null,
                 typeof(LibraryLoaderWindows)),
             new CustomData(
                 (int)PlatformID.Win32Windows,
-                null,
+                runtimeIdentifier: null,
                 typeof(LibraryLoaderWindows)),
             new CustomData(
                 (int)PlatformID.WinCE,
-                null,
+                runtimeIdentifier: null,
                 typeof(LibraryLoaderWindows)),
             new CustomData(
                 (int)PlatformID.Xbox,
-                null,
+                runtimeIdentifier: null,
                 typeof(LibraryLoaderWindows)));
     }
 
