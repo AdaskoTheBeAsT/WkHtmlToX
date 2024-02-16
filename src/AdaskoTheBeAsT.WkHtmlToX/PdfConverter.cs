@@ -25,6 +25,8 @@ public class PdfConverter
     {
         var item = new PdfConvertWorkItem(document, createStreamFunc);
         _engine.AddConvertWorkItem(item, token);
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
         return item.TaskCompletionSource.Task;
+#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
     }
 }

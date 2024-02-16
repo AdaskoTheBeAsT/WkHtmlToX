@@ -246,8 +246,10 @@ public sealed class EngineTest
         using var source = new CancellationTokenSource(TimeSpan.FromSeconds(3));
         _sut.Process(source.Token);
 
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
         Func<Task<bool>> action1 = async () => await pdfConvertWorkItem.TaskCompletionSource.Task;
         Func<Task<bool>> action2 = async () => await imageConvertWorkItem.TaskCompletionSource.Task;
+#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
 
         // Assert
         using (new AssertionScope())
