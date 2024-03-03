@@ -195,7 +195,9 @@ internal abstract class ProcessorBase
         {
             applySetting(config, localName, ((double)value).ToString("0.##", CultureInfo.InvariantCulture));
         }
+#pragma warning disable REFL040
         else if (typeof(Dictionary<string, string>).IsAssignableFrom(type))
+#pragma warning restore REFL040
         {
             var dictionary = (Dictionary<string, string>)value;
             var index = 0;

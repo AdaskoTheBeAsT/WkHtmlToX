@@ -40,7 +40,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApi
             {
                 c.SwaggerEndpoint(
                     SwaggerEndpoint,
-                    $"{GetType().FullName?.Replace(".Startup", string.Empty, StringComparison.OrdinalIgnoreCase)}");
+                    $"{typeof(Startup).FullName?.Replace(".Startup", string.Empty, StringComparison.OrdinalIgnoreCase)}");
             });
 
             app.UseReDoc(c =>
