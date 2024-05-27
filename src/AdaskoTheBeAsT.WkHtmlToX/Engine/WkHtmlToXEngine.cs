@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Concurrent;
+#if NETSTANDARD2_0
 using System.Runtime.InteropServices;
+#endif
 using System.Threading;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
