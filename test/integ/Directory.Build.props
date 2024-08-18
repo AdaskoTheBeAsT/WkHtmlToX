@@ -2,9 +2,9 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
   <ItemGroup>
     
-    <PackageReference Include="Reqnroll" Version="2.0.1" />
-    <PackageReference Include="Reqnroll.Tools.MsBuild.Generation" Version="2.0.1" />
-    <PackageReference Include="Reqnroll.xUnit" Version="2.0.1" />
+    <PackageReference Include="Reqnroll" Version="2.0.3" />
+    <PackageReference Include="Reqnroll.Tools.MsBuild.Generation" Version="2.0.3" />
+    <PackageReference Include="Reqnroll.xUnit" Version="2.0.3" />
   </ItemGroup>
 
   <!--<ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">

@@ -45,7 +45,7 @@ steps:
       verbosityRestore: Quiet
       arguments: AdaskoTheBeAsT.WkHtmlToX.sln
 
-  - task: SonarCloudPrepare@1
+  - task: SonarCloudPrepare@2
     displayName: "Prepare analysis on SonarCloud"
     inputs:
       scannerMode: "MSBuild"
@@ -82,7 +82,16 @@ steps:
       command: test
       projects: "$(unitTestProjects)"
       publishTestResults: false
-      arguments: '--configuration $(buildConfiguration) --collect:"Code Coverage" --collect:"XPlat Code Coverage;Format=opencover,cobertura" --logger:"trx" --results-directory $(testResultsDirectory)'
+      arguments: >-
+        --configuration $(buildConfiguration)
+        --collect:"Code Coverage"
+        --collect:"XPlat Code Coverage"
+        --logger:"trx"
+        --results-directory $(testResultsDirectory)
+        --no-build
+        --no-restore
+        --settings $(Build.SourcesDirectory)/.runsettings
+        /p:RunCodeAnalysis=false
 
   - task: ResharperCli@2
     inputs:
@@ -91,10 +100,10 @@ steps:
       resultsOutputFilePath: "$(Build.SourcesDirectory)/CodeQualityResults.xml"
       additionalArguments: "--no-build"
 
-  - task: SonarCloudAnalyze@1
+  - task: SonarCloudAnalyze@2
     displayName: Sonar Cloud analyze
 
-  - task: SonarCloudPublish@1
+  - task: SonarCloudPublish@2
     displayName: Sonar Cloud publish
     inputs:
       pollingTimeoutSec: "300"

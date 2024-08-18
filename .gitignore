@@ -351,3 +351,10 @@ MigrationBackup/
 
 # JetBrains Rider
 .idea/
+
+.sarif/*
+!.sarif/.gitkeep
+
+.dotcover/*
+!.dotcover/.gitkeep
+NDependOut/

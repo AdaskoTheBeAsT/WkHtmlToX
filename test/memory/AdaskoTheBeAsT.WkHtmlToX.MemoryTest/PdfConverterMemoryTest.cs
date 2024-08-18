@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using FluentAssertions;
 using JetBrains.dotMemoryUnit;
+using JetBrains.dotMemoryUnit.Kernel;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -28,12 +29,17 @@ public sealed class PdfConverterMemoryTest
 
     public void Dispose() => _engine.Dispose();
 
-    [DotMemoryUnit(SavingStrategy = SavingStrategy.OnAnyFail)]
+    [DotMemoryUnit(SavingStrategy = SavingStrategy.OnAnyFail, FailIfRunWithoutSupport = false)]
     [Fact]
     public async Task ShouldNotLeaveAnyObjectsSurvivedAsync()
     {
         var htmlToPdfGenerator = new HtmlToPdfDocumentGenerator(new SmallHtmlGenerator());
-        var memoryCheckPoint = dotMemory.Check();
+        MemoryCheckPoint? memoryCheckPoint = null;
+        if (dotMemoryApi.IsEnabled)
+        {
+            memoryCheckPoint = dotMemory.Check();
+        }
+
         var doc = htmlToPdfGenerator.Generate();
 
         if (!Directory.Exists("files"))
@@ -59,14 +65,22 @@ public sealed class PdfConverterMemoryTest
 #pragma warning restore IDISP011
         _output.WriteLine(converted.ToString(CultureInfo.InvariantCulture));
 
-        dotMemory.Check(
-            memory =>
-            {
-                var objects = memory.GetDifference(memoryCheckPoint)
-                    .GetSurvivedObjects()
-                    .GetObjects(where => where.Namespace.Like(nameof(AdaskoTheBeAsT)));
-                var objectCount = objects.ObjectsCount;
-                objectCount.Should().BeLessOrEqualTo(5);
-            });
+        if (dotMemoryApi.IsEnabled)
+        {
+            dotMemory.Check(
+                memory =>
+                {
+                    if (memoryCheckPoint == null)
+                    {
+                        return;
+                    }
+
+                    var objects = memory.GetDifference(memoryCheckPoint.Value)
+                        .GetSurvivedObjects()
+                        .GetObjects(where => where.Namespace.Like(nameof(AdaskoTheBeAsT)));
+                    var objectCount = objects.ObjectsCount;
+                    objectCount.Should().BeLessOrEqualTo(5);
+                });
+        }
     }
 }
