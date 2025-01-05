@@ -22,9 +22,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest.Features
     public partial class ImageConverterFeatureFeature : object, Xunit.IClassFixture<ImageConverterFeatureFeature.FixtureData>, Xunit.IAsyncLifetime
     {
         
-        private static global::Reqnroll.ITestRunner testRunner;
+        private global::Reqnroll.ITestRunner testRunner;
         
         private static string[] featureTags = ((string[])(null));
+        
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "ImageConverterFeature", null, global::Reqnroll.ProgrammingLanguage.CSharp, featureTags);
         
         private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
         
@@ -38,26 +40,30 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest.Features
         
         public static async System.Threading.Tasks.Task FeatureSetupAsync()
         {
-            testRunner = global::Reqnroll.TestRunnerManager.GetTestRunnerForAssembly(null, global::Reqnroll.xUnit.ReqnrollPlugin.XUnitParallelWorkerTracker.Instance.GetWorkerId());
-            global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "ImageConverterFeature", null, global::Reqnroll.ProgrammingLanguage.CSharp, featureTags);
-            await testRunner.OnFeatureStartAsync(featureInfo);
         }
         
         public static async System.Threading.Tasks.Task FeatureTearDownAsync()
         {
-            string testWorkerId = testRunner.TestWorkerId;
-            await testRunner.OnFeatureEndAsync();
-            testRunner = null;
-            global::Reqnroll.xUnit.ReqnrollPlugin.XUnitParallelWorkerTracker.Instance.ReleaseWorker(testWorkerId);
         }
         
         public async System.Threading.Tasks.Task TestInitializeAsync()
         {
+            testRunner = global::Reqnroll.TestRunnerManager.GetTestRunnerForAssembly(featureHint: featureInfo);
+            if (((testRunner.FeatureContext != null) 
+                        && (testRunner.FeatureContext.FeatureInfo.Equals(featureInfo) == false)))
+            {
+                await testRunner.OnFeatureEndAsync();
+            }
+            if ((testRunner.FeatureContext == null))
+            {
+                await testRunner.OnFeatureStartAsync(featureInfo);
+            }
         }
         
         public async System.Threading.Tasks.Task TestTearDownAsync()
         {
             await testRunner.OnScenarioEndAsync();
+            global::Reqnroll.TestRunnerManager.ReleaseTestRunner(testRunner);
         }
         
         public void ScenarioInitialize(global::Reqnroll.ScenarioInfo scenarioInfo)

@@ -18,7 +18,23 @@ public partial class ImageProcessorTest
     public ImageProcessorTest()
     {
         _fixture = new Fixture();
-        _module = new Mock<IWkHtmlToImageModule>();
+        _module = new Mock<IWkHtmlToImageModule>(MockBehavior.Strict);
+        var globalSettingsPtr = new IntPtr(_fixture.Create<int>());
+        var converterPtr = new IntPtr(_fixture.Create<int>());
+        _module.Setup(m =>
+                m.CreateGlobalSettings())
+            .Returns(globalSettingsPtr);
+        _module.Setup(m =>
+                m.CreateConverter(It.IsAny<IntPtr>()))
+            .Returns(converterPtr);
+        _module.Setup(
+            m =>
+                m.DestroyConverter(It.IsAny<IntPtr>()));
+        _module.Setup(
+                m =>
+                    m.Convert(It.IsAny<IntPtr>()))
+            .Returns(value: true);
+
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null);
         _sut = new ImageProcessor(configuration, _module.Object);
     }

@@ -21,7 +21,25 @@ public partial class PdfProcessorTest
     public PdfProcessorTest()
     {
         _fixture = new Fixture();
-        _module = new Mock<IWkHtmlToPdfModule>();
+        _module = new Mock<IWkHtmlToPdfModule>(MockBehavior.Strict);
+        _module.Setup(
+            m =>
+                m.AddObject(It.IsAny<IntPtr>(), It.IsAny<IntPtr>(), It.IsAny<string>()));
+        _module.Setup(
+            m =>
+                m.AddObject(It.IsAny<IntPtr>(), It.IsAny<IntPtr>(), It.IsAny<byte[]>()));
+        _module.Setup(m =>
+            m.CreateGlobalSettings())
+            .Returns(IntPtr.Zero);
+        _module.Setup(m =>
+                m.CreateObjectSettings())
+            .Returns(IntPtr.Zero);
+        _module.Setup(m =>
+                m.CreateConverter(It.IsAny<nint>()))
+            .Returns(IntPtr.Zero);
+        _module.Setup(m =>
+                m.SetGlobalSetting(It.IsAny<nint>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Returns(0);
         _sut = new PdfProcessor(
             new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null),
             _module.Object);
@@ -49,7 +67,7 @@ public partial class PdfProcessorTest
     public void ShouldAllowToObtainProcessingDocument()
     {
         // Arrange
-        var doc = new Mock<ISettings>().Object;
+        var doc = new Mock<ISettings>(MockBehavior.Strict).Object;
 
         // Act
         _sut.ProcessingDocument = doc;
@@ -73,7 +91,8 @@ public partial class PdfProcessorTest
     {
         // Arrange
         _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
-        _module.Setup(m => m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
+        _module.Setup(m => m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()))
+            .Returns(0);
         _module.Setup(m => m.SetFinishedCallback(It.IsAny<IntPtr>(), It.IsAny<IntCallback>()));
         _module.Setup(m => m.SetPhaseChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()));
         _module.Setup(m => m.SetProgressChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()));
@@ -121,7 +140,8 @@ public partial class PdfProcessorTest
     public void RegisterEventsShouldRegisterErrorCallbackWhenSpecified()
     {
         // Arrange
-        _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
+        _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()))
+            .Returns(0);
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -149,7 +169,8 @@ public partial class PdfProcessorTest
     public void RegisterEventsShouldRegisterWarningCallbackWhenSpecified()
     {
         // Arrange
-        _module.Setup(m => m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
+        _module.Setup(m => m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()))
+            .Returns(0);
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -177,7 +198,8 @@ public partial class PdfProcessorTest
     public void RegisterEventsShouldRegisterFinishedCallbackWhenSpecified()
     {
         // Arrange
-        _module.Setup(m => m.SetFinishedCallback(It.IsAny<IntPtr>(), It.IsAny<IntCallback>()));
+        _module.Setup(m => m.SetFinishedCallback(It.IsAny<IntPtr>(), It.IsAny<IntCallback>()))
+            .Returns(0);
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -205,7 +227,8 @@ public partial class PdfProcessorTest
     public void RegisterEventsShouldRegisterPhaseChangedCallbackWhenSpecified()
     {
         // Arrange
-        _module.Setup(m => m.SetPhaseChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()));
+        _module.Setup(m => m.SetPhaseChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()))
+            .Returns(0);
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -233,7 +256,8 @@ public partial class PdfProcessorTest
     public void RegisterEventsShouldRegisterProgressChangedCallbackWhenSpecified()
     {
         // Arrange
-        _module.Setup(m => m.SetProgressChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()));
+        _module.Setup(m => m.SetProgressChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()))
+            .Returns(0);
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -274,7 +298,7 @@ public partial class PdfProcessorTest
         // Arrange
         var result = default(ErrorEventArgs?);
         var errorMessage = _fixture.Create<string>();
-        var doc = new Mock<ISettings>().Object;
+        var doc = new Mock<ISettings>(MockBehavior.Strict).Object;
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -314,7 +338,7 @@ public partial class PdfProcessorTest
         // Arrange
         var result = default(WarningEventArgs?);
         var errorMessage = _fixture.Create<string>();
-        var doc = new Mock<ISettings>().Object;
+        var doc = new Mock<ISettings>(MockBehavior.Strict).Object;
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -354,7 +378,7 @@ public partial class PdfProcessorTest
         // Arrange
         var result = default(FinishedEventArgs?);
         var code = _fixture.Create<int>();
-        var doc = new Mock<ISettings>().Object;
+        var doc = new Mock<ISettings>(MockBehavior.Strict).Object;
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -402,7 +426,7 @@ public partial class PdfProcessorTest
             .Returns(phaseDescription);
 
         var result = default(PhaseChangedEventArgs?);
-        var doc = new Mock<ISettings>().Object;
+        var doc = new Mock<ISettings>(MockBehavior.Strict).Object;
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -446,7 +470,7 @@ public partial class PdfProcessorTest
             .Returns(progressDescription);
 
         var result = default(ProgressChangedEventArgs?);
-        var doc = new Mock<ISettings>().Object;
+        var doc = new Mock<ISettings>(MockBehavior.Strict).Object;
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -492,11 +516,13 @@ public partial class PdfProcessorTest
         // Arrange
         if (useGlobal)
         {
-            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(0);
         }
         else
         {
-            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(0);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());
@@ -589,11 +615,13 @@ public partial class PdfProcessorTest
         // Arrange
         if (useGlobal)
         {
-            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(0);
         }
         else
         {
-            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(0);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());
@@ -659,11 +687,13 @@ public partial class PdfProcessorTest
         // Arrange
         if (useGlobal)
         {
-            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(0);
         }
         else
         {
-            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(0);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());
@@ -706,11 +736,13 @@ public partial class PdfProcessorTest
         // Arrange
         if (useGlobal)
         {
-            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(0);
         }
         else
         {
-            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(0);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());
@@ -759,11 +791,13 @@ public partial class PdfProcessorTest
         // Arrange
         if (useGlobal)
         {
-            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(0);
         }
         else
         {
-            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(0);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());
@@ -806,11 +840,13 @@ public partial class PdfProcessorTest
         // Arrange
         if (useGlobal)
         {
-            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(0);
         }
         else
         {
-            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(0);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());
@@ -848,11 +884,13 @@ public partial class PdfProcessorTest
         // Arrange
         if (useGlobal)
         {
-            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(0);
         }
         else
         {
-            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(0);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());

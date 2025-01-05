@@ -29,19 +29,20 @@ public sealed class EngineTest
     public EngineTest()
     {
         _configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null);
-        _libraryLoaderMock = new Mock<ILibraryLoader>();
-        _libraryLoaderFactoryMock = new Mock<ILibraryLoaderFactory>();
+        _libraryLoaderMock = new Mock<ILibraryLoader>(MockBehavior.Strict);
+        _libraryLoaderMock.Setup(l => l.Dispose());
+        _libraryLoaderFactoryMock = new Mock<ILibraryLoaderFactory>(MockBehavior.Strict);
         _libraryLoaderFactoryMock
             .Setup(l => l.Create(It.IsAny<WkHtmlToXConfiguration>()))
             .Returns(_libraryLoaderMock.Object);
 
-        _pdfModuleMock = new Mock<IWkHtmlToPdfModule>();
-        _pdfProcessorMock = new Mock<IPdfProcessor>();
+        _pdfModuleMock = new Mock<IWkHtmlToPdfModule>(MockBehavior.Strict);
+        _pdfProcessorMock = new Mock<IPdfProcessor>(MockBehavior.Strict);
         _pdfProcessorMock.SetupGet(p => p.PdfModule)
             .Returns(_pdfModuleMock.Object);
 
-        _imageModuleMock = new Mock<IWkHtmlToImageModule>();
-        _imageProcessorMock = new Mock<IImageProcessor>();
+        _imageModuleMock = new Mock<IWkHtmlToImageModule>(MockBehavior.Strict);
+        _imageProcessorMock = new Mock<IImageProcessor>(MockBehavior.Strict);
         _imageProcessorMock.SetupGet(p => p.ImageModule)
             .Returns(_imageModuleMock.Object);
 
@@ -62,9 +63,9 @@ public sealed class EngineTest
         {
             using var engine = new WkHtmlToXEngine(
                 null!,
-                new Mock<ILibraryLoaderFactory>().Object,
-                new Mock<IPdfProcessor>().Object,
-                new Mock<IImageProcessor>().Object);
+                new Mock<ILibraryLoaderFactory>(MockBehavior.Strict).Object,
+                new Mock<IPdfProcessor>(MockBehavior.Strict).Object,
+                new Mock<IImageProcessor>(MockBehavior.Strict).Object);
         };
 
         // Act and Assert
@@ -81,8 +82,8 @@ public sealed class EngineTest
             using var engine = new WkHtmlToXEngine(
                 configuration,
                 null!,
-                new Mock<IPdfProcessor>().Object,
-                new Mock<IImageProcessor>().Object);
+                new Mock<IPdfProcessor>(MockBehavior.Strict).Object,
+                new Mock<IImageProcessor>(MockBehavior.Strict).Object);
         };
 
         // Act and Assert
@@ -98,9 +99,9 @@ public sealed class EngineTest
         {
             using var engine = new WkHtmlToXEngine(
                 configuration,
-                new Mock<ILibraryLoaderFactory>().Object,
+                new Mock<ILibraryLoaderFactory>(MockBehavior.Strict).Object,
                 null!,
-                new Mock<IImageProcessor>().Object);
+                new Mock<IImageProcessor>(MockBehavior.Strict).Object);
         };
 
         // Act and Assert
@@ -116,8 +117,8 @@ public sealed class EngineTest
         {
             using var engine = new WkHtmlToXEngine(
                 configuration,
-                new Mock<ILibraryLoaderFactory>().Object,
-                new Mock<IPdfProcessor>().Object,
+                new Mock<ILibraryLoaderFactory>(MockBehavior.Strict).Object,
+                new Mock<IPdfProcessor>(MockBehavior.Strict).Object,
                 null!);
         };
 

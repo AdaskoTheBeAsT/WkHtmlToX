@@ -18,7 +18,7 @@ public class ImageConverterTest
 
     public ImageConverterTest()
     {
-        _engineMock = new Mock<IWkHtmlToXEngine>();
+        _engineMock = new Mock<IWkHtmlToXEngine>(MockBehavior.Strict);
         _sut = new ImageConverter(_engineMock.Object);
     }
 

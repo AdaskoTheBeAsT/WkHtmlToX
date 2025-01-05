@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net6.0;net7.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
     <ProjectGuid>D4842FD1-D8B6-432C-98AB-EBF7E839A3D0</ProjectGuid>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryType>github</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <Description>AdaskoTheBeAsT.WkHtmlToX c# wrapper</Description>
-    <PackageVersion>7.2.0</PackageVersion>
+    <PackageVersion>8.0.0</PackageVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Authors>Adam "AdaskoTheBeAsT" Pluciński</Authors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2024.2.0">
+    <PackageReference Include="JetBrains.Annotations" Version="2024.3.0">
       <Exclude>all</Exclude>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

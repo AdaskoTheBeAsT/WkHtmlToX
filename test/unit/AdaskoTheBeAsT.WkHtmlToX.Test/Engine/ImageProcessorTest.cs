@@ -75,7 +75,8 @@ public partial class ImageProcessorTest
             .Returns(converterPtr);
         _module.Setup(
             m =>
-                m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+                m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Returns(0);
         var document = new HtmlToImageDocument();
         var quality = _fixture.Create<string>();
         document.ImageSettings.Quality = quality;
@@ -122,6 +123,13 @@ public partial class ImageProcessorTest
         var document = new HtmlToImageDocument();
         _module.Setup(m => m.Initialize(It.IsAny<int>()))
             .Returns(0);
+
+        _module.Setup(m =>
+                m.CreateConverter(It.IsAny<IntPtr>()))
+            .Returns(IntPtr.Zero);
+
+        _module.Setup(m =>
+               m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
 
         Action action = () => _sut.Convert(document, _ => Stream.Null);
 
@@ -170,7 +178,8 @@ public partial class ImageProcessorTest
             .Returns(converterPtr);
         _module.Setup(
             m =>
-                m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+                m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Returns(0);
         _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
             .Returns(value: false);
         _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
@@ -218,7 +227,8 @@ public partial class ImageProcessorTest
             .Returns(converterPtr);
         _module.Setup(
             m =>
-                m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+                m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Returns(0);
         _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
             .Returns(value: true);
         _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));

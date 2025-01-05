@@ -22,7 +22,7 @@ public class PdfConverterTest
     public PdfConverterTest()
     {
         _fixture = new Fixture();
-        _engineMock = new Mock<IWkHtmlToXEngine>();
+        _engineMock = new Mock<IWkHtmlToXEngine>(MockBehavior.Strict);
         _sut = new PdfConverter(_engineMock.Object);
     }
 
