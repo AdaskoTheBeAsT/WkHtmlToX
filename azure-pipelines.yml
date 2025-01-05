@@ -33,6 +33,13 @@ steps:
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: UseDotNet@2
+    displayName: "Use .NET Core SDK 8.0.x"
+    inputs:
+      packageType: "sdk"
+      version: 8.0.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
+  - task: UseDotNet@2
     displayName: "Use .NET Core SDK from global.json"
     inputs:
       packageType: "sdk"
@@ -45,10 +52,10 @@ steps:
       verbosityRestore: Quiet
       arguments: AdaskoTheBeAsT.WkHtmlToX.sln
 
-  - task: SonarCloudPrepare@2
+  - task: SonarCloudPrepare@3
     displayName: "Prepare analysis on SonarCloud"
     inputs:
-      scannerMode: "MSBuild"
+      scannerMode: "dotnet"
       SonarCloud: "Sonar.AdaskoTheBeAsT.WkHtmlToX"
       organization: "adaskothebeast-github"
       projectKey: "AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX"
@@ -100,10 +107,10 @@ steps:
       resultsOutputFilePath: "$(Build.SourcesDirectory)/CodeQualityResults.xml"
       additionalArguments: "--no-build"
 
-  - task: SonarCloudAnalyze@2
+  - task: SonarCloudAnalyze@3
     displayName: Sonar Cloud analyze
 
-  - task: SonarCloudPublish@2
+  - task: SonarCloudPublish@3
     displayName: Sonar Cloud publish
     inputs:
       pollingTimeoutSec: "300"
