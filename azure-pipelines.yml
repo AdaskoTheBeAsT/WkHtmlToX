@@ -103,6 +103,7 @@ steps:
   - task: ResharperCli@2
     inputs:
       solutionOrProjectPath: "AdaskoTheBeAsT.WkHtmlToX.sln"
+      resharperNuGetVersion: "2023.3.3"
       failBuildLevelSelector: "Warning"
       resultsOutputFilePath: "$(Build.SourcesDirectory)/CodeQualityResults.xml"
       additionalArguments: "--no-build"
