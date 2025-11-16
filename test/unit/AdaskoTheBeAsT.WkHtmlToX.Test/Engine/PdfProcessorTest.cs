@@ -484,18 +484,21 @@ public partial class PdfProcessorTest
         // Arrange
         var converterPtr = new IntPtr(_fixture.Create<int>());
         var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
-        const string html = @"<!DOCTYPE html>
-                <html lang=""en"">
-                <head>
-                <meta charset=""utf-8"">
-                <title>title</title>
-                <link rel=""stylesheet"" href=""style.css"">
-                <script src=""script.js""></script>
-                </head>
-                <body>
-                <!-- page content -->
-                </body>
-                </html>";
+        const string html =
+            """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+            <meta charset="utf-8">
+            <title>title</title>
+            <link rel="stylesheet" href="style.css">
+            <script src="script.js"></script>
+            </head>
+            <body>
+            <!-- page content -->
+            </body>
+            </html>
+            """;
         using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(html));
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
