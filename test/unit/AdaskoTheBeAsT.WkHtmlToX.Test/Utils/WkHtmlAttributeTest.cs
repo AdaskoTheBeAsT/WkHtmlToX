@@ -1,7 +1,7 @@
 using System;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
 using AutoFixture;
-using FluentAssertions;
+using AwesomeAssertions;
 using Xunit;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Test.Utils;

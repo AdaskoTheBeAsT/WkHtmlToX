@@ -1,5 +1,5 @@
 using AdaskoTheBeAsT.WkHtmlToX.Documents;
-using FluentAssertions;
+using AwesomeAssertions;
 using Xunit;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Test.Documents;

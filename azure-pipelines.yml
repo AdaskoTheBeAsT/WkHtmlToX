@@ -19,24 +19,17 @@ variables:
 
 steps:
   - task: UseDotNet@2
-    displayName: "Use .NET Core SDK 6.0.x"
-    inputs:
-      packageType: "sdk"
-      version: 6.0.x
-      installationPath: $(Agent.ToolsDirectory)/dotnet
-
-  - task: UseDotNet@2
-    displayName: "Use .NET Core SDK 7.0.x"
-    inputs:
-      packageType: "sdk"
-      version: 7.0.x
-      installationPath: $(Agent.ToolsDirectory)/dotnet
-
-  - task: UseDotNet@2
     displayName: "Use .NET Core SDK 8.0.x"
     inputs:
       packageType: "sdk"
       version: 8.0.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
+  - task: UseDotNet@2
+    displayName: "Use .NET Core SDK 9.0.x"
+    inputs:
+      packageType: "sdk"
+      version: 9.0.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: UseDotNet@2
@@ -52,6 +45,13 @@ steps:
       verbosityRestore: Quiet
       arguments: AdaskoTheBeAsT.WkHtmlToX.sln
 
+  - task: DotNetCoreCLI@2
+    displayName: "Restore dotnet tools"
+    inputs:
+      command: 'custom'
+      custom: 'tool'
+      arguments: 'restore'
+
   - task: SonarCloudPrepare@3
     displayName: "Prepare analysis on SonarCloud"
     inputs:
@@ -61,12 +61,13 @@ steps:
       projectKey: "AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX"
       projectName: AdaskoTheBeAsT.WkHtmlToX
       extraProperties: |
+        sonar.working.directory=$(Build.ArtifactStagingDirectory)/.sonar
         sonar.resharper.cs.reportPath=$(Build.SourcesDirectory)/CodeQualityResults.xml
 
   - task: DotNetCoreCLI@2
     displayName: Build
     inputs:
-      arguments: "AdaskoTheBeAsT.WkHtmlToX.sln --configuration $(buildConfiguration)"
+      arguments: "AdaskoTheBeAsT.WkHtmlToX.sln --configuration $(buildConfiguration) --no-restore"
 
   - task: CopyFiles@2
     displayName: "Copy nuget packages"
@@ -100,13 +101,13 @@ steps:
         --settings $(Build.SourcesDirectory)/.runsettings
         /p:RunCodeAnalysis=false
 
-  - task: ResharperCli@2
+  - task: DotNetCoreCLI@2
+    displayName: "Launch ReSharper inspect code"
+    continueOnError: true
     inputs:
-      solutionOrProjectPath: "AdaskoTheBeAsT.WkHtmlToX.sln"
-      resharperNuGetVersion: "2023.3.3"
-      failBuildLevelSelector: "Warning"
-      resultsOutputFilePath: "$(Build.SourcesDirectory)/CodeQualityResults.xml"
-      additionalArguments: "--no-build"
+      command: "custom"
+      custom: "jb"
+      arguments: "inspectcode $(Build.SourcesDirectory)/AdaskoTheBeAsT.WkHtmlToX.sln -o=$(Build.SourcesDirectory)/CodeQualityResults.xml"
 
   - task: SonarCloudAnalyze@3
     displayName: Sonar Cloud analyze
@@ -127,6 +128,7 @@ steps:
     inputs:
       testResultsFormat: "VSTest"
       testResultsFiles: "*.trx"
+      mergeTestResults: true
       searchFolder: "$(testResultsDirectory)"
 
   - task: reportgenerator@5

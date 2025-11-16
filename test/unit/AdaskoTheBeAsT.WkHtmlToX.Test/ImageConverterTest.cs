@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Documents;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AdaskoTheBeAsT.WkHtmlToX.WorkItems;
-using FluentAssertions;
-using FluentAssertions.Execution;
+using AwesomeAssertions;
+using AwesomeAssertions.Execution;
 using Moq;
 using Xunit;
 

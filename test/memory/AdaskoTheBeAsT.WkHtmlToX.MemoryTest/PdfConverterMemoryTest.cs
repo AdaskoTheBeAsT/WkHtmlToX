@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
-using FluentAssertions;
+using AwesomeAssertions;
 using JetBrains.dotMemoryUnit;
 using JetBrains.dotMemoryUnit.Kernel;
 using Xunit;
@@ -79,7 +79,7 @@ public sealed class PdfConverterMemoryTest
                         .GetSurvivedObjects()
                         .GetObjects(where => where.Namespace.Like(nameof(AdaskoTheBeAsT)));
                     var objectCount = objects.ObjectsCount;
-                    objectCount.Should().BeLessOrEqualTo(5);
+                    objectCount.Should().BeLessThanOrEqualTo(5);
                 });
         }
     }

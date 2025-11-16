@@ -5,8 +5,8 @@ using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AdaskoTheBeAsT.WkHtmlToX.EventDefinitions;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
 using AutoFixture;
-using FluentAssertions;
-using FluentAssertions.Execution;
+using AwesomeAssertions;
+using AwesomeAssertions.Execution;
 using Moq;
 using Xunit;
 

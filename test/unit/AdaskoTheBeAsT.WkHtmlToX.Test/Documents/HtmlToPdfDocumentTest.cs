@@ -1,6 +1,6 @@
 using AdaskoTheBeAsT.WkHtmlToX.Documents;
-using FluentAssertions;
-using FluentAssertions.Execution;
+using AwesomeAssertions;
+using AwesomeAssertions.Execution;
 using Xunit;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Test.Documents;

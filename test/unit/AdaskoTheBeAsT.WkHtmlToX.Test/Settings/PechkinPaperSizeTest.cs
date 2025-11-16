@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using AdaskoTheBeAsT.WkHtmlToX.Settings;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
-using FluentAssertions;
-using FluentAssertions.Execution;
+using AwesomeAssertions;
+using AwesomeAssertions.Execution;
 using Xunit;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings;

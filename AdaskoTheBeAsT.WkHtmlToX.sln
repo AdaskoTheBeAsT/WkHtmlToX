@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.3.32901.215
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11205.157 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".props", ".props", "{136E4C89-F9AD-4919-8CD9-66B721915644}"
 	ProjectSection(SolutionItems) = preProject
@@ -47,6 +47,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "memory", "memory", "{6419332E-EA13-44A9-B9C7-57CF3FD91EE3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.WkHtmlToX.MemoryTest", "test\memory\AdaskoTheBeAsT.WkHtmlToX.MemoryTest\AdaskoTheBeAsT.WkHtmlToX.MemoryTest.csproj", "{1DF1B829-F9B0-49A5-B81F-6584E7437068}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{C1D3B3C0-814B-414F-9336-49B299C28E33}"
+	ProjectSection(SolutionItems) = preProject
+		.config\dotnet-tools.json = .config\dotnet-tools.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

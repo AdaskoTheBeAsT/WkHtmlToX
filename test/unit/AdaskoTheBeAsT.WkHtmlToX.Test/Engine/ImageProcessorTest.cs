@@ -2,8 +2,8 @@ using System;
 using System.IO;
 using AdaskoTheBeAsT.WkHtmlToX.Documents;
 using AutoFixture;
-using FluentAssertions;
-using FluentAssertions.Execution;
+using AwesomeAssertions;
+using AwesomeAssertions.Execution;
 using Moq;
 using Xunit;
 
@@ -183,7 +183,7 @@ public partial class ImageProcessorTest
         _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
             .Returns(value: false);
         _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
-        _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
+        _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>())).Returns(0);
         _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
         var document = new HtmlToImageDocument();
         var quality = _fixture.Create<string>();
@@ -232,7 +232,7 @@ public partial class ImageProcessorTest
         _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
             .Returns(value: true);
         _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
-        _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
+        _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>())).Returns(0);
         _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
         var document = new HtmlToImageDocument();
         var quality = _fixture.Create<string>();

@@ -1,5 +1,8 @@
 using System;
 using System.IO;
+#if NET9_0_OR_GREATER
+using System.Threading;
+#endif
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 using AdaskoTheBeAsT.WkHtmlToX.Native;
 
@@ -10,81 +13,107 @@ internal sealed class LibraryLoaderWindows
 {
     private const string LibraryName = "wkhtmltox.dll";
 
+#if NET9_0_OR_GREATER
+    private static readonly Lock SyncLock = new();
+#else
+    private static readonly object SyncLock = new();
+#endif
+
     private SafeLibraryHandle? _libraryHandle;
 
     public override void Load()
     {
-        // https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
-        var runtimeIdentifier = $"win-{GetProcessorArchitecture()}";
-
-        var rootDirectory = GetCurrentDir();
-
-        // Search a few different locations for our native assembly
-        var paths = new[]
+        lock (SyncLock)
         {
-            // This is where native libraries in our nupkg should end up
-            GetRuntimeLibraryPath(rootDirectory, runtimeIdentifier, LibraryName),
-
-            // The build output folder
-            GetCurrentDirectoryLibraryPath(rootDirectory, LibraryName),
-        };
-
-        foreach (var path in paths)
-        {
-            if (string.IsNullOrEmpty(path))
+            // Already loaded
+            if (_libraryHandle != null && !_libraryHandle.IsClosed)
             {
-                continue;
-            }
-
-            if (File.Exists(path))
-            {
-                var libHandle = SystemWindowsNativeMethods.LoadLibraryEx(
-                    path,
-                    IntPtr.Zero,
-                    LoadLibraryFlags.LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LoadLibraryFlags.LOAD_LIBRARY_SEARCH_SYSTEM32);
-                if (libHandle.IsInvalid)
-                {
-                    throw new DllNotLoadedException($"LoadLibrary failed: {path}");
-                }
-
-                _libraryHandle = libHandle;
                 return;
             }
-        }
 
-        throw new DllNotLoadedException();
+            // https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+            var runtimeIdentifier = $"win-{GetProcessorArchitecture()}";
+
+            var rootDirectory = GetCurrentDir();
+
+            // Search a few different locations for our native assembly
+            var paths = new[]
+            {
+                // This is where native libraries in our nupkg should end up
+                GetRuntimeLibraryPath(rootDirectory, runtimeIdentifier, LibraryName),
+
+                // The build output folder
+                GetCurrentDirectoryLibraryPath(rootDirectory, LibraryName),
+            };
+
+            foreach (var path in paths)
+            {
+                if (string.IsNullOrEmpty(path))
+                {
+                    continue;
+                }
+
+                if (File.Exists(path))
+                {
+                    var libHandle = SystemWindowsNativeMethods.LoadLibraryEx(
+                        path,
+                        IntPtr.Zero,
+                        LoadLibraryFlags.LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LoadLibraryFlags.LOAD_LIBRARY_SEARCH_SYSTEM32);
+
+                    if (libHandle.IsInvalid)
+                    {
+                        throw new DllNotLoadedException($"LoadLibrary failed: {path}");
+                    }
+
+                    _libraryHandle = libHandle;
+                    return;
+                }
+            }
+
+            throw new DllNotLoadedException();
+        }
     }
 
     public override void Release()
     {
-        if (_libraryHandle == null)
-        {
-            return;
-        }
-
-        if (!_libraryHandle.IsClosed)
-        {
-            _libraryHandle.Dispose();
-        }
-
-        _libraryHandle = null;
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
+        SafeLibraryHandle? handleToDispose = null;
+        lock (SyncLock)
         {
             if (_libraryHandle == null)
             {
                 return;
             }
 
-            if (!_libraryHandle.IsClosed)
+            handleToDispose = _libraryHandle;
+            _libraryHandle = null;
+        }
+
+        if (handleToDispose != null && !handleToDispose.IsClosed)
+        {
+            handleToDispose.Dispose();
+        }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            SafeLibraryHandle? handleToDispose = null;
+            lock (SyncLock)
             {
-                _libraryHandle.Dispose();
+                if (_libraryHandle == null)
+                {
+                    return;
+                }
+
+                handleToDispose = _libraryHandle;
+                _libraryHandle = null;
             }
 
-            _libraryHandle = null;
+            if (handleToDispose != null && !handleToDispose.IsClosed)
+            {
+                handleToDispose.Dispose();
+            }
         }
     }
 }

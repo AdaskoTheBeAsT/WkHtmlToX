@@ -2,7 +2,7 @@ using System;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 using AdaskoTheBeAsT.WkHtmlToX.Loaders;
-using FluentAssertions;
+using AwesomeAssertions;
 using Xunit;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Test.Loaders;

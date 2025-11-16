@@ -1,8 +1,8 @@
 using System.Text;
 using AdaskoTheBeAsT.WkHtmlToX.Settings;
 using AutoFixture;
-using FluentAssertions;
-using FluentAssertions.Execution;
+using AwesomeAssertions;
+using AwesomeAssertions.Execution;
 using Xunit;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings;

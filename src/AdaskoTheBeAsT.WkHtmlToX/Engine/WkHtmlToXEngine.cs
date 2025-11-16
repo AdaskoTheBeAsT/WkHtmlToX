@@ -16,7 +16,11 @@ public sealed class WkHtmlToXEngine
     : IWorkItemVisitor,
         IWkHtmlToXEngine
 {
+#if NET9_0_OR_GREATER
+    private static readonly Lock SyncLock = new();
+#else
     private static readonly object SyncLock = new();
+#endif
     private readonly BlockingCollection<ConvertWorkItemBase> _blockingCollection = new();
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly ILibraryLoaderFactory _libraryLoaderFactory;
@@ -26,7 +30,10 @@ public sealed class WkHtmlToXEngine
 
     private bool _initialized;
     private ILibraryLoader? _libraryLoader;
-    private bool _disposed;
+
+    // 0 = not disposed, 1 = disposed
+    private int _disposeState;
+    private Thread? _workerThread;
 
     public WkHtmlToXEngine(WkHtmlToXConfiguration configuration)
         : this(
@@ -85,7 +92,9 @@ public sealed class WkHtmlToXEngine
             }
 #endif
 
+            thread.Name = "WkHtmlToXEngine Worker";
             thread.Start(_cancellationTokenSource.Token);
+            _workerThread = thread;
             _initialized = true;
         }
     }
@@ -132,6 +141,7 @@ public sealed class WkHtmlToXEngine
 
 #pragma warning disable CA1031 // Do not catch general exception types
 #pragma warning disable S108 // Nested blocks of code should not be left empty
+#pragma warning disable MA0051 // Method is too long
     internal void Process(object? obj)
     {
 #if NETSTANDARD2_0
@@ -150,11 +160,13 @@ public sealed class WkHtmlToXEngine
 #endif
 
         var token = (CancellationToken)obj;
-
-        InitializeInProcessingThread();
+        var initSucceeded = false;
 
         try
         {
+            InitializeInProcessingThread();
+            initSucceeded = true;
+
             foreach (var convertWorkItem in _blockingCollection.GetConsumingEnumerable(token))
             {
                 convertWorkItem.Accept(this);
@@ -165,17 +177,73 @@ public sealed class WkHtmlToXEngine
         {
             // no op
         }
+        finally
+        {
+            if (initSucceeded)
+            {
+                try
+                {
+                    _pdfProcessor.PdfModule.Terminate();
+                }
+                catch
+                {
+                    /* no op */
+                }
+
+                try
+                {
+                    _imageProcessor.ImageModule.Terminate();
+                }
+                catch
+                {
+                    /* no op */
+                }
+
+                try
+                {
+                    var loader = Interlocked.Exchange(ref _libraryLoader, value: null);
+                    loader?.Release();
+                }
+                catch
+                {
+                    /* no op */
+                }
+            }
+
+            lock (SyncLock)
+            {
+                _initialized = false;
+            }
+        }
 #pragma warning restore CC0004 // Catch block cannot be empty
     }
+#pragma warning restore MA0051 // Method is too long
 #pragma warning restore S108 // Nested blocks of code should not be left empty
 #pragma warning restore CA1031 // Do not catch general exception types
 
     internal void InitializeInProcessingThread()
     {
+        // If already disposed, do not proceed.
+        if (Volatile.Read(ref _disposeState) != 0)
+        {
+            throw new ObjectDisposedException(nameof(WkHtmlToXEngine));
+        }
+
 #pragma warning disable IDISP003 // Dispose previous before re-assigning.
-        _libraryLoader = _libraryLoaderFactory.Create(_configuration!);
+        var newLoader = _libraryLoaderFactory.Create(_configuration!);
 #pragma warning restore IDISP003 // Dispose previous before re-assigning.
-        _libraryLoader.Load();
+        newLoader.Load();
+
+        // If disposal happened while loading, dispose the created loader immediately.
+        if (Volatile.Read(ref _disposeState) != 0)
+        {
+            newLoader.Dispose();
+            throw new ObjectDisposedException(nameof(WkHtmlToXEngine));
+        }
+
+        // Publish atomically; dispose any previous (defensive).
+        var previous = Interlocked.Exchange(ref _libraryLoader, newLoader);
+        previous?.Dispose();
 
         var pdfModuleLoaded = _pdfProcessor.PdfModule.Initialize(0) == 1;
         if (!pdfModuleLoaded)
@@ -192,18 +260,34 @@ public sealed class WkHtmlToXEngine
 
     private void Dispose(bool disposing)
     {
-        if (!_disposed)
+        // Make Dispose one-shot across all threads (including finalizer)
+        if (Interlocked.Exchange(ref _disposeState, 1) != 0)
         {
-            if (disposing)
-            {
-                _blockingCollection.CompleteAdding();
-                _cancellationTokenSource.Cancel();
-                _blockingCollection.Dispose();
-                _cancellationTokenSource.Dispose();
-                _libraryLoader?.Dispose();
-            }
+            return;
+        }
 
-            _disposed = true;
+        if (disposing)
+        {
+            _blockingCollection.CompleteAdding();
+            _cancellationTokenSource.Cancel();
+
+            try
+            {
+                _workerThread?.Join();
+            }
+#pragma warning disable CC0004
+            catch
+            {
+                // ignored
+            }
+#pragma warning restore CC0004
+
+            _blockingCollection.Dispose();
+            _cancellationTokenSource.Dispose();
+
+            // Win the race for loader ownership if the worker didn't already release it
+            var loader = Interlocked.Exchange(ref _libraryLoader, value: null);
+            loader?.Dispose();
         }
     }
 }

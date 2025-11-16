@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Documents;
 using AdaskoTheBeAsT.WkHtmlToX.Settings;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.IO;
 using Reqnroll;
 

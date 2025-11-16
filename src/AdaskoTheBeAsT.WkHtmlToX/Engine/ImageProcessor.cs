@@ -63,6 +63,9 @@ internal sealed class ImageProcessor
         finally
         {
             ImageModule.DestroyConverter(converterPtr);
+
+            // it seems destroying converter also destroys global settings
+            ////ImageModule.DestroyGlobalSetting(globalSettingsPtr);
             ProcessingDocument = null;
         }
     }

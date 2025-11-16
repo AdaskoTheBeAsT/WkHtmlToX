@@ -71,13 +71,14 @@ internal sealed class PdfProcessor
         }
         finally
         {
+            PdfModule.DestroyConverter(converterPtr);
+
             for (int i = objectSettingsPtrs.Count - 1; i >= 0; i--)
             {
                 PdfModule.DestroyObjectSetting(objectSettingsPtrs[i]);
             }
 
             PdfModule.DestroyGlobalSetting(globalSettingsPtr);
-            PdfModule.DestroyConverter(converterPtr);
 
             ProcessingDocument = null;
         }

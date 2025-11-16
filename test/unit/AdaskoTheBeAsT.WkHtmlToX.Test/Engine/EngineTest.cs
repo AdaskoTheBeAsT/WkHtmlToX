@@ -7,8 +7,8 @@ using AdaskoTheBeAsT.WkHtmlToX.Documents;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 using AdaskoTheBeAsT.WkHtmlToX.WorkItems;
-using FluentAssertions;
-using FluentAssertions.Execution;
+using AwesomeAssertions;
+using AwesomeAssertions.Execution;
 using Moq;
 using Xunit;
 
