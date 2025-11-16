@@ -24,7 +24,7 @@ internal abstract class LibraryLoaderBase
 
     protected static string GetCurrentDir()
     {
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         var uri = new Uri(Assembly.GetExecutingAssembly().Location);
 #else
         var uri = new Uri(Assembly.GetExecutingAssembly().GetName().CodeBase!);

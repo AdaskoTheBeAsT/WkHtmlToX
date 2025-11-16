@@ -26,7 +26,7 @@ internal sealed class ImageProcessor
                 "No image settings is defined in document that was passed. At least one object must be defined.");
         }
 #endif
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(document?.ImageSettings);
 #endif
 
@@ -36,7 +36,7 @@ internal sealed class ImageProcessor
             throw new ArgumentNullException(nameof(createStreamFunc));
         }
 #endif
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(createStreamFunc);
 #endif
 
@@ -79,7 +79,7 @@ internal sealed class ImageProcessor
             throw new ArgumentNullException(nameof(document));
         }
 #endif
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(document);
 #endif
         var globalSettings = ImageModule.CreateGlobalSettings();

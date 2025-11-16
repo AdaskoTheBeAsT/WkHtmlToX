@@ -179,7 +179,7 @@ internal abstract class ProcessorBase
             throw new ArgumentNullException(nameof(value));
         }
 #endif
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(value);
 #endif
         var type = value.GetType();

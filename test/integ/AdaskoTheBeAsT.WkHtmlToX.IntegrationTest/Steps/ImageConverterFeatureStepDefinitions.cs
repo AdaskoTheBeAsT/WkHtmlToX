@@ -72,7 +72,7 @@ public class ImageConverterFeatureStepDefinitions
                 .ConfigureAwait(false);
 #pragma warning restore RCS1212 // Remove redundant assignment.
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
 #pragma warning disable S2583 // Conditionally executed code should be reachable
             if (stream != null)
             {

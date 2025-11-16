@@ -70,7 +70,7 @@ public class PdfConverterTest
 #if NET462_OR_GREATER
         using var memoryStream = new MemoryStream();
 #endif
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         await using var memoryStream = new MemoryStream();
 #endif
 

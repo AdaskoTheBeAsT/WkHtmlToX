@@ -128,7 +128,7 @@ internal abstract class WkHtmlToXModule
             throw new ArgumentNullException(nameof(stream));
         }
 #endif
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(stream);
 #endif
         GetOutput(converter, _ => stream);
@@ -144,7 +144,7 @@ internal abstract class WkHtmlToXModule
             throw new ArgumentNullException(nameof(createStreamFunc));
         }
 #endif
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(createStreamFunc);
 #endif
         var totalLength = GetOutputImpl(converter, out IntPtr data);

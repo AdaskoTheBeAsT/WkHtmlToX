@@ -32,7 +32,7 @@ internal sealed class PdfProcessor
             throw new ArgumentNullException(nameof(document));
         }
 #endif
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(document);
 #endif
 
@@ -42,7 +42,7 @@ internal sealed class PdfProcessor
             throw new ArgumentNullException(nameof(createStreamFunc));
         }
 #endif
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(createStreamFunc);
 #endif
 
@@ -93,7 +93,7 @@ internal sealed class PdfProcessor
             throw new ArgumentNullException(nameof(document));
         }
 #endif
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(document);
 #endif
 
@@ -130,7 +130,7 @@ internal sealed class PdfProcessor
             throw new ArgumentNullException(nameof(pdfObjectSettings));
         }
 #endif
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(pdfObjectSettings);
 #endif
         if (!string.IsNullOrEmpty(pdfObjectSettings.HtmlContent))
@@ -164,7 +164,7 @@ internal sealed class PdfProcessor
             throw new ArgumentNullException(nameof(pdfObjectSettings));
         }
 #endif
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(pdfObjectSettings);
 #endif
 
@@ -209,7 +209,7 @@ internal sealed class PdfProcessor
             throw new ArgumentNullException(nameof(htmlContentStream));
         }
 #endif
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(htmlContentStream);
 #endif
 

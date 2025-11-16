@@ -21,7 +21,7 @@ public sealed class WkHtmlToXEngine
 #else
     private static readonly object SyncLock = new();
 #endif
-    private readonly BlockingCollection<ConvertWorkItemBase> _blockingCollection = new();
+    private readonly BlockingCollection<ConvertWorkItemBase> _blockingCollection = [];
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly ILibraryLoaderFactory _libraryLoaderFactory;
     private readonly IPdfProcessor _pdfProcessor;
@@ -85,7 +85,7 @@ public sealed class WkHtmlToXEngine
             }
 #endif
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
             if (OperatingSystem.IsWindows())
             {
                 thread.SetApartmentState(ApartmentState.STA);
@@ -153,7 +153,7 @@ public sealed class WkHtmlToXEngine
 #pragma warning restore RCS1256 // Invalid argument null check
 #endif
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
 #pragma warning disable RCS1256 // Invalid argument null check.
         ArgumentNullException.ThrowIfNull(obj);
 #pragma warning restore RCS1256 // Invalid argument null check.
@@ -223,11 +223,17 @@ public sealed class WkHtmlToXEngine
 
     internal void InitializeInProcessingThread()
     {
+#if NET8_0_OR_GREATER
+        var disposed = Volatile.Read(ref _disposeState) != 0;
+        ObjectDisposedException.ThrowIf(disposed, this);
+#endif
+#if NETSTANDARD2_0
         // If already disposed, do not proceed.
         if (Volatile.Read(ref _disposeState) != 0)
         {
             throw new ObjectDisposedException(nameof(WkHtmlToXEngine));
         }
+#endif
 
 #pragma warning disable IDISP003 // Dispose previous before re-assigning.
         var newLoader = _libraryLoaderFactory.Create(_configuration!);

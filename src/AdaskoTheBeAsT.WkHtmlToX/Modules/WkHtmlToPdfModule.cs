@@ -154,7 +154,7 @@ internal sealed class WkHtmlToPdfModule
             throw new ArgumentNullException(nameof(buffer));
         }
 #endif
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(buffer);
 #endif
         return PdfNativeMethods.wkhtmltopdf_get_global_setting(

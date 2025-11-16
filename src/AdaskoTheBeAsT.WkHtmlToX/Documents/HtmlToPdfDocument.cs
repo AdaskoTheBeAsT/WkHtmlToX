@@ -10,7 +10,7 @@ public class HtmlToPdfDocument
     public HtmlToPdfDocument()
     {
         GlobalSettings = new PdfGlobalSettings();
-        ObjectSettings = new List<PdfObjectSettings>();
+        ObjectSettings = [];
     }
 
     public List<PdfObjectSettings> ObjectSettings { get; }
