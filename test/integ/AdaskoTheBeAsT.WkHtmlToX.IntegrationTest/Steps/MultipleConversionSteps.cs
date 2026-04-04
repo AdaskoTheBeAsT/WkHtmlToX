@@ -11,8 +11,8 @@ using Reqnroll;
 namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest.Steps;
 
 [Binding]
-[Scope(Feature = "MultipleConversionFeature")]
-public sealed class MultipleConversionFeatureSteps
+[Scope(Feature = "MultipleConversion")]
+public sealed class MultipleConversionSteps
 {
     private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager;
     private PdfConverter? _sut;
@@ -21,7 +21,7 @@ public sealed class MultipleConversionFeatureSteps
     private byte[]? _content1;
     private byte[]? _content2;
 
-    public MultipleConversionFeatureSteps()
+    public MultipleConversionSteps()
     {
         _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
     }

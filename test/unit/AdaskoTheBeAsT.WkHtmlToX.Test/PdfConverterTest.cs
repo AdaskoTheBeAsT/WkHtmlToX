@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +25,18 @@ public class PdfConverterTest
         _fixture = new Fixture();
         _engineMock = new Mock<IWkHtmlToXEngine>(MockBehavior.Strict);
         _sut = new PdfConverter(_engineMock.Object);
+    }
+
+    [Fact]
+    public void ConstructorShouldThrowExceptionWhenNullEnginePassed()
+    {
+        // Arrange
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+        Action action = () => _ = new PdfConverter(engine: null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+        // Act and Assert
+        action.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]

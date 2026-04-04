@@ -10,15 +10,15 @@ using Reqnroll;
 namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest.Steps;
 
 [Binding]
-[Scope(Feature = "PdfConverterFeature")]
-public sealed class PdfConverterFeatureSteps
+[Scope(Feature = nameof(PdfConverter))]
+public sealed class PdfConverterSteps
 {
     private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager;
     private PdfConverter? _sut;
     private string? _htmlContent;
     private HtmlToPdfDocument? _htmlToPdfDocument;
 
-    public PdfConverterFeatureSteps()
+    public PdfConverterSteps()
     {
         _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
     }

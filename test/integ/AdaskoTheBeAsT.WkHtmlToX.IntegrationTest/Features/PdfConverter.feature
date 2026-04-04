@@ -1,11 +1,11 @@
-Feature: ImageConverterFeature
+Feature: PdfConverter
 
-Scenario Outline: Convert Image
-	Given I have SynchronizedImageConverter
+Scenario Outline: Convert pdf
+	Given I have SynchronizedPdfConverter
     And I have sample html to convert '<filename>'
-    And I created HtmlToImageDocument
-	When I convert html to image <repetitions> times
-	Then proper image should be created
+    And I created HtmlToPdfDocument
+	When I convert html to pdf <repetitions> times
+	Then proper pdf should be created
 
     Examples:
     | filename    | repetitions |
@@ -13,3 +13,4 @@ Scenario Outline: Convert Image
     | Simple.html | 5           |
     | Simple.html | 10          |
     | Large.html  | 10          |
+

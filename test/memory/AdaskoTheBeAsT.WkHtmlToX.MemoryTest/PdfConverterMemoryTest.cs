@@ -8,7 +8,9 @@ using AwesomeAssertions;
 using JetBrains.dotMemoryUnit;
 using JetBrains.dotMemoryUnit.Kernel;
 using Xunit;
+#if NET462_OR_GREATER
 using Xunit.Abstractions;
+#endif
 
 namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest;
 

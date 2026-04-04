@@ -1,4 +1,4 @@
-Feature: MultipleConversionFeature
+Feature: MultipleConversion
 
 Scenario: Convert same html twice should give same results
     Given I have SynchronizedPdfConverter

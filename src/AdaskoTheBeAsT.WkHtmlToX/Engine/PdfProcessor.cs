@@ -195,7 +195,16 @@ internal sealed class PdfProcessor
         IntPtr objectSettings,
         byte[] htmlContentByteArray)
     {
-        PdfModule.AddObject(converter, objectSettings, htmlContentByteArray);
+        if (htmlContentByteArray.Length > 0 && htmlContentByteArray[htmlContentByteArray.Length - 1] == byte.MinValue)
+        {
+            PdfModule.AddObject(converter, objectSettings, htmlContentByteArray);
+            return;
+        }
+
+        var terminated = new byte[htmlContentByteArray.Length + 1];
+        Array.Copy(htmlContentByteArray, terminated, htmlContentByteArray.Length);
+        terminated[terminated.Length - 1] = byte.MinValue;
+        PdfModule.AddObject(converter, objectSettings, terminated);
     }
 
     internal void AddContentStream(
@@ -213,7 +222,14 @@ internal sealed class PdfProcessor
         ArgumentNullException.ThrowIfNull(htmlContentStream);
 #endif
 
-        var length = htmlContentStream.Length;
+        var length = htmlContentStream.Length - htmlContentStream.Position;
+        if (length < 0)
+        {
+            throw new ArgumentException(
+                "The stream position is greater than the stream length.",
+                nameof(htmlContentStream));
+        }
+
         if (length > int.MaxValue)
         {
             throw new HtmlContentStreamTooLargeException();
@@ -221,10 +237,11 @@ internal sealed class PdfProcessor
 
         var len = (int)length;
 
-        var buffer = ArrayPool<byte>.Shared.Rent(len);
+        var buffer = ArrayPool<byte>.Shared.Rent(len + 1);
         try
         {
-            _ = htmlContentStream.Read(buffer, 0, len);
+            ReadExact(htmlContentStream, buffer, len);
+            buffer[len] = 0;
             PdfModule.AddObject(converter, objectSettings, buffer);
         }
         finally
@@ -280,4 +297,20 @@ internal sealed class PdfProcessor
         IntPtr converter,
         IntCallback callback) =>
         PdfModule.SetFinishedCallback(converter, callback);
+
+    private static void ReadExact(Stream htmlContentStream, byte[] buffer, int length)
+    {
+        var bytesRead = 0;
+        while (bytesRead < length)
+        {
+            var read = htmlContentStream.Read(buffer, bytesRead, length - bytesRead);
+            if (read == 0)
+            {
+                throw new EndOfStreamException(
+                    "Could not read all bytes from htmlContentStream.");
+            }
+
+            bytesRead += read;
+        }
+    }
 }

@@ -9,8 +9,8 @@ using Reqnroll;
 namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest.Steps;
 
 [Binding]
-[Scope(Feature = "ImageConverterFeature")]
-public class ImageConverterFeatureStepDefinitions
+[Scope(Feature = nameof(ImageConverter))]
+public class ImageConverterStepDefinitions
 {
     private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager;
     private ImageConverter? _sut;
@@ -18,7 +18,7 @@ public class ImageConverterFeatureStepDefinitions
     private string? _outputFilePath;
     private HtmlToImageDocument? _htmlToImageDocument;
 
-    public ImageConverterFeatureStepDefinitions()
+    public ImageConverterStepDefinitions()
     {
         _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
     }

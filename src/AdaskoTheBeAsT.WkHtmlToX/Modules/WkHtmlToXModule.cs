@@ -58,6 +58,11 @@ internal abstract class WkHtmlToXModule
             }
 
             var nullPos = Array.IndexOf(buffer, byte.MinValue);
+            if (nullPos < 0)
+            {
+                throw new GetGlobalSettingsFailedException(
+                    $"GetGlobalSettings failed for obtaining setting={name}. Returned value was not null-terminated.");
+            }
 
             return Encoding.UTF8.GetString(buffer, 0, nullPos);
         }

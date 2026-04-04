@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,18 @@ public class ImageConverterTest
     {
         _engineMock = new Mock<IWkHtmlToXEngine>(MockBehavior.Strict);
         _sut = new ImageConverter(_engineMock.Object);
+    }
+
+    [Fact]
+    public void ConstructorShouldThrowExceptionWhenNullEnginePassed()
+    {
+        // Arrange
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+        Action action = () => _ = new ImageConverter(engine: null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+        // Act and Assert
+        action.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]

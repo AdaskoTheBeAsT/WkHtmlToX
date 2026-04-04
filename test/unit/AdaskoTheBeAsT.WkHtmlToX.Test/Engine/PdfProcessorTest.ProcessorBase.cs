@@ -90,12 +90,16 @@ public partial class PdfProcessorTest
     public void RegisterEventsShouldNotRegisterWhereEventsNotAttached()
     {
         // Arrange
-        _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
+        _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()))
+            .Returns(value: 0);
         _module.Setup(m => m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()))
             .Returns(0);
-        _module.Setup(m => m.SetFinishedCallback(It.IsAny<IntPtr>(), It.IsAny<IntCallback>()));
-        _module.Setup(m => m.SetPhaseChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()));
-        _module.Setup(m => m.SetProgressChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()));
+        _module.Setup(m => m.SetFinishedCallback(It.IsAny<IntPtr>(), It.IsAny<IntCallback>()))
+            .Returns(value: 0);
+        _module.Setup(m => m.SetPhaseChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()))
+            .Returns(value: 0);
+        _module.Setup(m => m.SetProgressChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()))
+            .Returns(value: 0);
 
         // Act
         _sut.RegisterEvents(new IntPtr(12));
@@ -565,11 +569,13 @@ public partial class PdfProcessorTest
         // Arrange
         if (useGlobal)
         {
-            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(value: 0);
         }
         else
         {
-            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+            _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+                .Returns(value: 0);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());

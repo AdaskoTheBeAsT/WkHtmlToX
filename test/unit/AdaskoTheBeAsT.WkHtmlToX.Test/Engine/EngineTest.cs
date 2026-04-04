@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Concurrent;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
@@ -268,6 +270,68 @@ public sealed class EngineTest
     }
 
     [Fact]
+    public async Task InitializeShouldThrowAndFailQueuedItemsWhenInitializationFailsAsync()
+    {
+        // Arrange
+        _libraryLoaderFactoryMock
+            .Setup(l => l.Create(It.IsAny<WkHtmlToXConfiguration>()))
+            .Returns(_libraryLoaderMock.Object);
+        _libraryLoaderMock.Setup(l => l.Load());
+
+        _pdfModuleMock.Setup(p => p.Initialize(It.IsAny<int>()))
+            .Returns(0);
+
+        var pdfConvertWorkItem = new PdfConvertWorkItem(new HtmlToPdfDocument(), _ => Stream.Null);
+        _sut.AddConvertWorkItem(pdfConvertWorkItem, CancellationToken.None);
+
+        // Act
+        Action action = () => _sut.Initialize();
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
+        Func<Task<bool>> taskAction = async () => await pdfConvertWorkItem.TaskCompletionSource.Task;
+#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
+
+        // Assert
+        using (new AssertionScope())
+        {
+            action.Should().Throw<PdfModuleInitializationException>();
+            await taskAction.Should().ThrowAsync<PdfModuleInitializationException>();
+        }
+    }
+
+    [Fact]
+    public void DisposeShouldCancelPendingItemsWhenWorkerWasNotInitialized()
+    {
+        // Arrange
+        var pdfConvertWorkItem = new PdfConvertWorkItem(new HtmlToPdfDocument(), _ => Stream.Null);
+        _sut.AddConvertWorkItem(pdfConvertWorkItem, CancellationToken.None);
+
+        // Act
+        _sut.Dispose();
+
+        // Assert
+        using (new AssertionScope())
+        {
+            pdfConvertWorkItem.TaskCompletionSource.Task.IsCanceled.Should().BeTrue();
+            pdfConvertWorkItem.TaskCompletionSource.Task.Status.Should().Be(TaskStatus.Canceled);
+        }
+    }
+
+    [Fact]
+    public void AddConvertWorkItemShouldThrowObjectDisposedExceptionWhenAddingCompleted()
+    {
+        // Arrange
+        var blockingCollection = GetBlockingCollection(_sut);
+        blockingCollection.CompleteAdding();
+        var pdfConvertWorkItem = new PdfConvertWorkItem(new HtmlToPdfDocument(), _ => Stream.Null);
+
+        // Act
+        Action action = () => _sut.AddConvertWorkItem(pdfConvertWorkItem, CancellationToken.None);
+
+        // Assert
+        action.Should().Throw<ObjectDisposedException>();
+    }
+
+    [Fact]
     public void InitializeInProcessingThreadShouldWork()
     {
         // Arrange
@@ -330,5 +394,12 @@ public sealed class EngineTest
 
         // Assert
         action.Should().Throw<ImageModuleInitializationException>();
+    }
+
+    private static BlockingCollection<ConvertWorkItemBase> GetBlockingCollection(WkHtmlToXEngine engine)
+    {
+        var field = typeof(WkHtmlToXEngine).GetField("_blockingCollection", BindingFlags.Instance | BindingFlags.NonPublic);
+        return field?.GetValue(engine) as BlockingCollection<ConvertWorkItemBase>
+            ?? throw new InvalidOperationException("Could not get blocking collection.");
     }
 }

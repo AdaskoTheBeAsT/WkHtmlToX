@@ -130,12 +130,13 @@ public partial class PdfProcessorTest
         _module.Setup(m =>
                 m.CreateConverter(It.IsAny<IntPtr>()))
             .Returns(converterPtr);
+        _module.Setup(m =>
+                m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Returns(value: 0);
         _module.Setup(
             m =>
-                m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
-        _module.Setup(
-            m =>
-                m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+                m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Returns(value: 0);
         var document = new HtmlToPdfDocument();
 
         // Act
@@ -184,7 +185,8 @@ public partial class PdfProcessorTest
             .Returns(0);
         _module.Setup(
             m =>
-                m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+                m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Returns(value: 0);
         var document = new HtmlToPdfDocument();
         var documentTitle = _fixture.Create<string>();
         document.GlobalSettings.DocumentTitle = documentTitle;
@@ -464,6 +466,59 @@ public partial class PdfProcessorTest
     }
 
     [Fact]
+    public void AddContentByteArrayShouldAppendNullTerminatorWhenMissing()
+    {
+        // Arrange
+        var converterPtr = new IntPtr(_fixture.Create<int>());
+        var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
+        var htmlContentByteArray = Encoding.UTF8.GetBytes("<html><body>test</body></html>");
+        byte[]? received = null;
+        _module.Setup(
+                m =>
+                    m.AddObject(It.IsAny<IntPtr>(), It.IsAny<IntPtr>(), It.IsAny<byte[]>()))
+            .Callback<IntPtr, IntPtr, byte[]>((_, _, data) => received = data);
+
+        // Act
+        _sut.AddContentByteArray(converterPtr, objectSettingsPtr, htmlContentByteArray);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            received.Should().NotBeNull();
+            received.Should().NotBeSameAs(htmlContentByteArray);
+            received!.Length.Should().Be(htmlContentByteArray.Length + 1);
+            received[received.Length - 1].Should().Be(byte.MinValue);
+            for (var i = 0; i < htmlContentByteArray.Length; i++)
+            {
+                received[i].Should().Be(htmlContentByteArray[i]);
+            }
+        }
+    }
+
+    [Fact]
+    public void AddContentByteArrayShouldReuseBufferWhenAlreadyNullTerminated()
+    {
+        // Arrange
+        var converterPtr = new IntPtr(_fixture.Create<int>());
+        var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
+        var htmlContentByteArray = new byte[]
+        {
+            1, 2, 3, byte.MinValue,
+        };
+        byte[]? received = null;
+        _module.Setup(
+                m =>
+                    m.AddObject(It.IsAny<IntPtr>(), It.IsAny<IntPtr>(), It.IsAny<byte[]>()))
+            .Callback<IntPtr, IntPtr, byte[]>((_, _, data) => received = data);
+
+        // Act
+        _sut.AddContentByteArray(converterPtr, objectSettingsPtr, htmlContentByteArray);
+
+        // Assert
+        received.Should().BeSameAs(htmlContentByteArray);
+    }
+
+    [Fact]
     public void AddContentStreamShouldThrowExceptionWhenNullPassed()
     {
         // Arrange
@@ -512,6 +567,45 @@ public partial class PdfProcessorTest
     }
 
     [Fact]
+    public void AddContentStreamShouldReadFromCurrentPositionWithChunkedReads()
+    {
+        // Arrange
+        var converterPtr = new IntPtr(_fixture.Create<int>());
+        var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
+        var prefix = Encoding.UTF8.GetBytes("unused:");
+        var html = Encoding.UTF8.GetBytes("<html><body>test</body></html>");
+        var buffer = new byte[prefix.Length + html.Length];
+        Array.Copy(prefix, 0, buffer, 0, prefix.Length);
+        Array.Copy(html, 0, buffer, prefix.Length, html.Length);
+
+        using var stream = new ChunkedMemoryStream(buffer, chunkSize: 3)
+        {
+            Position = prefix.Length,
+        };
+        byte[]? received = null;
+        _module.Setup(
+                m =>
+                    m.AddObject(It.IsAny<IntPtr>(), It.IsAny<IntPtr>(), It.IsAny<byte[]>()))
+            .Callback<IntPtr, IntPtr, byte[]>((_, _, data) => received = data);
+
+        // Act
+        _sut.AddContentStream(converterPtr, objectSettingsPtr, stream);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            received.Should().NotBeNull();
+            received!.Length.Should().BeGreaterThanOrEqualTo(html.Length + 1);
+            for (var i = 0; i < html.Length; i++)
+            {
+                received[i].Should().Be(html[i]);
+            }
+
+            received[html.Length].Should().Be(byte.MinValue);
+        }
+    }
+
+    [Fact]
     public void AddContentStreamShouldThrowExceptionWhenTooLargeStreamPassed()
     {
         // Arrange
@@ -520,6 +614,8 @@ public partial class PdfProcessorTest
         var streamMock = new Mock<Stream>(MockBehavior.Strict);
         streamMock.SetupGet(s => s.Length)
             .Returns(int.MaxValue + 1L);
+        streamMock.SetupGet(s => s.Position)
+            .Returns(0L);
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, streamMock.Object);
@@ -723,5 +819,27 @@ public partial class PdfProcessorTest
         public byte[]? HtmlContentByteArray { get; } = htmlContentByteArray;
 
         public Stream? HtmlContentStream { get; } = htmlContentStream;
+    }
+
+    private sealed class ChunkedMemoryStream
+        : MemoryStream
+    {
+        private readonly int _chunkSize;
+
+        public ChunkedMemoryStream(
+            byte[] buffer,
+            int chunkSize)
+            : base(buffer)
+        {
+            _chunkSize = chunkSize > 0 ? chunkSize : 1;
+        }
+
+        public override int Read(
+            byte[] buffer,
+            int offset,
+            int count)
+        {
+            return base.Read(buffer, offset, Math.Min(count, _chunkSize));
+        }
     }
 }

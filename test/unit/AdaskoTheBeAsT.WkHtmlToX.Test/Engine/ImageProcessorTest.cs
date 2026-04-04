@@ -39,7 +39,8 @@ public partial class ImageProcessorTest
             .Returns(converterPtr);
         _module.Setup(
             m =>
-                m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()));
+                m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Returns(value: 0);
         var document = new HtmlToImageDocument();
 
         // Act
