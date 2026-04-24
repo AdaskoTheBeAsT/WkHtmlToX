@@ -1,88 +1,169 @@
 using System;
-using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaskoTheBeAsT.WkHtmlToX.Documents;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
+using AdaskoTheBeAsT.WkHtmlToX.Settings;
 using AwesomeAssertions;
+using AwesomeAssertions.Execution;
 using JetBrains.dotMemoryUnit;
 using JetBrains.dotMemoryUnit.Kernel;
 using Xunit;
-#if NET462_OR_GREATER
-using Xunit.Abstractions;
-#endif
 
 namespace AdaskoTheBeAsT.WkHtmlToX.MemoryTest;
 
 public sealed class PdfConverterMemoryTest
-    : IDisposable
 {
+    private const int WarmupConversionCount = 2;
+    private const int MeasurementConversionCount = 20;
+    private const int EngineLifecycleIterationCount = 8;
+
     private readonly ITestOutputHelper _output;
-    private readonly WkHtmlToXEngine _engine;
 
     public PdfConverterMemoryTest(
         ITestOutputHelper output)
     {
         _output = output ?? throw new ArgumentNullException(nameof(output));
         DotMemoryUnitTestOutput.SetOutputMethod(_output.WriteLine);
-        _engine = new WkHtmlToXEngine(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null));
-        _engine.Initialize();
     }
-
-    public void Dispose() => _engine.Dispose();
 
     [DotMemoryUnit(SavingStrategy = SavingStrategy.OnAnyFail, FailIfRunWithoutSupport = false)]
     [Fact]
-    public async Task ShouldNotLeaveAnyObjectsSurvivedAsync()
+    public async Task ShouldNotRetainPdfDocumentGraphAfterRepeatedConversionsWithCallbacksAsync()
+    {
+        var phaseChangedCallCount = 0;
+        var progressChangedCallCount = 0;
+        var finishedCallCount = 0;
+
+        using var engine = CreateInitializedEngine(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
+        {
+            PhaseChangedAction = _ => phaseChangedCallCount++,
+            ProgressChangedAction = _ => progressChangedCallCount++,
+            FinishedAction = _ => finishedCallCount++,
+        });
+
+        var converter = new PdfConverter(engine);
+
+        await RunPdfConversionsAsync(converter, WarmupConversionCount);
+        var memoryCheckPoint = TakeMemoryCheckPoint();
+
+        await RunPdfConversionsAsync(converter, MeasurementConversionCount);
+
+        using (new AssertionScope())
+        {
+            phaseChangedCallCount.Should().BeGreaterThan(0);
+            progressChangedCallCount.Should().BeGreaterThan(0);
+            finishedCallCount.Should().Be(WarmupConversionCount + MeasurementConversionCount);
+        }
+
+        AssertNoSurvivedPdfDocumentObjects(memoryCheckPoint);
+    }
+
+    [DotMemoryUnit(SavingStrategy = SavingStrategy.OnAnyFail, FailIfRunWithoutSupport = false)]
+    [Fact]
+    public async Task ShouldNotRetainEngineObjectsAfterRepeatedEngineLifecyclesAsync()
+    {
+        await RunEngineLifecycleAsync(1);
+        var memoryCheckPoint = TakeMemoryCheckPoint();
+
+        await RunEngineLifecycleAsync(EngineLifecycleIterationCount);
+
+        AssertNoSurvivedEngineObjects(memoryCheckPoint);
+    }
+
+    private static WkHtmlToXEngine CreateInitializedEngine(WkHtmlToXConfiguration configuration)
+    {
+        var engine = new WkHtmlToXEngine(configuration);
+        engine.Initialize();
+        return engine;
+    }
+
+    private static MemoryCheckPoint? TakeMemoryCheckPoint() =>
+        dotMemoryApi.IsEnabled ? dotMemory.Check() : null;
+
+    private static void AssertNoSurvivedPdfDocumentObjects(MemoryCheckPoint? memoryCheckPoint)
+    {
+        if (!dotMemoryApi.IsEnabled || memoryCheckPoint is null)
+        {
+            return;
+        }
+
+        dotMemory.Check(
+            memory =>
+            {
+                var survivedObjects = memory.GetDifference(memoryCheckPoint.Value)
+                    .GetSurvivedObjects();
+
+                using (new AssertionScope())
+                {
+                    survivedObjects.GetObjects(where => where.Type.Is<HtmlToPdfDocument>())
+                        .ObjectsCount.Should().Be(0);
+                    survivedObjects.GetObjects(where => where.Type.Is<PdfObjectSettings>())
+                        .ObjectsCount.Should().Be(0);
+                    survivedObjects.GetObjects(where => where.Type.Is<PdfGlobalSettings>())
+                        .ObjectsCount.Should().Be(0);
+                }
+            });
+    }
+
+    private static void AssertNoSurvivedEngineObjects(MemoryCheckPoint? memoryCheckPoint)
+    {
+        if (!dotMemoryApi.IsEnabled || memoryCheckPoint is null)
+        {
+            return;
+        }
+
+        dotMemory.Check(
+            memory =>
+            {
+                var survivedObjects = memory.GetDifference(memoryCheckPoint.Value)
+                    .GetSurvivedObjects();
+
+                using (new AssertionScope())
+                {
+                    survivedObjects.GetObjects(where => where.Namespace.Like("AdaskoTheBeAsT.WkHtmlToX.Engine"))
+                        .ObjectsCount.Should().Be(0);
+                    survivedObjects.GetObjects(where => where.Type.Is<PdfConverter>())
+                        .ObjectsCount.Should().Be(0);
+                }
+            });
+    }
+
+    private async Task RunPdfConversionsAsync(PdfConverter converter, int count)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            await ConvertSingleDocumentAsync(converter).ConfigureAwait(false);
+        }
+    }
+
+    private async Task RunEngineLifecycleAsync(int count)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            using var engine = CreateInitializedEngine(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null));
+            var converter = new PdfConverter(engine);
+
+            await ConvertSingleDocumentAsync(converter).ConfigureAwait(false);
+        }
+    }
+
+    private async Task ConvertSingleDocumentAsync(PdfConverter converter)
     {
         var htmlToPdfGenerator = new HtmlToPdfDocumentGenerator(new SmallHtmlGenerator());
-        MemoryCheckPoint? memoryCheckPoint = null;
-        if (dotMemoryApi.IsEnabled)
-        {
-            memoryCheckPoint = dotMemory.Check();
-        }
+        var document = htmlToPdfGenerator.Generate();
+        await using var stream = new MemoryStream();
 
-        var doc = htmlToPdfGenerator.Generate();
-
-        if (!Directory.Exists("files"))
-        {
-            Directory.CreateDirectory("files");
-        }
-
-        var converter = new PdfConverter(_engine);
-#pragma warning disable SEC0112 // Path Tampering Unvalidated File Path
-#pragma warning disable SCS0018 // Potential Path Traversal vulnerability was found where '{0}' in '{1}' may be tainted by user-controlled data from '{2}' in method '{3}'.
-        await using var stream = new FileStream(
-            Path.Combine(
-                "Files",
-                $"{DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture)}.pdf"),
-            FileMode.Create);
-#pragma warning restore SCS0018 // Potential Path Traversal vulnerability was found where '{0}' in '{1}' may be tainted by user-controlled data from '{2}' in method '{3}'.
-#pragma warning restore SEC0112 // Path Tampering Unvalidated File Path
 #pragma warning disable IDISP011
         var converted = await converter.ConvertAsync(
-            doc,
-            _ => stream,
-            CancellationToken.None);
+                document,
+                _ => stream,
+                CancellationToken.None)
+            .ConfigureAwait(false);
 #pragma warning restore IDISP011
-        _output.WriteLine(converted.ToString(CultureInfo.InvariantCulture));
 
-        if (dotMemoryApi.IsEnabled)
-        {
-            dotMemory.Check(
-                memory =>
-                {
-                    if (memoryCheckPoint == null)
-                    {
-                        return;
-                    }
-
-                    var objects = memory.GetDifference(memoryCheckPoint.Value)
-                        .GetSurvivedObjects()
-                        .GetObjects(where => where.Namespace.Like(nameof(AdaskoTheBeAsT)));
-                    var objectCount = objects.ObjectsCount;
-                    objectCount.Should().BeLessThanOrEqualTo(5);
-                });
-        }
+        converted.Should().BeTrue();
+        _output.WriteLine($"Converted {stream.Length} bytes.");
     }
 }

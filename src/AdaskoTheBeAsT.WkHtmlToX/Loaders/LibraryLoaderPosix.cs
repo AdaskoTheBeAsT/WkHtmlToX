@@ -1,20 +1,25 @@
-using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.InteropServices;
+using AdaskoTheBeAsT.Interop.Unmanaged;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
-using AdaskoTheBeAsT.WkHtmlToX.Native;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Loaders;
 
 [ExcludeFromCodeCoverage]
+#pragma warning disable CA2213 // Field is disposed via Release()/Dispose(bool)
 internal abstract class LibraryLoaderPosix
     : LibraryLoaderBase
 {
-    private IntPtr _libraryHandle;
+    private UnmanagedLibrary? _library;
 
     public override void Load()
     {
+        if (_library is not null)
+        {
+            return;
+        }
+
         var libraryName = GetLibraryName();
         var runtimeIdentifier = GetRuntimeIdentifier();
 
@@ -39,22 +44,21 @@ internal abstract class LibraryLoaderPosix
                 continue;
             }
 
-            if (File.Exists(path))
+            if (!File.Exists(path))
             {
-                SystemPosixNativeMethods.dlerror();
-                var libPtr = SystemPosixNativeMethods.dlopen(path, SystemPosixNativeMethods.RTLD_NOW);
-                if (libPtr == IntPtr.Zero)
-                {
-                    var errorPtr = SystemPosixNativeMethods.dlerror();
-                    if (errorPtr != IntPtr.Zero)
-                    {
-                        var error = Marshal.PtrToStringAnsi(errorPtr);
-                        throw new DllNotLoadedException($"dlopen failed: {path} : {error}");
-                    }
-                }
+                continue;
+            }
 
-                _libraryHandle = libPtr;
+            try
+            {
+#pragma warning disable IDISP003 // Dispose previous before re-assigning.
+                _library = new UnmanagedLibrary(path);
+#pragma warning restore IDISP003
                 return;
+            }
+            catch (Win32Exception ex)
+            {
+                throw new DllNotLoadedException($"dlopen failed: {path} : {ex.Message}", ex);
             }
         }
 
@@ -63,21 +67,11 @@ internal abstract class LibraryLoaderPosix
 
     public override void Release()
     {
-        if (_libraryHandle == IntPtr.Zero)
-        {
-            return;
-        }
-
-        var retVal = SystemPosixNativeMethods.dlclose(_libraryHandle);
-        if (retVal != 0)
-        {
-            var errorPtr = SystemPosixNativeMethods.dlerror();
-            if (errorPtr != IntPtr.Zero)
-            {
-                var error = Marshal.PtrToStringAnsi(errorPtr);
-                throw new DllUnloadFailedException($"dlclose failed: {error}");
-            }
-        }
+        var libraryToDispose = _library;
+#pragma warning disable IDISP003 // Dispose previous before re-assigning.
+        _library = null;
+#pragma warning restore IDISP003
+        libraryToDispose?.Dispose();
     }
 
     protected override void Dispose(bool disposing)
@@ -92,3 +86,4 @@ internal abstract class LibraryLoaderPosix
 
     protected abstract string GetRuntimeIdentifier();
 }
+#pragma warning restore CA2213

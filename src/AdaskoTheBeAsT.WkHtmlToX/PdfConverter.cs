@@ -15,7 +15,7 @@ public class PdfConverter
 
     public PdfConverter(IWkHtmlToXEngine engine)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (engine == null)
         {
             throw new ArgumentNullException(nameof(engine));

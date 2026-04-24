@@ -60,7 +60,7 @@ internal static class PdfNativeMethods
     /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
-    internal static extern int wkhtmltopdf_destroy_global_settings(IntPtr settings);
+    internal static extern void wkhtmltopdf_destroy_global_settings(IntPtr settings);
 
     /// <summary>
     /// wkhtmltopdf_create_object_settings.
@@ -77,7 +77,7 @@ internal static class PdfNativeMethods
     /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
-    internal static extern int wkhtmltopdf_destroy_object_settings(IntPtr settings);
+    internal static extern void wkhtmltopdf_destroy_object_settings(IntPtr settings);
 
     /// <summary>
     /// wkhtmltopdf_set_global_setting.
@@ -164,7 +164,7 @@ internal static class PdfNativeMethods
     /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
-    internal static extern int wkhtmltopdf_set_warning_callback(
+    internal static extern void wkhtmltopdf_set_warning_callback(
         IntPtr converter,
         [MarshalAs(UnmanagedType.FunctionPtr)] StringCallback callback);
 
@@ -176,7 +176,7 @@ internal static class PdfNativeMethods
     /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
-    internal static extern int wkhtmltopdf_set_error_callback(
+    internal static extern void wkhtmltopdf_set_error_callback(
         IntPtr converter,
         [MarshalAs(UnmanagedType.FunctionPtr)] StringCallback callback);
 
@@ -188,7 +188,7 @@ internal static class PdfNativeMethods
     /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
-    internal static extern int wkhtmltopdf_set_phase_changed_callback(
+    internal static extern void wkhtmltopdf_set_phase_changed_callback(
         IntPtr converter,
         [MarshalAs(UnmanagedType.FunctionPtr)] VoidCallback callback);
 
@@ -200,9 +200,9 @@ internal static class PdfNativeMethods
     /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
-    internal static extern int wkhtmltopdf_set_progress_changed_callback(
+    internal static extern void wkhtmltopdf_set_progress_changed_callback(
         IntPtr converter,
-        [MarshalAs(UnmanagedType.FunctionPtr)] VoidCallback callback);
+        [MarshalAs(UnmanagedType.FunctionPtr)] IntCallback callback);
 
     /// <summary>
     /// wkhtmltopdf_set_finished_callback.
@@ -212,7 +212,7 @@ internal static class PdfNativeMethods
     /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
-    internal static extern int wkhtmltopdf_set_finished_callback(
+    internal static extern void wkhtmltopdf_set_finished_callback(
         IntPtr converter,
         [MarshalAs(UnmanagedType.FunctionPtr)] IntCallback callback);
 

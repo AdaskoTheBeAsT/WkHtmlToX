@@ -19,18 +19,13 @@ internal sealed class ImageProcessor
 
     public bool Convert(IHtmlToImageDocument? document, Func<int, Stream> createStreamFunc)
     {
-#if NETSTANDARD2_0
-        if (document?.ImageSettings == null)
+        if (document?.ImageSettings is null)
         {
             throw new ArgumentException(
                 "No image settings is defined in document that was passed. At least one object must be defined.");
         }
-#endif
-#if NET8_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(document?.ImageSettings);
-#endif
 
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (createStreamFunc is null)
         {
             throw new ArgumentNullException(nameof(createStreamFunc));
@@ -63,6 +58,7 @@ internal sealed class ImageProcessor
         finally
         {
             ImageModule.DestroyConverter(converterPtr);
+            ReleaseRegisteredCallbacks();
 
             // it seems destroying converter also destroys global settings
             ////ImageModule.DestroyGlobalSetting(globalSettingsPtr);
@@ -73,7 +69,7 @@ internal sealed class ImageProcessor
     internal (IntPtr converterPtr, IntPtr globalSettingsPtr) CreateConverter(
         IHtmlToImageDocument document)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (document is null)
         {
             throw new ArgumentNullException(nameof(document));
@@ -104,27 +100,27 @@ internal sealed class ImageProcessor
     protected internal override string GetProgressDescription(IntPtr converter) =>
         ImageModule.GetProgressDescription(converter);
 
-    protected internal override int SetWarningCallback(
+    protected internal override void SetWarningCallback(
         IntPtr converter,
         StringCallback callback) =>
         ImageModule.SetWarningCallback(converter, callback);
 
-    protected internal override int SetErrorCallback(
+    protected internal override void SetErrorCallback(
         IntPtr converter,
         StringCallback callback) =>
         ImageModule.SetErrorCallback(converter, callback);
 
-    protected internal override int SetPhaseChangedCallback(
+    protected internal override void SetPhaseChangedCallback(
         IntPtr converter,
         VoidCallback callback) =>
         ImageModule.SetPhaseChangedCallback(converter, callback);
 
-    protected internal override int SetProgressChangedCallback(
+    protected internal override void SetProgressChangedCallback(
         IntPtr converter,
-        VoidCallback callback) =>
+        IntCallback callback) =>
         ImageModule.SetProgressChangedCallback(converter, callback);
 
-    protected internal override int SetFinishedCallback(
+    protected internal override void SetFinishedCallback(
         IntPtr converter,
         IntCallback callback) =>
         ImageModule.SetFinishedCallback(converter, callback);

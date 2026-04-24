@@ -6,4 +6,4 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Utils;
 
 [SuppressUnmanagedCodeSecurity]
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-public delegate void StringCallback(IntPtr converter, [MarshalAs(UnmanagedType.LPStr)] string str);
+public delegate void StringCallback(IntPtr converter, IntPtr str);

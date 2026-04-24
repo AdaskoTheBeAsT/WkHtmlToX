@@ -1,8 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Documents;
+using AdaskoTheBeAsT.WkHtmlToX.Engine;
+using AdaskoTheBeAsT.WkHtmlToX.EventDefinitions;
+using AwesomeAssertions;
+using AwesomeAssertions.Execution;
 using Microsoft.IO;
 using Reqnroll;
 
@@ -10,10 +15,15 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest.Steps;
 
 [Binding]
 [Scope(Feature = nameof(ImageConverter))]
-public class ImageConverterStepDefinitions
+public sealed class ImageConverterStepDefinitions
+    : IDisposable
 {
     private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager;
+    private readonly List<PhaseChangedEventArgs> _phaseChangedEvents;
+    private readonly List<ProgressChangedEventArgs> _progressChangedEvents;
+    private readonly List<FinishedEventArgs> _finishedEvents;
     private ImageConverter? _sut;
+    private WkHtmlToXEngine? _ownedEngine;
     private string? _filePath;
     private string? _outputFilePath;
     private HtmlToImageDocument? _htmlToImageDocument;
@@ -21,12 +31,28 @@ public class ImageConverterStepDefinitions
     public ImageConverterStepDefinitions()
     {
         _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
+        _phaseChangedEvents = [];
+        _progressChangedEvents = [];
+        _finishedEvents = [];
     }
 
     [Given("I have SynchronizedImageConverter")]
     public void GivenIHaveSynchronizedImageConverter()
     {
-        _sut = new ImageConverter(GlobalInitializer.Engine!);
+        CreateSut(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null));
+    }
+
+    [Given("I have SynchronizedImageConverter with callback tracking")]
+    public void GivenIHaveSynchronizedImageConverterWithCallbackTracking()
+    {
+        var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
+        {
+            PhaseChangedAction = eventArgs => _phaseChangedEvents.Add(eventArgs),
+            ProgressChangedAction = eventArgs => _progressChangedEvents.Add(eventArgs),
+            FinishedAction = eventArgs => _finishedEvents.Add(eventArgs),
+        };
+
+        CreateSut(configuration);
     }
 
     [Given("I have sample html to convert '([^']*)'")]
@@ -85,6 +111,29 @@ public class ImageConverterStepDefinitions
         }
     }
 
+    [Then("image lifecycle callbacks should be raised")]
+    public void ThenImageLifecycleCallbacksShouldBeRaised()
+    {
+        using (new AssertionScope())
+        {
+            _phaseChangedEvents.Should().NotBeEmpty();
+            _phaseChangedEvents.Should().OnlyContain(
+                eventArgs => ReferenceEquals(eventArgs.Document, _htmlToImageDocument)
+                    && eventArgs.PhaseCount > 0
+                    && eventArgs.CurrentPhase >= 0);
+            _phaseChangedEvents.Should().Contain(eventArgs => !string.IsNullOrWhiteSpace(eventArgs.Description));
+
+            _progressChangedEvents.Should().NotBeEmpty();
+            _progressChangedEvents.Should().OnlyContain(
+                eventArgs => ReferenceEquals(eventArgs.Document, _htmlToImageDocument));
+            _progressChangedEvents.Should().Contain(eventArgs => !string.IsNullOrWhiteSpace(eventArgs.Description));
+
+            _finishedEvents.Should().HaveCount(1);
+            _finishedEvents[0].Document.Should().BeSameAs(_htmlToImageDocument);
+            _finishedEvents[0].Success.Should().BeTrue();
+        }
+    }
+
     [Then("proper image should be created")]
 #pragma warning disable MA0038 // Make method static
     public void ThenProperImageShouldBeCreated()
@@ -92,4 +141,31 @@ public class ImageConverterStepDefinitions
         // noop
     }
 #pragma warning restore MA0038 // Make method static
+
+    [AfterScenario]
+    public void AfterScenario()
+    {
+        DisposeOwnedEngine();
+    }
+
+    public void Dispose()
+    {
+        DisposeOwnedEngine();
+    }
+
+    private void DisposeOwnedEngine()
+    {
+        _ownedEngine?.Dispose();
+        _ownedEngine = null;
+    }
+
+    private void CreateSut(WkHtmlToXConfiguration configuration)
+    {
+        DisposeOwnedEngine();
+#pragma warning disable IDISP003 // Dispose previous before re-assigning.
+        _ownedEngine = new WkHtmlToXEngine(configuration);
+#pragma warning restore IDISP003 // Dispose previous before re-assigning.
+        _ownedEngine.Initialize();
+        _sut = new ImageConverter(_ownedEngine);
+    }
 }

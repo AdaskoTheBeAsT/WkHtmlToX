@@ -1,13 +1,14 @@
-using System;
+using System.ComponentModel;
 using System.IO;
 #if NET9_0_OR_GREATER
 using System.Threading;
 #endif
+using AdaskoTheBeAsT.Interop.Unmanaged;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
-using AdaskoTheBeAsT.WkHtmlToX.Native;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Loaders;
 
+#pragma warning disable CA2213 // Field is disposed via Release()/Dispose(bool)
 internal sealed class LibraryLoaderWindows
     : LibraryLoaderBase
 {
@@ -19,14 +20,13 @@ internal sealed class LibraryLoaderWindows
     private static readonly object SyncLock = new();
 #endif
 
-    private SafeLibraryHandle? _libraryHandle;
+    private UnmanagedLibrary? _library;
 
     public override void Load()
     {
         lock (SyncLock)
         {
-            // Already loaded
-            if (_libraryHandle != null && !_libraryHandle.IsClosed)
+            if (_library is not null)
             {
                 return;
             }
@@ -53,20 +53,23 @@ internal sealed class LibraryLoaderWindows
                     continue;
                 }
 
-                if (File.Exists(path))
+                if (!File.Exists(path))
                 {
-                    var libHandle = SystemWindowsNativeMethods.LoadLibraryEx(
+                    continue;
+                }
+
+                try
+                {
+#pragma warning disable IDISP003 // Dispose previous before re-assigning.
+                    _library = new UnmanagedLibrary(
                         path,
-                        IntPtr.Zero,
                         LoadLibraryFlags.LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LoadLibraryFlags.LOAD_LIBRARY_SEARCH_SYSTEM32);
-
-                    if (libHandle.IsInvalid)
-                    {
-                        throw new DllNotLoadedException($"LoadLibrary failed: {path}");
-                    }
-
-                    _libraryHandle = libHandle;
+#pragma warning restore IDISP003
                     return;
+                }
+                catch (Win32Exception ex)
+                {
+                    throw new DllNotLoadedException($"LoadLibrary failed: {path}", ex);
                 }
             }
 
@@ -76,44 +79,24 @@ internal sealed class LibraryLoaderWindows
 
     public override void Release()
     {
-        SafeLibraryHandle? handleToDispose = null;
+        UnmanagedLibrary? libraryToDispose;
         lock (SyncLock)
         {
-            if (_libraryHandle == null)
-            {
-                return;
-            }
-
-            handleToDispose = _libraryHandle;
-            _libraryHandle = null;
+            libraryToDispose = _library;
+#pragma warning disable IDISP003 // Dispose previous before re-assigning.
+            _library = null;
+#pragma warning restore IDISP003
         }
 
-        if (handleToDispose != null && !handleToDispose.IsClosed)
-        {
-            handleToDispose.Dispose();
-        }
+        libraryToDispose?.Dispose();
     }
 
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
-            SafeLibraryHandle? handleToDispose = null;
-            lock (SyncLock)
-            {
-                if (_libraryHandle == null)
-                {
-                    return;
-                }
-
-                handleToDispose = _libraryHandle;
-                _libraryHandle = null;
-            }
-
-            if (handleToDispose != null && !handleToDispose.IsClosed)
-            {
-                handleToDispose.Dispose();
-            }
+            Release();
         }
     }
 }
+#pragma warning restore CA2213

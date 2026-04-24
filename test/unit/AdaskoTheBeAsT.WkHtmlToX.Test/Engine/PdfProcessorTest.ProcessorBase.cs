@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AdaskoTheBeAsT.WkHtmlToX.EventDefinitions;
@@ -90,16 +91,11 @@ public partial class PdfProcessorTest
     public void RegisterEventsShouldNotRegisterWhereEventsNotAttached()
     {
         // Arrange
-        _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()))
-            .Returns(value: 0);
-        _module.Setup(m => m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()))
-            .Returns(0);
-        _module.Setup(m => m.SetFinishedCallback(It.IsAny<IntPtr>(), It.IsAny<IntCallback>()))
-            .Returns(value: 0);
-        _module.Setup(m => m.SetPhaseChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()))
-            .Returns(value: 0);
-        _module.Setup(m => m.SetProgressChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()))
-            .Returns(value: 0);
+        _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
+        _module.Setup(m => m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
+        _module.Setup(m => m.SetFinishedCallback(It.IsAny<IntPtr>(), It.IsAny<IntCallback>()));
+        _module.Setup(m => m.SetPhaseChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()));
+        _module.Setup(m => m.SetProgressChangedCallback(It.IsAny<IntPtr>(), It.IsAny<IntCallback>()));
 
         // Act
         _sut.RegisterEvents(new IntPtr(12));
@@ -135,7 +131,7 @@ public partial class PdfProcessorTest
                 m =>
                     m.SetProgressChangedCallback(
                         It.IsAny<IntPtr>(),
-                        It.IsAny<VoidCallback>()),
+                        It.IsAny<IntCallback>()),
                 Times.Never);
         }
     }
@@ -144,8 +140,7 @@ public partial class PdfProcessorTest
     public void RegisterEventsShouldRegisterErrorCallbackWhenSpecified()
     {
         // Arrange
-        _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()))
-            .Returns(0);
+        _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -173,8 +168,7 @@ public partial class PdfProcessorTest
     public void RegisterEventsShouldRegisterWarningCallbackWhenSpecified()
     {
         // Arrange
-        _module.Setup(m => m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()))
-            .Returns(0);
+        _module.Setup(m => m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -202,8 +196,7 @@ public partial class PdfProcessorTest
     public void RegisterEventsShouldRegisterFinishedCallbackWhenSpecified()
     {
         // Arrange
-        _module.Setup(m => m.SetFinishedCallback(It.IsAny<IntPtr>(), It.IsAny<IntCallback>()))
-            .Returns(0);
+        _module.Setup(m => m.SetFinishedCallback(It.IsAny<IntPtr>(), It.IsAny<IntCallback>()));
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -231,8 +224,7 @@ public partial class PdfProcessorTest
     public void RegisterEventsShouldRegisterPhaseChangedCallbackWhenSpecified()
     {
         // Arrange
-        _module.Setup(m => m.SetPhaseChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()))
-            .Returns(0);
+        _module.Setup(m => m.SetPhaseChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()));
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -260,8 +252,7 @@ public partial class PdfProcessorTest
     public void RegisterEventsShouldRegisterProgressChangedCallbackWhenSpecified()
     {
         // Arrange
-        _module.Setup(m => m.SetProgressChangedCallback(It.IsAny<IntPtr>(), It.IsAny<VoidCallback>()))
-            .Returns(0);
+        _module.Setup(m => m.SetProgressChangedCallback(It.IsAny<IntPtr>(), It.IsAny<IntCallback>()));
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
@@ -280,20 +271,53 @@ public partial class PdfProcessorTest
                 m =>
                     m.SetProgressChangedCallback(
                         It.IsAny<IntPtr>(),
-                        It.IsAny<VoidCallback>()),
+                        It.IsAny<IntCallback>()),
                 Times.Once);
         }
+    }
+
+    [Fact]
+    public void RegisterEventsShouldKeepCallbacksRootedUntilReleased()
+    {
+        // Arrange
+        _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
+
+        var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
+        {
+            ErrorAction = _ => { },
+        };
+
+        var sut = new PdfProcessor(configuration, _module.Object);
+
+        // Act
+        sut.RegisterEvents(new IntPtr(12));
+
+        // Assert
+        sut.HasRegisteredCallbacks.Should().BeTrue();
+
+        // Act
+        sut.ReleaseRegisteredCallbacks();
+
+        // Assert
+        sut.HasRegisteredCallbacks.Should().BeFalse();
     }
 
     [Fact]
     public void OnErrorShouldNotThrowWhenNoEvent()
     {
         // Arrange
-        var errorMessage = _fixture.Create<string>();
-        Action action = () => _sut.OnError(new IntPtr(1), errorMessage);
+        var errorMessagePointer = StringToUtf8Pointer("zażółć gęślą jaźń");
+        Action action = () => _sut.OnError(new IntPtr(1), errorMessagePointer);
 
         // Act and Assert
-        action.Should().NotThrow();
+        try
+        {
+            action.Should().NotThrow();
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(errorMessagePointer);
+        }
     }
 
     [Fact]
@@ -301,7 +325,8 @@ public partial class PdfProcessorTest
     {
         // Arrange
         var result = default(ErrorEventArgs?);
-        var errorMessage = _fixture.Create<string>();
+        var errorMessage = "zażółć gęślą jaźń";
+        var errorMessagePointer = StringToUtf8Pointer(errorMessage);
         var doc = new Mock<ISettings>(MockBehavior.Strict).Object;
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
@@ -314,14 +339,21 @@ public partial class PdfProcessorTest
             ProcessingDocument = doc,
         };
 
-        // Act
-        sut.OnError(new IntPtr(1), errorMessage);
-
-        // Assert
-        using (new AssertionScope())
+        try
         {
-            result!.Document.Should().Be(doc);
-            result!.Message.Should().Be(errorMessage);
+            // Act
+            sut.OnError(new IntPtr(1), errorMessagePointer);
+
+            // Assert
+            using (new AssertionScope())
+            {
+                result!.Document.Should().Be(doc);
+                result!.Message.Should().Be(errorMessage);
+            }
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(errorMessagePointer);
         }
     }
 
@@ -329,11 +361,18 @@ public partial class PdfProcessorTest
     public void OnWarningShouldNotThrowWhenNoEvent()
     {
         // Arrange
-        var errorMessage = _fixture.Create<string>();
-        Action action = () => _sut.OnWarning(new IntPtr(1), errorMessage);
+        var warningMessagePointer = StringToUtf8Pointer("zażółć gęślą jaźń");
+        Action action = () => _sut.OnWarning(new IntPtr(1), warningMessagePointer);
 
         // Act and Assert
-        action.Should().NotThrow();
+        try
+        {
+            action.Should().NotThrow();
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(warningMessagePointer);
+        }
     }
 
     [Fact]
@@ -341,7 +380,8 @@ public partial class PdfProcessorTest
     {
         // Arrange
         var result = default(WarningEventArgs?);
-        var errorMessage = _fixture.Create<string>();
+        var warningMessage = "zażółć gęślą jaźń";
+        var warningMessagePointer = StringToUtf8Pointer(warningMessage);
         var doc = new Mock<ISettings>(MockBehavior.Strict).Object;
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
@@ -354,14 +394,21 @@ public partial class PdfProcessorTest
             ProcessingDocument = doc,
         };
 
-        // Act
-        sut.OnWarning(new IntPtr(1), errorMessage);
-
-        // Assert
-        using (new AssertionScope())
+        try
         {
-            result!.Document.Should().Be(doc);
-            result!.Message.Should().Be(errorMessage);
+            // Act
+            sut.OnWarning(new IntPtr(1), warningMessagePointer);
+
+            // Assert
+            using (new AssertionScope())
+            {
+                result!.Document.Should().Be(doc);
+                result!.Message.Should().Be(warningMessage);
+            }
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(warningMessagePointer);
         }
     }
 
@@ -459,7 +506,7 @@ public partial class PdfProcessorTest
     public void OnProgressChangedShouldNotThrowWhenNoEvent()
     {
         // Arrange
-        Action action = () => _sut.OnProgressChanged(new IntPtr(1));
+        Action action = () => _sut.OnProgressChanged(new IntPtr(1), _fixture.Create<int>());
 
         // Act and Assert
         action.Should().NotThrow();
@@ -487,7 +534,7 @@ public partial class PdfProcessorTest
         };
 
         // Act
-        sut.OnProgressChanged(new IntPtr(1));
+        sut.OnProgressChanged(new IntPtr(1), _fixture.Create<int>());
 
         // Assert
         using (new AssertionScope())
@@ -906,7 +953,8 @@ public partial class PdfProcessorTest
         var keyName2 = _fixture.Create<string>();
         var dictionary = new Dictionary<string, string?>(StringComparer.Ordinal)
         {
-            [keyName1] = value1, [keyName2] = null,
+            [keyName1] = value1,
+            [keyName2] = null,
         };
 
         // Act
@@ -968,5 +1016,6 @@ public partial class PdfProcessorTest
         public TestSettings TestSettings { get; set; }
 #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
     }
+
 #pragma warning restore CA1034 // Nested types should not be visible
 }

@@ -1,0 +1,13 @@
+# CODEOWNERS
+#
+# Every file in the repository is owned by the repository owner; any pull
+# request touching these paths requires a review from one of the owners
+# listed below before it can be merged (when "Require review from Code
+# Owners" is enabled on the protected branch).
+#
+# Syntax reference: https://docs.github.com/en/repositories/managing-your-repositories-settings-and-security-policies/about-code-owners
+# GitHub accepts both @username and verified-email forms; both are listed
+# so review requests reach the owner regardless of the account preference.
+
+# Default owner for everything in the repo
+*                           @AdaskoTheBeAsT adaskothebeast@gmail.com

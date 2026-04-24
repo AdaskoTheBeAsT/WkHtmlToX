@@ -27,12 +27,12 @@ internal abstract class WkHtmlToXModule
     public string GetLibraryVersion()
     {
         var ptr = GetLibraryVersionImpl();
-        return Marshal.PtrToStringAnsi(ptr) ?? string.Empty;
+        return Utf8Interop.PtrToString(ptr);
     }
 
     public abstract IntPtr CreateGlobalSettings();
 
-    public abstract int DestroyGlobalSetting(
+    public abstract void DestroyGlobalSetting(
         IntPtr settings);
 
     public abstract int SetGlobalSetting(
@@ -78,23 +78,23 @@ internal abstract class WkHtmlToXModule
     public abstract void DestroyConverter(
         IntPtr converter);
 
-    public abstract int SetWarningCallback(
+    public abstract void SetWarningCallback(
         IntPtr converter,
         StringCallback callback);
 
-    public abstract int SetErrorCallback(
+    public abstract void SetErrorCallback(
         IntPtr converter,
         StringCallback callback);
 
-    public abstract int SetPhaseChangedCallback(
+    public abstract void SetPhaseChangedCallback(
         IntPtr converter,
         VoidCallback callback);
 
-    public abstract int SetProgressChangedCallback(
+    public abstract void SetProgressChangedCallback(
         IntPtr converter,
-        VoidCallback callback);
+        IntCallback callback);
 
-    public abstract int SetFinishedCallback(
+    public abstract void SetFinishedCallback(
         IntPtr converter,
         IntCallback callback);
 
@@ -109,14 +109,14 @@ internal abstract class WkHtmlToXModule
         int phase)
     {
         var ptr = GetPhaseDescriptionImpl(converter, phase);
-        return Marshal.PtrToStringAnsi(ptr) ?? string.Empty;
+        return Utf8Interop.PtrToString(ptr);
     }
 
     public string GetProgressDescription(
         IntPtr converter)
     {
         var ptr = GetProgressStringImpl(converter);
-        return Marshal.PtrToStringAnsi(ptr) ?? string.Empty;
+        return Utf8Interop.PtrToString(ptr);
     }
 
     public abstract int GetPhaseCount(
@@ -127,7 +127,7 @@ internal abstract class WkHtmlToXModule
 
     public void GetOutput(IntPtr converter, Stream stream)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (stream is null)
         {
             throw new ArgumentNullException(nameof(stream));
@@ -143,7 +143,7 @@ internal abstract class WkHtmlToXModule
         IntPtr converter,
         Func<int, Stream> createStreamFunc)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (createStreamFunc is null)
         {
             throw new ArgumentNullException(nameof(createStreamFunc));

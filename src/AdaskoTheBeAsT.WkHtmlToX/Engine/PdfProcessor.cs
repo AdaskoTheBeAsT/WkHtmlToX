@@ -26,7 +26,7 @@ internal sealed class PdfProcessor
 
     public bool Convert(IHtmlToPdfDocument document, Func<int, Stream> createStreamFunc)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (document is null)
         {
             throw new ArgumentNullException(nameof(document));
@@ -36,7 +36,7 @@ internal sealed class PdfProcessor
         ArgumentNullException.ThrowIfNull(document);
 #endif
 
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (createStreamFunc is null)
         {
             throw new ArgumentNullException(nameof(createStreamFunc));
@@ -54,7 +54,8 @@ internal sealed class PdfProcessor
 
         ProcessingDocument = document;
 
-        var (converterPtr, globalSettingsPtr, objectSettingsPtrs) = CreateConverter(document);
+        var converterData = CreateConverter(document);
+        var converterPtr = converterData.converterPtr;
 
         RegisterEvents(converterPtr);
 
@@ -72,13 +73,15 @@ internal sealed class PdfProcessor
         finally
         {
             PdfModule.DestroyConverter(converterPtr);
-
-            for (int i = objectSettingsPtrs.Count - 1; i >= 0; i--)
+            ReleaseRegisteredCallbacks();
+#if false
+            for (int i = converterData.objectSettingsPtrs.Count - 1; i >= 0; i--)
             {
-                PdfModule.DestroyObjectSetting(objectSettingsPtrs[i]);
+                PdfModule.DestroyObjectSetting(converterData.objectSettingsPtrs[i]);
             }
 
-            PdfModule.DestroyGlobalSetting(globalSettingsPtr);
+            PdfModule.DestroyGlobalSetting(converterData.globalSettingsPtr);
+#endif
 
             ProcessingDocument = null;
         }
@@ -87,7 +90,7 @@ internal sealed class PdfProcessor
     internal (IntPtr converterPtr, IntPtr globalSettingsPtr, List<IntPtr> objectSettingsPtrs) CreateConverter(
         IHtmlToPdfDocument document)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (document is null)
         {
             throw new ArgumentNullException(nameof(document));
@@ -124,7 +127,7 @@ internal sealed class PdfProcessor
         IntPtr objectSettings,
         PdfObjectSettings pdfObjectSettings)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (pdfObjectSettings is null)
         {
             throw new ArgumentNullException(nameof(pdfObjectSettings));
@@ -158,7 +161,7 @@ internal sealed class PdfProcessor
         IntPtr objectSettings,
         PdfObjectSettings pdfObjectSettings)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (pdfObjectSettings is null)
         {
             throw new ArgumentNullException(nameof(pdfObjectSettings));
@@ -212,7 +215,7 @@ internal sealed class PdfProcessor
         IntPtr objectSettings,
         Stream htmlContentStream)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (htmlContentStream is null)
         {
             throw new ArgumentNullException(nameof(htmlContentStream));
@@ -273,27 +276,27 @@ internal sealed class PdfProcessor
     protected internal override string GetProgressDescription(IntPtr converter) =>
         PdfModule.GetProgressDescription(converter);
 
-    protected internal override int SetWarningCallback(
+    protected internal override void SetWarningCallback(
         IntPtr converter,
         StringCallback callback) =>
         PdfModule.SetWarningCallback(converter, callback);
 
-    protected internal override int SetErrorCallback(
+    protected internal override void SetErrorCallback(
         IntPtr converter,
         StringCallback callback) =>
         PdfModule.SetErrorCallback(converter, callback);
 
-    protected internal override int SetPhaseChangedCallback(
+    protected internal override void SetPhaseChangedCallback(
         IntPtr converter,
         VoidCallback callback) =>
         PdfModule.SetPhaseChangedCallback(converter, callback);
 
-    protected internal override int SetProgressChangedCallback(
+    protected internal override void SetProgressChangedCallback(
         IntPtr converter,
-        VoidCallback callback) =>
+        IntCallback callback) =>
         PdfModule.SetProgressChangedCallback(converter, callback);
 
-    protected internal override int SetFinishedCallback(
+    protected internal override void SetFinishedCallback(
         IntPtr converter,
         IntCallback callback) =>
         PdfModule.SetFinishedCallback(converter, callback);

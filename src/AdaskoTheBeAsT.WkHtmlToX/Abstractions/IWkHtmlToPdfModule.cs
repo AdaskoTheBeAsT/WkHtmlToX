@@ -7,7 +7,7 @@ internal interface IWkHtmlToPdfModule
 {
     IntPtr CreateObjectSettings();
 
-    int DestroyObjectSetting(IntPtr settings);
+    void DestroyObjectSetting(IntPtr settings);
 
     int SetObjectSetting(
         IntPtr settings,

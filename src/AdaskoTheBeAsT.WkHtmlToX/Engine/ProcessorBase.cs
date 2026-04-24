@@ -11,6 +11,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine;
 internal abstract class ProcessorBase
 {
     private readonly WkHtmlToXConfiguration _configuration;
+    private StringCallback? _warningCallback;
+    private StringCallback? _errorCallback;
+    private VoidCallback? _phaseChangedCallback;
+    private IntCallback? _progressChangedCallback;
+    private IntCallback? _finishedCallback;
 
     protected ProcessorBase(WkHtmlToXConfiguration configuration)
     {
@@ -18,6 +23,13 @@ internal abstract class ProcessorBase
     }
 
     public ISettings? ProcessingDocument { get; internal set; }
+
+    protected internal bool HasRegisteredCallbacks =>
+        _warningCallback is not null
+        || _errorCallback is not null
+        || _phaseChangedCallback is not null
+        || _progressChangedCallback is not null
+        || _finishedCallback is not null;
 
     protected internal void RegisterEvents(IntPtr converter)
     {
@@ -28,28 +40,42 @@ internal abstract class ProcessorBase
 
         if (_configuration.PhaseChangedAction != null)
         {
-            SetPhaseChangedCallback(converter, OnPhaseChanged);
+            _phaseChangedCallback = OnPhaseChanged;
+            SetPhaseChangedCallback(converter, _phaseChangedCallback);
         }
 
         if (_configuration.ProgressChangedAction != null)
         {
-            SetProgressChangedCallback(converter, OnProgressChanged);
+            _progressChangedCallback = OnProgressChanged;
+            SetProgressChangedCallback(converter, _progressChangedCallback);
         }
 
         if (_configuration.FinishedAction != null)
         {
-            SetFinishedCallback(converter, OnFinished);
+            _finishedCallback = OnFinished;
+            SetFinishedCallback(converter, _finishedCallback);
         }
 
         if (_configuration.WarningAction != null)
         {
-            SetWarningCallback(converter, OnWarning);
+            _warningCallback = OnWarning;
+            SetWarningCallback(converter, _warningCallback);
         }
 
         if (_configuration.ErrorAction != null)
         {
-            SetErrorCallback(converter, OnError);
+            _errorCallback = OnError;
+            SetErrorCallback(converter, _errorCallback);
         }
+    }
+
+    protected internal void ReleaseRegisteredCallbacks()
+    {
+        _warningCallback = null;
+        _errorCallback = null;
+        _phaseChangedCallback = null;
+        _progressChangedCallback = null;
+        _finishedCallback = null;
     }
 
     protected internal void OnPhaseChanged(IntPtr converter)
@@ -72,17 +98,19 @@ internal abstract class ProcessorBase
         _configuration.PhaseChangedAction?.Invoke(eventArgs);
     }
 
-    protected internal void OnProgressChanged(IntPtr converter)
+    protected internal void OnProgressChanged(IntPtr converter, int progress)
     {
         if (_configuration.ProgressChangedAction == null)
         {
             return;
         }
 
-        var progress = GetProgressDescription(converter);
+        _ = progress;
+
+        var progressDescription = GetProgressDescription(converter);
         var eventArgs = new ProgressChangedEventArgs(
             ProcessingDocument,
-            progress);
+            progressDescription);
 
         _configuration.ProgressChangedAction?.Invoke(eventArgs);
     }
@@ -104,13 +132,15 @@ internal abstract class ProcessorBase
     }
 
 #pragma warning disable CC0057 // Unused parameters
-    protected internal void OnError(IntPtr converter, string message)
+    protected internal void OnError(IntPtr converter, IntPtr messagePointer)
 #pragma warning restore CC0057 // Unused parameters
     {
         if (_configuration.ErrorAction == null)
         {
             return;
         }
+
+        var message = Utf8Interop.PtrToString(messagePointer);
 
         var eventArgs = new ErrorEventArgs(
             ProcessingDocument,
@@ -120,13 +150,15 @@ internal abstract class ProcessorBase
     }
 
 #pragma warning disable CC0057 // Unused parameters
-    protected internal void OnWarning(IntPtr converter, string message)
+    protected internal void OnWarning(IntPtr converter, IntPtr messagePointer)
 #pragma warning restore CC0057 // Unused parameters
     {
         if (_configuration.WarningAction == null)
         {
             return;
         }
+
+        var message = Utf8Interop.PtrToString(messagePointer);
 
         var eventArgs = new WarningEventArgs(
             ProcessingDocument,
@@ -173,7 +205,7 @@ internal abstract class ProcessorBase
 
     protected internal void Apply(IntPtr config, string? prefix, string name, object value, bool useGlobal)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (value is null)
         {
             throw new ArgumentNullException(nameof(value));
@@ -235,23 +267,23 @@ internal abstract class ProcessorBase
     protected internal abstract string GetProgressDescription(
         IntPtr converter);
 
-    protected internal abstract int SetWarningCallback(
+    protected internal abstract void SetWarningCallback(
         IntPtr converter,
         StringCallback callback);
 
-    protected internal abstract int SetErrorCallback(
+    protected internal abstract void SetErrorCallback(
         IntPtr converter,
         StringCallback callback);
 
-    protected internal abstract int SetPhaseChangedCallback(
+    protected internal abstract void SetPhaseChangedCallback(
         IntPtr converter,
         VoidCallback callback);
 
-    protected internal abstract int SetProgressChangedCallback(
+    protected internal abstract void SetProgressChangedCallback(
         IntPtr converter,
-        VoidCallback callback);
+        IntCallback callback);
 
-    protected internal abstract int SetFinishedCallback(
+    protected internal abstract void SetFinishedCallback(
         IntPtr converter,
         IntCallback callback);
 }

@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Documents;
+using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AdaskoTheBeAsT.WkHtmlToX.Settings;
 using AwesomeAssertions;
 using Microsoft.IO;
@@ -13,9 +14,11 @@ namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest.Steps;
 [Binding]
 [Scope(Feature = "MultipleConversion")]
 public sealed class MultipleConversionSteps
+    : IDisposable
 {
     private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager;
     private PdfConverter? _sut;
+    private WkHtmlToXEngine? _ownedEngine;
     private string? _htmlContent;
     private HtmlToPdfDocument? _htmlToPdfDocument;
     private byte[]? _content1;
@@ -29,7 +32,12 @@ public sealed class MultipleConversionSteps
     [Given("I have SynchronizedPdfConverter")]
     public void GivenIHaveSynchronizedPdfConverter()
     {
-        _sut = new PdfConverter(GlobalInitializer.Engine!);
+        DisposeOwnedEngine();
+#pragma warning disable IDISP003 // Dispose previous before re-assigning.
+        _ownedEngine = new WkHtmlToXEngine(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null));
+#pragma warning restore IDISP003 // Dispose previous before re-assigning.
+        _ownedEngine.Initialize();
+        _sut = new PdfConverter(_ownedEngine);
     }
 
     [Given("I have complex html")]
@@ -58,6 +66,23 @@ public sealed class MultipleConversionSteps
     public void ThenIShouldObtainFilesWithSameLength()
     {
         _content1.Should().HaveCount(_content2?.Length ?? 0);
+    }
+
+    [AfterScenario]
+    public void AfterScenario()
+    {
+        DisposeOwnedEngine();
+    }
+
+    public void Dispose()
+    {
+        DisposeOwnedEngine();
+    }
+
+    private void DisposeOwnedEngine()
+    {
+        _ownedEngine?.Dispose();
+        _ownedEngine = null;
     }
 
     private async Task<byte[]> GenerateContentAsync()

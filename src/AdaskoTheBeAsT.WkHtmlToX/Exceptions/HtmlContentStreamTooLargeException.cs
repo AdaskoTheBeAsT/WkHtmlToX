@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
 using System.Runtime.Serialization;
 #endif
 
@@ -27,7 +27,7 @@ public class HtmlContentStreamTooLargeException
     {
     }
 
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
     protected HtmlContentStreamTooLargeException(SerializationInfo info, StreamingContext context)
         : base(info, context)
     {
