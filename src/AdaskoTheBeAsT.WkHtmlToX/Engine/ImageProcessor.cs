@@ -64,11 +64,22 @@ internal sealed class ImageProcessor
 #if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(document);
 #endif
-        var globalSettings = ImageModule.CreateGlobalSettings();
-        ApplyConfig(globalSettings, document.ImageSettings, useGlobal: true);
-        var converter = ImageModule.CreateConverter(globalSettings);
+        var globalSettings = IntPtr.Zero;
+        var converter = IntPtr.Zero;
+        try
+        {
+            globalSettings = ImageModule.CreateGlobalSettings();
+            ApplyConfig(globalSettings, document.ImageSettings, useGlobal: true);
+            converter = ImageModule.CreateConverter(globalSettings);
+            EnsureConverterCreated(converter);
 
-        return (converter, globalSettings);
+            return (converter, globalSettings);
+        }
+        catch
+        {
+            CleanupFailedCreateConverter(converter, globalSettings);
+            throw;
+        }
     }
 
     protected internal override Func<IntPtr, string, string?, int> GetApplySettingFunc(bool useGlobal) =>
@@ -111,6 +122,14 @@ internal sealed class ImageProcessor
         IntCallback callback) =>
         ImageModule.SetFinishedCallback(converter, callback);
 
+    private static void EnsureConverterCreated(IntPtr converter)
+    {
+        if (converter == IntPtr.Zero)
+        {
+            throw new ArgumentException("converter pointer cannot be zero", nameof(converter));
+        }
+    }
+
     private bool ConvertCore(IHtmlToImageDocument document, Func<int, Stream> createStreamFunc)
     {
         var converterPtr = IntPtr.Zero;
@@ -145,6 +164,18 @@ internal sealed class ImageProcessor
             // it seems destroying converter also destroys global settings
             ////ImageModule.DestroyGlobalSetting(globalSettingsPtr);
             ProcessingDocument = null;
+        }
+    }
+
+    private void CleanupFailedCreateConverter(IntPtr converter, IntPtr globalSettings)
+    {
+        if (converter != IntPtr.Zero)
+        {
+            ImageModule.DestroyConverter(converter);
+        }
+        else if (globalSettings != IntPtr.Zero)
+        {
+            ImageModule.DestroyGlobalSetting(globalSettings);
         }
     }
 }

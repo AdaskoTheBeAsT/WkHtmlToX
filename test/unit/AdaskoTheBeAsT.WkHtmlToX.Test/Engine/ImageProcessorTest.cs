@@ -104,6 +104,59 @@ public partial class ImageProcessorTest
     }
 
     [Fact]
+    public void CreateConverterShouldDestroyGlobalSettingsWhenApplyingSettingsThrows()
+    {
+        // Arrange
+        var globalSettingsPtr = new IntPtr(_fixture.Create<int>());
+        var expectedException = new InvalidOperationException();
+        _module.Setup(m => m.CreateGlobalSettings())
+            .Returns(globalSettingsPtr);
+        _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Throws(expectedException);
+        _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
+
+        var document = new HtmlToImageDocument();
+        document.ImageSettings.Quality = _fixture.Create<string>();
+
+        // Act
+        Action action = () => _sut.CreateConverter(document);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            action.Should().Throw<InvalidOperationException>().Which.Should().BeSameAs(expectedException);
+            _module.Verify(m => m.DestroyGlobalSetting(globalSettingsPtr), Times.Once);
+            _module.Verify(m => m.CreateConverter(It.IsAny<IntPtr>()), Times.Never);
+        }
+    }
+
+    [Fact]
+    public void CreateConverterShouldDestroyGlobalSettingsWhenConverterPointerIsZero()
+    {
+        // Arrange
+        var globalSettingsPtr = new IntPtr(_fixture.Create<int>());
+        _module.Setup(m => m.CreateGlobalSettings())
+            .Returns(globalSettingsPtr);
+        _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Returns(0);
+        _module.Setup(m => m.CreateConverter(It.IsAny<IntPtr>()))
+            .Returns(IntPtr.Zero);
+        _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
+
+        var document = new HtmlToImageDocument();
+
+        // Act
+        Action action = () => _sut.CreateConverter(document);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            action.Should().Throw<ArgumentException>();
+            _module.Verify(m => m.DestroyGlobalSetting(globalSettingsPtr), Times.Once);
+        }
+    }
+
+    [Fact]
     public void ConvertImplShouldThrowExceptionWhenNullImageSettingsPassed()
     {
         // Arrange
@@ -130,6 +183,7 @@ public partial class ImageProcessorTest
         _module.Setup(m =>
                 m.CreateConverter(It.IsAny<IntPtr>()))
             .Returns(IntPtr.Zero);
+        _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
 
         _module.Setup(m =>
                m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));

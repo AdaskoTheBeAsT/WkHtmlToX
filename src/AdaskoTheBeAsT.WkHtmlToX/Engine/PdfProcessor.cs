@@ -96,26 +96,40 @@ internal sealed class PdfProcessor
         ArgumentNullException.ThrowIfNull(document);
 #endif
 
-        var globalSettings = PdfModule.CreateGlobalSettings();
-        ApplyConfig(globalSettings, document.GlobalSettings, useGlobal: true);
-        var converter = PdfModule.CreateConverter(globalSettings);
+        var globalSettings = IntPtr.Zero;
+        var converter = IntPtr.Zero;
         var objectSettingsPtr = new List<IntPtr>();
-        foreach (var obj in document.ObjectSettings)
+        var unattachedObjectSettingsPtr = new List<IntPtr>();
+        try
         {
-            if (obj == null)
+            globalSettings = PdfModule.CreateGlobalSettings();
+            ApplyConfig(globalSettings, document.GlobalSettings, useGlobal: true);
+            converter = PdfModule.CreateConverter(globalSettings);
+            EnsureConverterCreated(converter);
+            foreach (var obj in document.ObjectSettings)
             {
-                continue;
+                if (obj == null)
+                {
+                    continue;
+                }
+
+                var objectSettings = PdfModule.CreateObjectSettings();
+                objectSettingsPtr.Add(objectSettings);
+                unattachedObjectSettingsPtr.Add(objectSettings);
+
+                ApplyConfig(objectSettings, obj, useGlobal: false);
+
+                AddContent(converter, objectSettings, obj);
+                unattachedObjectSettingsPtr.Remove(objectSettings);
             }
 
-            var objectSettings = PdfModule.CreateObjectSettings();
-            objectSettingsPtr.Add(objectSettings);
-
-            ApplyConfig(objectSettings, obj, useGlobal: false);
-
-            AddContent(converter, objectSettings, obj);
+            return (converter, globalSettings, objectSettingsPtr);
         }
-
-        return (converter, globalSettings, objectSettingsPtr);
+        catch
+        {
+            CleanupFailedCreateConverter(converter, globalSettings, unattachedObjectSettingsPtr);
+            throw;
+        }
     }
 
     internal void AddContent(
@@ -310,6 +324,37 @@ internal sealed class PdfProcessor
             }
 
             bytesRead += read;
+        }
+    }
+
+    private static void EnsureConverterCreated(IntPtr converter)
+    {
+        if (converter == IntPtr.Zero)
+        {
+            throw new ArgumentException("converter pointer cannot be zero", nameof(converter));
+        }
+    }
+
+    private void CleanupFailedCreateConverter(
+        IntPtr converter,
+        IntPtr globalSettings,
+        List<IntPtr> unattachedObjectSettingsPtr)
+    {
+        foreach (var objectSettings in unattachedObjectSettingsPtr)
+        {
+            if (objectSettings != IntPtr.Zero)
+            {
+                PdfModule.DestroyObjectSetting(objectSettings);
+            }
+        }
+
+        if (converter != IntPtr.Zero)
+        {
+            PdfModule.DestroyConverter(converter);
+        }
+        else if (globalSettings != IntPtr.Zero)
+        {
+            PdfModule.DestroyGlobalSetting(globalSettings);
         }
     }
 }

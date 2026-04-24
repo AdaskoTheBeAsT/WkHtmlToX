@@ -292,6 +292,137 @@ public partial class PdfProcessorTest
 #pragma warning restore MA0051 // Method is too long
 
     [Fact]
+    public void CreateConverterShouldDestroyGlobalSettingsWhenApplyingGlobalSettingsThrows()
+    {
+        // Arrange
+        var globalSettingsPtr = new IntPtr(_fixture.Create<int>());
+        var expectedException = new InvalidOperationException();
+        _module.Setup(m => m.CreateGlobalSettings())
+            .Returns(globalSettingsPtr);
+        _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Throws(expectedException);
+        _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
+
+        var document = new HtmlToPdfDocument();
+        document.GlobalSettings.DocumentTitle = _fixture.Create<string>();
+
+        // Act
+        Action action = () => _sut.CreateConverter(document);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            action.Should().Throw<InvalidOperationException>().Which.Should().BeSameAs(expectedException);
+            _module.Verify(m => m.DestroyGlobalSetting(globalSettingsPtr), Times.Once);
+            _module.Verify(m => m.CreateConverter(It.IsAny<IntPtr>()), Times.Never);
+        }
+    }
+
+    [Fact]
+    public void CreateConverterShouldDestroyGlobalSettingsWhenConverterPointerIsZero()
+    {
+        // Arrange
+        var globalSettingsPtr = new IntPtr(_fixture.Create<int>());
+        _module.Setup(m => m.CreateGlobalSettings())
+            .Returns(globalSettingsPtr);
+        _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Returns(0);
+        _module.Setup(m => m.CreateConverter(It.IsAny<IntPtr>()))
+            .Returns(IntPtr.Zero);
+        _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
+
+        var document = new HtmlToPdfDocument();
+
+        // Act
+        Action action = () => _sut.CreateConverter(document);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            action.Should().Throw<ArgumentException>();
+            _module.Verify(m => m.DestroyGlobalSetting(globalSettingsPtr), Times.Once);
+        }
+    }
+
+    [Fact]
+    public void CreateConverterShouldDestroyConverterAndObjectSettingsWhenApplyingObjectSettingsThrows()
+    {
+        // Arrange
+        var globalSettingsPtr = new IntPtr(_fixture.Create<int>());
+        var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
+        var converterPtr = new IntPtr(_fixture.Create<int>());
+        var expectedException = new InvalidOperationException();
+        _module.Setup(m => m.CreateGlobalSettings())
+            .Returns(globalSettingsPtr);
+        _module.Setup(m => m.CreateConverter(It.IsAny<IntPtr>()))
+            .Returns(converterPtr);
+        _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Returns(0);
+        _module.Setup(m => m.CreateObjectSettings())
+            .Returns(objectSettingsPtr);
+        _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Throws(expectedException);
+        _module.Setup(m => m.DestroyObjectSetting(It.IsAny<IntPtr>()));
+        _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
+
+        var document = new HtmlToPdfDocument();
+        document.ObjectSettings.Add(
+            new PdfObjectSettings
+            {
+                CaptionText = _fixture.Create<string>(),
+                HtmlContent = "<html><head><title>title</title></head><body></body></html>",
+            });
+
+        // Act
+        Action action = () => _sut.CreateConverter(document);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            action.Should().Throw<InvalidOperationException>().Which.Should().BeSameAs(expectedException);
+            _module.Verify(m => m.DestroyObjectSetting(objectSettingsPtr), Times.Once);
+            _module.Verify(m => m.DestroyConverter(converterPtr), Times.Once);
+            _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Never);
+        }
+    }
+
+    [Fact]
+    public void CreateConverterShouldDestroyConverterAndObjectSettingsWhenAddingContentThrows()
+    {
+        // Arrange
+        var globalSettingsPtr = new IntPtr(_fixture.Create<int>());
+        var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
+        var converterPtr = new IntPtr(_fixture.Create<int>());
+        _module.Setup(m => m.CreateGlobalSettings())
+            .Returns(globalSettingsPtr);
+        _module.Setup(m => m.CreateConverter(It.IsAny<IntPtr>()))
+            .Returns(converterPtr);
+        _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Returns(0);
+        _module.Setup(m => m.CreateObjectSettings())
+            .Returns(objectSettingsPtr);
+        _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
+            .Returns(0);
+        _module.Setup(m => m.DestroyObjectSetting(It.IsAny<IntPtr>()));
+        _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
+
+        var document = new HtmlToPdfDocument();
+        document.ObjectSettings.Add(new PdfObjectSettings());
+
+        // Act
+        Action action = () => _sut.CreateConverter(document);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            action.Should().Throw<HtmlContentEmptyException>();
+            _module.Verify(m => m.DestroyObjectSetting(objectSettingsPtr), Times.Once);
+            _module.Verify(m => m.DestroyConverter(converterPtr), Times.Once);
+            _module.Verify(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()), Times.Never);
+        }
+    }
+
+    [Fact]
     public void ConvertImplShouldThrowExceptionWhenObjectSettingsListEmpty()
     {
         // Arrange
@@ -303,7 +434,7 @@ public partial class PdfProcessorTest
     }
 
     [Fact]
-    public void ConvertImplShouldThrowExceptionWhenModuleInitializeNotEqualOne()
+    public void ConvertImplShouldThrowExceptionWhenConverterPointerIsZero()
     {
         // Arrange
         var document = new HtmlToPdfDocument();
@@ -314,7 +445,7 @@ public partial class PdfProcessorTest
         Action action = () => _sut.Convert(document, _ => Stream.Null);
 
         // Act and Assert
-        action.Should().Throw<HtmlContentEmptyException>();
+        action.Should().Throw<ArgumentException>();
     }
 
 #pragma warning disable MA0051 // Method is too long
