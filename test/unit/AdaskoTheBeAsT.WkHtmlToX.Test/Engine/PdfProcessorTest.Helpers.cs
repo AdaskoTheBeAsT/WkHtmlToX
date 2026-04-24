@@ -1,3 +1,4 @@
+#if NET462
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -14,3 +15,4 @@ public partial class PdfProcessorTest
         return pointer;
     }
 }
+#endif

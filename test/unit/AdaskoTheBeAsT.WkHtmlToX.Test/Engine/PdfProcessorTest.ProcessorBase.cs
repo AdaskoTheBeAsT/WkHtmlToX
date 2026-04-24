@@ -306,7 +306,9 @@ public partial class PdfProcessorTest
     public void OnErrorShouldNotThrowWhenNoEvent()
     {
         // Arrange
-        var errorMessagePointer = StringToUtf8Pointer("zażółć gęślą jaźń");
+        const string errorMessage = "zażółć gęślą jaźń";
+#if NET462
+        var errorMessagePointer = StringToUtf8Pointer(errorMessage);
         Action action = () => _sut.OnError(new IntPtr(1), errorMessagePointer);
 
         // Act and Assert
@@ -318,6 +320,12 @@ public partial class PdfProcessorTest
         {
             Marshal.FreeHGlobal(errorMessagePointer);
         }
+#else
+        Action action = () => _sut.OnError(new IntPtr(1), errorMessage);
+
+        // Act and Assert
+        action.Should().NotThrow();
+#endif
     }
 
     [Fact]
@@ -326,7 +334,6 @@ public partial class PdfProcessorTest
         // Arrange
         var result = default(ErrorEventArgs?);
         const string errorMessage = "zażółć gęślą jaźń";
-        var errorMessagePointer = StringToUtf8Pointer(errorMessage);
         var doc = new Mock<ISettings>(MockBehavior.Strict).Object;
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
@@ -339,6 +346,8 @@ public partial class PdfProcessorTest
             ProcessingDocument = doc,
         };
 
+#if NET462
+        var errorMessagePointer = StringToUtf8Pointer(errorMessage);
         try
         {
             // Act
@@ -355,13 +364,26 @@ public partial class PdfProcessorTest
         {
             Marshal.FreeHGlobal(errorMessagePointer);
         }
+#else
+        // Act
+        sut.OnError(new IntPtr(1), errorMessage);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result!.Document.Should().Be(doc);
+            result!.Message.Should().Be(errorMessage);
+        }
+#endif
     }
 
     [Fact]
     public void OnWarningShouldNotThrowWhenNoEvent()
     {
         // Arrange
-        var warningMessagePointer = StringToUtf8Pointer("zażółć gęślą jaźń");
+        const string warningMessage = "zażółć gęślą jaźń";
+#if NET462
+        var warningMessagePointer = StringToUtf8Pointer(warningMessage);
         Action action = () => _sut.OnWarning(new IntPtr(1), warningMessagePointer);
 
         // Act and Assert
@@ -373,6 +395,12 @@ public partial class PdfProcessorTest
         {
             Marshal.FreeHGlobal(warningMessagePointer);
         }
+#else
+        Action action = () => _sut.OnWarning(new IntPtr(1), warningMessage);
+
+        // Act and Assert
+        action.Should().NotThrow();
+#endif
     }
 
     [Fact]
@@ -381,7 +409,6 @@ public partial class PdfProcessorTest
         // Arrange
         var result = default(WarningEventArgs?);
         const string warningMessage = "zażółć gęślą jaźń";
-        var warningMessagePointer = StringToUtf8Pointer(warningMessage);
         var doc = new Mock<ISettings>(MockBehavior.Strict).Object;
 
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
@@ -394,6 +421,8 @@ public partial class PdfProcessorTest
             ProcessingDocument = doc,
         };
 
+#if NET462
+        var warningMessagePointer = StringToUtf8Pointer(warningMessage);
         try
         {
             // Act
@@ -410,6 +439,17 @@ public partial class PdfProcessorTest
         {
             Marshal.FreeHGlobal(warningMessagePointer);
         }
+#else
+        // Act
+        sut.OnWarning(new IntPtr(1), warningMessage);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            result!.Document.Should().Be(doc);
+            result!.Message.Should().Be(warningMessage);
+        }
+#endif
     }
 
     [Fact]

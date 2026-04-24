@@ -124,6 +124,7 @@ internal abstract class ProcessorBase(WkHtmlToXConfiguration configuration)
         configuration.FinishedAction?.Invoke(eventArgs);
     }
 
+#if NET462
 #pragma warning disable CC0057 // Unused parameters
     protected internal void OnError(IntPtr converter, IntPtr messagePointer)
 #pragma warning restore CC0057 // Unused parameters
@@ -159,6 +160,39 @@ internal abstract class ProcessorBase(WkHtmlToXConfiguration configuration)
 
         configuration.WarningAction?.Invoke(eventArgs);
     }
+#else
+#pragma warning disable CC0057 // Unused parameters
+    protected internal void OnError(IntPtr converter, string? message)
+#pragma warning restore CC0057 // Unused parameters
+    {
+        if (configuration.ErrorAction == null)
+        {
+            return;
+        }
+
+        var eventArgs = new ErrorEventArgs(
+            ProcessingDocument,
+            message ?? string.Empty);
+
+        configuration.ErrorAction?.Invoke(eventArgs);
+    }
+
+#pragma warning disable CC0057 // Unused parameters
+    protected internal void OnWarning(IntPtr converter, string? message)
+#pragma warning restore CC0057 // Unused parameters
+    {
+        if (configuration.WarningAction == null)
+        {
+            return;
+        }
+
+        var eventArgs = new WarningEventArgs(
+            ProcessingDocument,
+            message ?? string.Empty);
+
+        configuration.WarningAction?.Invoke(eventArgs);
+    }
+#endif
 
     protected internal void ApplyConfig(IntPtr config, ISettings? settings, bool useGlobal, string? prefix = null)
     {

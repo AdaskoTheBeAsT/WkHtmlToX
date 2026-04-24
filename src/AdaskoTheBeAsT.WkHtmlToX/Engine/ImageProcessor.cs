@@ -20,10 +20,12 @@ internal sealed class ImageProcessor
     public bool Convert(IHtmlToImageDocument? document, Func<int, Stream> createStreamFunc)
     {
 #if !NET8_0_OR_GREATER
+#pragma warning disable RCS1256 // Invalid argument null check
         if (document is null)
         {
             throw new ArgumentNullException(nameof(document));
         }
+#pragma warning restore RCS1256 // Invalid argument null check
 #endif
 #if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(document);
@@ -47,33 +49,7 @@ internal sealed class ImageProcessor
 
         ProcessingDocument = document;
 
-#pragma warning disable S1481 // Unused local variables should be removed
-        // ReSharper disable once UnusedVariable
-        var (converterPtr, globalSettingsPtr) = CreateConverter(document);
-#pragma warning restore S1481 // Unused local variables should be removed
-
-        RegisterEvents(converterPtr);
-
-        try
-        {
-            var converted = ImageModule.Convert(converterPtr);
-
-            if (converted)
-            {
-                ImageModule.GetOutput(converterPtr, createStreamFunc);
-            }
-
-            return converted;
-        }
-        finally
-        {
-            ImageModule.DestroyConverter(converterPtr);
-            ReleaseRegisteredCallbacks();
-
-            // it seems destroying converter also destroys global settings
-            ////ImageModule.DestroyGlobalSetting(globalSettingsPtr);
-            ProcessingDocument = null;
-        }
+        return ConvertCore(document, createStreamFunc);
     }
 
     internal (IntPtr converterPtr, IntPtr globalSettingsPtr) CreateConverter(
@@ -134,4 +110,41 @@ internal sealed class ImageProcessor
         IntPtr converter,
         IntCallback callback) =>
         ImageModule.SetFinishedCallback(converter, callback);
+
+    private bool ConvertCore(IHtmlToImageDocument document, Func<int, Stream> createStreamFunc)
+    {
+        var converterPtr = IntPtr.Zero;
+        try
+        {
+#pragma warning disable S1481 // Unused local variables should be removed
+            // ReSharper disable once UnusedVariable
+            var (createdConverterPtr, globalSettingsPtr) = CreateConverter(document);
+#pragma warning restore S1481 // Unused local variables should be removed
+            converterPtr = createdConverterPtr;
+
+            RegisterEvents(converterPtr);
+
+            var converted = ImageModule.Convert(converterPtr);
+
+            if (converted)
+            {
+                ImageModule.GetOutput(converterPtr, createStreamFunc);
+            }
+
+            return converted;
+        }
+        finally
+        {
+            if (converterPtr != IntPtr.Zero)
+            {
+                ImageModule.DestroyConverter(converterPtr);
+            }
+
+            ReleaseRegisteredCallbacks();
+
+            // it seems destroying converter also destroys global settings
+            ////ImageModule.DestroyGlobalSetting(globalSettingsPtr);
+            ProcessingDocument = null;
+        }
+    }
 }

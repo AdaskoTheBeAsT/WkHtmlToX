@@ -52,7 +52,6 @@ public sealed class WkHtmlToXSessionFactoryTest
     {
         // Arrange
         _libraryLoaderMock.Setup(l => l.Load());
-        _libraryLoaderMock.Setup(l => l.Release());
         _pdfModuleMock.Setup(p => p.Initialize(It.IsAny<int>())).Returns(1);
         _pdfModuleMock.Setup(p => p.Terminate()).Returns(1);
         _imageModuleMock.Setup(p => p.Initialize(It.IsAny<int>())).Returns(1);
@@ -86,7 +85,6 @@ public sealed class WkHtmlToXSessionFactoryTest
     {
         // Arrange
         _libraryLoaderMock.Setup(l => l.Load());
-        _libraryLoaderMock.Setup(l => l.Release());
         _pdfModuleMock.Setup(p => p.Initialize(It.IsAny<int>())).Returns(0);
 
         // Act
@@ -94,7 +92,7 @@ public sealed class WkHtmlToXSessionFactoryTest
 
         // Assert
         action.Should().Throw<PdfModuleInitializationException>();
-        _libraryLoaderMock.Verify(l => l.Release(), Times.Once);
+        _libraryLoaderMock.Verify(l => l.Dispose(), Times.Once);
     }
 
     [Fact]
@@ -102,7 +100,6 @@ public sealed class WkHtmlToXSessionFactoryTest
     {
         // Arrange
         _libraryLoaderMock.Setup(l => l.Load());
-        _libraryLoaderMock.Setup(l => l.Release());
         _pdfModuleMock.Setup(p => p.Initialize(It.IsAny<int>())).Returns(1);
         _pdfModuleMock.Setup(p => p.Terminate()).Returns(1);
         _imageModuleMock.Setup(p => p.Initialize(It.IsAny<int>())).Returns(0);
@@ -115,7 +112,7 @@ public sealed class WkHtmlToXSessionFactoryTest
         {
             action.Should().Throw<ImageModuleInitializationException>();
             _pdfModuleMock.Verify(p => p.Terminate(), Times.Once);
-            _libraryLoaderMock.Verify(l => l.Release(), Times.Once);
+            _libraryLoaderMock.Verify(l => l.Dispose(), Times.Once);
         }
     }
 
@@ -124,7 +121,6 @@ public sealed class WkHtmlToXSessionFactoryTest
     {
         // Arrange
         _libraryLoaderMock.Setup(l => l.Load());
-        _libraryLoaderMock.Setup(l => l.Release());
         _pdfModuleMock.Setup(p => p.Initialize(It.IsAny<int>())).Returns(1);
         _pdfModuleMock.Setup(p => p.Terminate()).Returns(1);
         _imageModuleMock.Setup(p => p.Initialize(It.IsAny<int>())).Returns(1);
@@ -140,7 +136,7 @@ public sealed class WkHtmlToXSessionFactoryTest
         {
             _pdfModuleMock.Verify(p => p.Terminate(), Times.Once);
             _imageModuleMock.Verify(p => p.Terminate(), Times.Once);
-            _libraryLoaderMock.Verify(l => l.Release(), Times.Once);
+            _libraryLoaderMock.Verify(l => l.Dispose(), Times.Once);
         }
     }
 
@@ -149,7 +145,6 @@ public sealed class WkHtmlToXSessionFactoryTest
     {
         // Arrange
         _libraryLoaderMock.Setup(l => l.Load());
-        _libraryLoaderMock.Setup(l => l.Release());
         _pdfModuleMock.Setup(p => p.Initialize(It.IsAny<int>())).Returns(1);
         _pdfModuleMock.Setup(p => p.Terminate()).Returns(1);
         _imageModuleMock.Setup(p => p.Initialize(It.IsAny<int>())).Returns(1);
@@ -184,7 +179,7 @@ public sealed class WkHtmlToXSessionFactoryTest
             {
                 _pdfModuleMock.Verify(p => p.Terminate(), Times.Once);
                 _imageModuleMock.Verify(p => p.Terminate(), Times.Once);
-                _libraryLoaderMock.Verify(l => l.Release(), Times.Exactly(2));
+                _libraryLoaderMock.Verify(l => l.Dispose(), Times.Exactly(2));
             }
         }
         finally

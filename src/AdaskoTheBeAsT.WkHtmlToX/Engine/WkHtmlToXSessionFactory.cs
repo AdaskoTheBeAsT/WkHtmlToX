@@ -68,7 +68,7 @@ internal sealed class WkHtmlToXSessionFactory
         }
         catch
         {
-            TryIgnore(loader.Release);
+            TryIgnore(loader.Dispose);
             throw;
         }
     }
@@ -85,7 +85,7 @@ internal sealed class WkHtmlToXSessionFactory
 #endif
 
         TryIgnore(() => ReleaseNativeRuntime(session));
-        TryIgnore(session.Loader.Release);
+        TryIgnore(session.Loader.Dispose);
     }
 
     private static void InitializeNativeRuntime(

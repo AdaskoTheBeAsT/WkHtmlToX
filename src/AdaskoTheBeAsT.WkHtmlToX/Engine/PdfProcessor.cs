@@ -54,13 +54,14 @@ internal sealed class PdfProcessor
 
         ProcessingDocument = document;
 
-        var converterData = CreateConverter(document);
-        var converterPtr = converterData.converterPtr;
-
-        RegisterEvents(converterPtr);
-
+        var converterPtr = IntPtr.Zero;
         try
         {
+            var converterData = CreateConverter(document);
+            converterPtr = converterData.converterPtr;
+
+            RegisterEvents(converterPtr);
+
             var converted = PdfModule.Convert(converterPtr);
 
             if (converted)
@@ -72,7 +73,11 @@ internal sealed class PdfProcessor
         }
         finally
         {
-            PdfModule.DestroyConverter(converterPtr);
+            if (converterPtr != IntPtr.Zero)
+            {
+                PdfModule.DestroyConverter(converterPtr);
+            }
+
             ReleaseRegisteredCallbacks();
             ProcessingDocument = null;
         }

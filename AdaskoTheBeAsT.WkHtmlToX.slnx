@@ -6,7 +6,6 @@
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
     <File Path="AdaskoTheBeAsT.ruleset" />
-    <File Path="azure-pipelines.yml" />
     <File Path="DeterministicBuild.targets" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Build.targets" />
