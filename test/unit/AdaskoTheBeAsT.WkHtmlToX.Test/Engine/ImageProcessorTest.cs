@@ -281,7 +281,7 @@ public partial class ImageProcessorTest
             .Returns(0);
         _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
         _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
-            .Returns(true);
+            .Returns(value: true);
         _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
         _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
 

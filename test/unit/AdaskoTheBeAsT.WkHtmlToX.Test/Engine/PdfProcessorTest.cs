@@ -486,7 +486,7 @@ public partial class PdfProcessorTest
         {
             received.Should().NotBeNull();
             received.Should().NotBeSameAs(htmlContentByteArray);
-            received!.Length.Should().Be(htmlContentByteArray.Length + 1);
+            received!.Should().HaveCount(htmlContentByteArray.Length + 1);
             received[received.Length - 1].Should().Be(byte.MinValue);
             for (var i = 0; i < htmlContentByteArray.Length; i++)
             {
@@ -595,7 +595,7 @@ public partial class PdfProcessorTest
         using (new AssertionScope())
         {
             received.Should().NotBeNull();
-            received!.Length.Should().BeGreaterThanOrEqualTo(html.Length + 1);
+            received!.Should().HaveCountGreaterThanOrEqualTo(html.Length + 1);
             for (var i = 0; i < html.Length; i++)
             {
                 received[i].Should().Be(html[i]);
@@ -824,7 +824,7 @@ public partial class PdfProcessorTest
             .Returns(0);
         _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
         _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
-            .Returns(true);
+            .Returns(value: true);
         _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
         _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
 

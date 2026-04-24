@@ -17,7 +17,7 @@ public sealed class WkHtmlToXHostingServiceCollectionExtensionsTest
     public void AddWkHtmlToXHostedServiceShouldThrowWhenServicesIsNull()
     {
         // Arrange
-        IServiceCollection? services = null;
+        const IServiceCollection? services = null;
         var configuration = new WkHtmlToXConfiguration(platformId: 0, runtimeIdentifier: null);
 
         // Act
@@ -32,7 +32,7 @@ public sealed class WkHtmlToXHostingServiceCollectionExtensionsTest
     {
         // Arrange
         var services = new ServiceCollection();
-        WkHtmlToXConfiguration? configuration = null;
+        const WkHtmlToXConfiguration? configuration = null;
 
         // Act
         Action action = () => services.AddWkHtmlToXHostedService(configuration: configuration!);

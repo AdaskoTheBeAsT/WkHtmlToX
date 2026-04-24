@@ -134,7 +134,7 @@ public sealed class PdfConverterSteps
                 eventArgs => ReferenceEquals(eventArgs.Document, _htmlToPdfDocument));
             _progressChangedEvents.Should().Contain(eventArgs => !string.IsNullOrWhiteSpace(eventArgs.Description));
 
-            _finishedEvents.Should().HaveCount(1);
+            _finishedEvents.Should().ContainSingle();
             _finishedEvents[0].Document.Should().BeSameAs(_htmlToPdfDocument);
             _finishedEvents[0].Success.Should().BeTrue();
         }

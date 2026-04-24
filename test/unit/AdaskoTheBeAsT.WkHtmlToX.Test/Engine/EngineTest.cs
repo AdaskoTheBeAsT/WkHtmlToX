@@ -160,7 +160,11 @@ public sealed class EngineTest
         // Arrange
         var tcs = new TaskCompletionSource<bool>();
 #pragma warning disable xUnit1051
+#if NET8_0_OR_GREATER
+        tcs.TrySetCanceled(TestContext.Current.CancellationToken);
+#else
         tcs.TrySetCanceled();
+#endif
 #pragma warning restore xUnit1051
         _workerMock
             .Setup(w => w.ExecuteAsync(

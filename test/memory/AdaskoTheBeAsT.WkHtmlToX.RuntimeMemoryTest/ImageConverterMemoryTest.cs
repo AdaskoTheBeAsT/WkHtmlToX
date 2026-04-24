@@ -17,7 +17,10 @@ public sealed class ImageConverterMemoryTest
 {
     private const int WarmupConversionCount = 2;
     private const int MeasurementConversionCount = 20;
-    private const string HtmlContent = @"<html><body><p>This paragraph contains enough content for repeatable image conversion memory testing.</p><p>Additional text keeps the rendering path stable.</p></body></html>";
+    private const string HtmlContent =
+        """
+        <html><body><p>This paragraph contains enough content for repeatable image conversion memory testing.</p><p>Additional text keeps the rendering path stable.</p></body></html>
+        """;
 
     private readonly ITestOutputHelper _output;
 
@@ -54,8 +57,8 @@ public sealed class ImageConverterMemoryTest
 
             using (new AssertionScope())
             {
-                phaseChangedCallCount.Should().BeGreaterThan(0);
-                progressChangedCallCount.Should().BeGreaterThan(0);
+                phaseChangedCallCount.Should().BePositive();
+                progressChangedCallCount.Should().BePositive();
                 finishedCallCount.Should().Be(WarmupConversionCount + MeasurementConversionCount);
             }
 
@@ -161,7 +164,7 @@ public sealed class ImageConverterMemoryTest
         using (new AssertionScope())
         {
             converted.Should().BeTrue();
-            stream.Length.Should().BeGreaterThan(0);
+            stream.Length.Should().BePositive();
         }
 
         _output.WriteLine($"Converted {stream.Length} image bytes.");

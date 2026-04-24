@@ -8,6 +8,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Settings;
 using AwesomeAssertions;
 using Microsoft.IO;
 using Reqnroll;
+using Xunit;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.IntegrationTest.Steps;
 
@@ -125,7 +126,11 @@ public sealed class MultipleConversionSteps
                 .ConfigureAwait(false);
 
             stream!.Position = 0;
+#if NET8_0_OR_GREATER
+            await stream.CopyToAsync(ms, TestContext.Current.CancellationToken).ConfigureAwait(false);
+#else
             await stream.CopyToAsync(ms).ConfigureAwait(false);
+#endif
             return ms.ToArray();
         }
         finally

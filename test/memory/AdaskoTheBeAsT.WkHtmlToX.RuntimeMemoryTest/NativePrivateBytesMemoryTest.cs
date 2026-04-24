@@ -76,7 +76,7 @@ public sealed class NativePrivateBytesMemoryTest
         {
             probeResult.Mode.Should().Be(mode);
             probeResult.SamplePrivateBytes.Should().HaveCount(MeasurementIterationCount);
-            probeResult.FinalPrivateBytes.Should().BeGreaterThan(0);
+            probeResult.FinalPrivateBytes.Should().BePositive();
             probeResult.PeakPrivateBytes.Should().BeGreaterThanOrEqualTo(probeResult.FinalPrivateBytes);
             probeResult.GrowthBytes.Should().BeLessThanOrEqualTo(maxAllowedGrowthBytes);
         }

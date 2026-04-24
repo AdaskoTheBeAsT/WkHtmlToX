@@ -325,7 +325,7 @@ public partial class PdfProcessorTest
     {
         // Arrange
         var result = default(ErrorEventArgs?);
-        var errorMessage = "zażółć gęślą jaźń";
+        const string errorMessage = "zażółć gęślą jaźń";
         var errorMessagePointer = StringToUtf8Pointer(errorMessage);
         var doc = new Mock<ISettings>(MockBehavior.Strict).Object;
 
@@ -380,7 +380,7 @@ public partial class PdfProcessorTest
     {
         // Arrange
         var result = default(WarningEventArgs?);
-        var warningMessage = "zażółć gęślą jaźń";
+        const string warningMessage = "zażółć gęślą jaźń";
         var warningMessagePointer = StringToUtf8Pointer(warningMessage);
         var doc = new Mock<ISettings>(MockBehavior.Strict).Object;
 
@@ -517,6 +517,7 @@ public partial class PdfProcessorTest
     {
         // Arrange
         var progressDescription = _fixture.Create<string>();
+        var progressValue = _fixture.Create<int>();
         _module.Setup(m => m.GetProgressDescription(It.IsAny<IntPtr>()))
             .Returns(progressDescription);
 
@@ -534,12 +535,13 @@ public partial class PdfProcessorTest
         };
 
         // Act
-        sut.OnProgressChanged(new IntPtr(1), _fixture.Create<int>());
+        sut.OnProgressChanged(new IntPtr(1), progressValue);
 
         // Assert
         using (new AssertionScope())
         {
             result!.Document.Should().Be(doc);
+            result!.Progress.Should().Be(progressValue);
             result!.Description.Should().Be(progressDescription);
         }
     }

@@ -128,7 +128,7 @@ public sealed class ImageConverterStepDefinitions
                 eventArgs => ReferenceEquals(eventArgs.Document, _htmlToImageDocument));
             _progressChangedEvents.Should().Contain(eventArgs => !string.IsNullOrWhiteSpace(eventArgs.Description));
 
-            _finishedEvents.Should().HaveCount(1);
+            _finishedEvents.Should().ContainSingle();
             _finishedEvents[0].Document.Should().BeSameAs(_htmlToImageDocument);
             _finishedEvents[0].Success.Should().BeTrue();
         }

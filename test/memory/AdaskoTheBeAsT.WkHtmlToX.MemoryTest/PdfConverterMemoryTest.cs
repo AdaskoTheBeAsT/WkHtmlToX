@@ -52,8 +52,8 @@ public sealed class PdfConverterMemoryTest
 
         using (new AssertionScope())
         {
-            phaseChangedCallCount.Should().BeGreaterThan(0);
-            progressChangedCallCount.Should().BeGreaterThan(0);
+            phaseChangedCallCount.Should().BePositive();
+            progressChangedCallCount.Should().BePositive();
             finishedCallCount.Should().Be(WarmupConversionCount + MeasurementConversionCount);
         }
 

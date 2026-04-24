@@ -8,24 +8,10 @@ using AdaskoTheBeAsT.WkHtmlToX.WorkItems;
 
 namespace AdaskoTheBeAsT.WkHtmlToX;
 
-public class ImageConverter
+public class ImageConverter(IWkHtmlToXEngine engine)
     : IImageConverter
 {
-    private readonly IWkHtmlToXEngine _engine;
-
-    public ImageConverter(IWkHtmlToXEngine engine)
-    {
-#if !NET8_0_OR_GREATER
-        if (engine == null)
-        {
-            throw new ArgumentNullException(nameof(engine));
-        }
-#endif
-#if NET8_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(engine);
-#endif
-        _engine = engine;
-    }
+    private readonly IWkHtmlToXEngine _engine = engine ?? throw new ArgumentNullException(nameof(engine));
 
     public Task<bool> ConvertAsync(
         IHtmlToImageDocument document,

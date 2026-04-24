@@ -16,11 +16,14 @@ namespace AdaskoTheBeAsT.WkHtmlToX.NativeMemoryProbe;
 internal static class Program
 {
     private const string ResultPrefix = "RESULT:";
-    private const string SmallHtml = @"<html><body><p>This paragraph contains enough content for memory probing.</p><p>Repeatable content keeps the rendering path stable.</p></body></html>";
+    private const string SmallHtml =
+        """
+        <html><body><p>This paragraph contains enough content for memory probing.</p><p>Repeatable content keeps the rendering path stable.</p></body></html>
+        """;
 
-#pragma warning disable VSTHRD200
+#pragma warning disable VSTHRD200,CC0061
     public static async Task<int> Main(string[] args)
-#pragma warning restore VSTHRD200
+#pragma warning restore VSTHRD200,CC0061
     {
         try
         {
@@ -132,7 +135,9 @@ internal static class Program
             .ConfigureAwait(false);
 #pragma warning restore IDISP011
 
-        using var outputStream = stream ?? throw new InvalidOperationException("PDF conversion did not provide an output stream.");
+#pragma warning disable MA0004 // Use Task.ConfigureAwait
+        await using var outputStream = stream ?? throw new InvalidOperationException("PDF conversion did not provide an output stream.");
+#pragma warning restore MA0004 // Use Task.ConfigureAwait
         EnsureSuccessfulConversion(converted, outputStream.Length, "pdf");
     }
 
@@ -166,7 +171,9 @@ internal static class Program
             .ConfigureAwait(false);
 #pragma warning restore IDISP011
 
-        using var outputStream = stream ?? throw new InvalidOperationException("Image conversion did not provide an output stream.");
+#pragma warning disable MA0004 // Use Task.ConfigureAwait
+        await using var outputStream = stream ?? throw new InvalidOperationException("Image conversion did not provide an output stream.");
+#pragma warning restore MA0004 // Use Task.ConfigureAwait
         EnsureSuccessfulConversion(converted, outputStream.Length, "image");
     }
 

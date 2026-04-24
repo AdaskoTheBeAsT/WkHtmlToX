@@ -74,15 +74,6 @@ internal sealed class PdfProcessor
         {
             PdfModule.DestroyConverter(converterPtr);
             ReleaseRegisteredCallbacks();
-#if false
-            for (int i = converterData.objectSettingsPtrs.Count - 1; i >= 0; i--)
-            {
-                PdfModule.DestroyObjectSetting(converterData.objectSettingsPtrs[i]);
-            }
-
-            PdfModule.DestroyGlobalSetting(converterData.globalSettingsPtr);
-#endif
-
             ProcessingDocument = null;
         }
     }

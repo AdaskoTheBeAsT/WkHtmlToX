@@ -19,7 +19,17 @@ internal sealed class ImageProcessor
 
     public bool Convert(IHtmlToImageDocument? document, Func<int, Stream> createStreamFunc)
     {
-        if (document?.ImageSettings is null)
+#if !NET8_0_OR_GREATER
+        if (document is null)
+        {
+            throw new ArgumentNullException(nameof(document));
+        }
+#endif
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(document);
+#endif
+
+        if (document.ImageSettings is null)
         {
             throw new ArgumentException(
                 "No image settings is defined in document that was passed. At least one object must be defined.");
