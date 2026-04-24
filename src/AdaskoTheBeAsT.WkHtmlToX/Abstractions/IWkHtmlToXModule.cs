@@ -16,7 +16,7 @@ internal interface IWkHtmlToXModule
 
     IntPtr CreateGlobalSettings();
 
-    int DestroyGlobalSetting(IntPtr settings);
+    void DestroyGlobalSetting(IntPtr settings);
 
     int SetGlobalSetting(
         IntPtr settings,
@@ -31,15 +31,15 @@ internal interface IWkHtmlToXModule
 
     void DestroyConverter(IntPtr converter);
 
-    int SetWarningCallback(IntPtr converter, StringCallback callback);
+    void SetWarningCallback(IntPtr converter, StringCallback callback);
 
-    int SetErrorCallback(IntPtr converter, StringCallback callback);
+    void SetErrorCallback(IntPtr converter, StringCallback callback);
 
-    int SetPhaseChangedCallback(IntPtr converter, VoidCallback callback);
+    void SetPhaseChangedCallback(IntPtr converter, VoidCallback callback);
 
-    int SetProgressChangedCallback(IntPtr converter, VoidCallback callback);
+    void SetProgressChangedCallback(IntPtr converter, IntCallback callback);
 
-    int SetFinishedCallback(IntPtr converter, IntCallback callback);
+    void SetFinishedCallback(IntPtr converter, IntCallback callback);
 
     bool Convert(IntPtr converter);
 

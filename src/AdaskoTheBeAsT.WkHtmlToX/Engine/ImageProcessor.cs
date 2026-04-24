@@ -19,18 +19,25 @@ internal sealed class ImageProcessor
 
     public bool Convert(IHtmlToImageDocument? document, Func<int, Stream> createStreamFunc)
     {
-#if NETSTANDARD2_0
-        if (document?.ImageSettings == null)
+#if !NET8_0_OR_GREATER
+#pragma warning disable RCS1256 // Invalid argument null check
+        if (document is null)
+        {
+            throw new ArgumentNullException(nameof(document));
+        }
+#pragma warning restore RCS1256 // Invalid argument null check
+#endif
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(document);
+#endif
+
+        if (document.ImageSettings is null)
         {
             throw new ArgumentException(
                 "No image settings is defined in document that was passed. At least one object must be defined.");
         }
-#endif
-#if NET8_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(document?.ImageSettings);
-#endif
 
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (createStreamFunc is null)
         {
             throw new ArgumentNullException(nameof(createStreamFunc));
@@ -42,38 +49,13 @@ internal sealed class ImageProcessor
 
         ProcessingDocument = document;
 
-#pragma warning disable S1481 // Unused local variables should be removed
-        // ReSharper disable once UnusedVariable
-        var (converterPtr, globalSettingsPtr) = CreateConverter(document);
-#pragma warning restore S1481 // Unused local variables should be removed
-
-        RegisterEvents(converterPtr);
-
-        try
-        {
-            var converted = ImageModule.Convert(converterPtr);
-
-            if (converted)
-            {
-                ImageModule.GetOutput(converterPtr, createStreamFunc);
-            }
-
-            return converted;
-        }
-        finally
-        {
-            ImageModule.DestroyConverter(converterPtr);
-
-            // it seems destroying converter also destroys global settings
-            ////ImageModule.DestroyGlobalSetting(globalSettingsPtr);
-            ProcessingDocument = null;
-        }
+        return ConvertCore(document, createStreamFunc);
     }
 
     internal (IntPtr converterPtr, IntPtr globalSettingsPtr) CreateConverter(
         IHtmlToImageDocument document)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (document is null)
         {
             throw new ArgumentNullException(nameof(document));
@@ -82,11 +64,22 @@ internal sealed class ImageProcessor
 #if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(document);
 #endif
-        var globalSettings = ImageModule.CreateGlobalSettings();
-        ApplyConfig(globalSettings, document.ImageSettings, useGlobal: true);
-        var converter = ImageModule.CreateConverter(globalSettings);
+        var globalSettings = IntPtr.Zero;
+        var converter = IntPtr.Zero;
+        try
+        {
+            globalSettings = ImageModule.CreateGlobalSettings();
+            ApplyConfig(globalSettings, document.ImageSettings, useGlobal: true);
+            converter = ImageModule.CreateConverter(globalSettings);
+            EnsureConverterCreated(converter);
 
-        return (converter, globalSettings);
+            return (converter, globalSettings);
+        }
+        catch
+        {
+            CleanupFailedCreateConverter(converter, globalSettings);
+            throw;
+        }
     }
 
     protected internal override Func<IntPtr, string, string?, int> GetApplySettingFunc(bool useGlobal) =>
@@ -104,28 +97,85 @@ internal sealed class ImageProcessor
     protected internal override string GetProgressDescription(IntPtr converter) =>
         ImageModule.GetProgressDescription(converter);
 
-    protected internal override int SetWarningCallback(
+    protected internal override void SetWarningCallback(
         IntPtr converter,
         StringCallback callback) =>
         ImageModule.SetWarningCallback(converter, callback);
 
-    protected internal override int SetErrorCallback(
+    protected internal override void SetErrorCallback(
         IntPtr converter,
         StringCallback callback) =>
         ImageModule.SetErrorCallback(converter, callback);
 
-    protected internal override int SetPhaseChangedCallback(
+    protected internal override void SetPhaseChangedCallback(
         IntPtr converter,
         VoidCallback callback) =>
         ImageModule.SetPhaseChangedCallback(converter, callback);
 
-    protected internal override int SetProgressChangedCallback(
+    protected internal override void SetProgressChangedCallback(
         IntPtr converter,
-        VoidCallback callback) =>
+        IntCallback callback) =>
         ImageModule.SetProgressChangedCallback(converter, callback);
 
-    protected internal override int SetFinishedCallback(
+    protected internal override void SetFinishedCallback(
         IntPtr converter,
         IntCallback callback) =>
         ImageModule.SetFinishedCallback(converter, callback);
+
+    private static void EnsureConverterCreated(IntPtr converter)
+    {
+        if (converter == IntPtr.Zero)
+        {
+            throw new ArgumentException("converter pointer cannot be zero", nameof(converter));
+        }
+    }
+
+    private bool ConvertCore(IHtmlToImageDocument document, Func<int, Stream> createStreamFunc)
+    {
+        var converterPtr = IntPtr.Zero;
+        try
+        {
+#pragma warning disable S1481 // Unused local variables should be removed
+            // ReSharper disable once UnusedVariable
+            var (createdConverterPtr, globalSettingsPtr) = CreateConverter(document);
+#pragma warning restore S1481 // Unused local variables should be removed
+            converterPtr = createdConverterPtr;
+
+            RegisterEvents(converterPtr);
+
+            var converted = ImageModule.Convert(converterPtr);
+
+            if (converted)
+            {
+                ImageModule.GetOutput(converterPtr, createStreamFunc);
+            }
+
+            return converted;
+        }
+        finally
+        {
+            if (converterPtr != IntPtr.Zero)
+            {
+                ImageModule.DestroyConverter(converterPtr);
+            }
+
+            ReleaseRegisteredCallbacks();
+
+            // it seems destroying converter also destroys global settings
+            ////ImageModule.DestroyGlobalSetting(globalSettingsPtr);
+            ProcessingDocument = null;
+        }
+    }
+
+    private void CleanupFailedCreateConverter(IntPtr converter, IntPtr globalSettings)
+    {
+        if (converter != IntPtr.Zero)
+        {
+            ImageModule.DestroyConverter(converter);
+        }
+        else if (globalSettings != IntPtr.Zero)
+        {
+            ImageModule.DestroyGlobalSetting(globalSettings);
+        }
+    }
 }

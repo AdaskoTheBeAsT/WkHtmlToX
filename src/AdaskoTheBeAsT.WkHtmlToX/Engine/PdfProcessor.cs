@@ -26,7 +26,7 @@ internal sealed class PdfProcessor
 
     public bool Convert(IHtmlToPdfDocument document, Func<int, Stream> createStreamFunc)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (document is null)
         {
             throw new ArgumentNullException(nameof(document));
@@ -36,7 +36,7 @@ internal sealed class PdfProcessor
         ArgumentNullException.ThrowIfNull(document);
 #endif
 
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (createStreamFunc is null)
         {
             throw new ArgumentNullException(nameof(createStreamFunc));
@@ -54,12 +54,14 @@ internal sealed class PdfProcessor
 
         ProcessingDocument = document;
 
-        var (converterPtr, globalSettingsPtr, objectSettingsPtrs) = CreateConverter(document);
-
-        RegisterEvents(converterPtr);
-
+        var converterPtr = IntPtr.Zero;
         try
         {
+            var converterData = CreateConverter(document);
+            converterPtr = converterData.converterPtr;
+
+            RegisterEvents(converterPtr);
+
             var converted = PdfModule.Convert(converterPtr);
 
             if (converted)
@@ -71,15 +73,12 @@ internal sealed class PdfProcessor
         }
         finally
         {
-            PdfModule.DestroyConverter(converterPtr);
-
-            for (int i = objectSettingsPtrs.Count - 1; i >= 0; i--)
+            if (converterPtr != IntPtr.Zero)
             {
-                PdfModule.DestroyObjectSetting(objectSettingsPtrs[i]);
+                PdfModule.DestroyConverter(converterPtr);
             }
 
-            PdfModule.DestroyGlobalSetting(globalSettingsPtr);
-
+            ReleaseRegisteredCallbacks();
             ProcessingDocument = null;
         }
     }
@@ -87,7 +86,7 @@ internal sealed class PdfProcessor
     internal (IntPtr converterPtr, IntPtr globalSettingsPtr, List<IntPtr> objectSettingsPtrs) CreateConverter(
         IHtmlToPdfDocument document)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (document is null)
         {
             throw new ArgumentNullException(nameof(document));
@@ -97,26 +96,40 @@ internal sealed class PdfProcessor
         ArgumentNullException.ThrowIfNull(document);
 #endif
 
-        var globalSettings = PdfModule.CreateGlobalSettings();
-        ApplyConfig(globalSettings, document.GlobalSettings, useGlobal: true);
-        var converter = PdfModule.CreateConverter(globalSettings);
+        var globalSettings = IntPtr.Zero;
+        var converter = IntPtr.Zero;
         var objectSettingsPtr = new List<IntPtr>();
-        foreach (var obj in document.ObjectSettings)
+        var unattachedObjectSettingsPtr = new List<IntPtr>();
+        try
         {
-            if (obj == null)
+            globalSettings = PdfModule.CreateGlobalSettings();
+            ApplyConfig(globalSettings, document.GlobalSettings, useGlobal: true);
+            converter = PdfModule.CreateConverter(globalSettings);
+            EnsureConverterCreated(converter);
+            foreach (var obj in document.ObjectSettings)
             {
-                continue;
+                if (obj == null)
+                {
+                    continue;
+                }
+
+                var objectSettings = PdfModule.CreateObjectSettings();
+                objectSettingsPtr.Add(objectSettings);
+                unattachedObjectSettingsPtr.Add(objectSettings);
+
+                ApplyConfig(objectSettings, obj, useGlobal: false);
+
+                AddContent(converter, objectSettings, obj);
+                unattachedObjectSettingsPtr.Remove(objectSettings);
             }
 
-            var objectSettings = PdfModule.CreateObjectSettings();
-            objectSettingsPtr.Add(objectSettings);
-
-            ApplyConfig(objectSettings, obj, useGlobal: false);
-
-            AddContent(converter, objectSettings, obj);
+            return (converter, globalSettings, objectSettingsPtr);
         }
-
-        return (converter, globalSettings, objectSettingsPtr);
+        catch
+        {
+            CleanupFailedCreateConverter(converter, globalSettings, unattachedObjectSettingsPtr);
+            throw;
+        }
     }
 
     internal void AddContent(
@@ -124,7 +137,7 @@ internal sealed class PdfProcessor
         IntPtr objectSettings,
         PdfObjectSettings pdfObjectSettings)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (pdfObjectSettings is null)
         {
             throw new ArgumentNullException(nameof(pdfObjectSettings));
@@ -158,7 +171,7 @@ internal sealed class PdfProcessor
         IntPtr objectSettings,
         PdfObjectSettings pdfObjectSettings)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (pdfObjectSettings is null)
         {
             throw new ArgumentNullException(nameof(pdfObjectSettings));
@@ -212,7 +225,7 @@ internal sealed class PdfProcessor
         IntPtr objectSettings,
         Stream htmlContentStream)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (htmlContentStream is null)
         {
             throw new ArgumentNullException(nameof(htmlContentStream));
@@ -273,27 +286,27 @@ internal sealed class PdfProcessor
     protected internal override string GetProgressDescription(IntPtr converter) =>
         PdfModule.GetProgressDescription(converter);
 
-    protected internal override int SetWarningCallback(
+    protected internal override void SetWarningCallback(
         IntPtr converter,
         StringCallback callback) =>
         PdfModule.SetWarningCallback(converter, callback);
 
-    protected internal override int SetErrorCallback(
+    protected internal override void SetErrorCallback(
         IntPtr converter,
         StringCallback callback) =>
         PdfModule.SetErrorCallback(converter, callback);
 
-    protected internal override int SetPhaseChangedCallback(
+    protected internal override void SetPhaseChangedCallback(
         IntPtr converter,
         VoidCallback callback) =>
         PdfModule.SetPhaseChangedCallback(converter, callback);
 
-    protected internal override int SetProgressChangedCallback(
+    protected internal override void SetProgressChangedCallback(
         IntPtr converter,
-        VoidCallback callback) =>
+        IntCallback callback) =>
         PdfModule.SetProgressChangedCallback(converter, callback);
 
-    protected internal override int SetFinishedCallback(
+    protected internal override void SetFinishedCallback(
         IntPtr converter,
         IntCallback callback) =>
         PdfModule.SetFinishedCallback(converter, callback);
@@ -311,6 +324,37 @@ internal sealed class PdfProcessor
             }
 
             bytesRead += read;
+        }
+    }
+
+    private static void EnsureConverterCreated(IntPtr converter)
+    {
+        if (converter == IntPtr.Zero)
+        {
+            throw new ArgumentException("converter pointer cannot be zero", nameof(converter));
+        }
+    }
+
+    private void CleanupFailedCreateConverter(
+        IntPtr converter,
+        IntPtr globalSettings,
+        List<IntPtr> unattachedObjectSettingsPtr)
+    {
+        foreach (var objectSettings in unattachedObjectSettingsPtr)
+        {
+            if (objectSettings != IntPtr.Zero)
+            {
+                PdfModule.DestroyObjectSetting(objectSettings);
+            }
+        }
+
+        if (converter != IntPtr.Zero)
+        {
+            PdfModule.DestroyConverter(converter);
+        }
+        else if (globalSettings != IntPtr.Zero)
+        {
+            PdfModule.DestroyGlobalSetting(globalSettings);
         }
     }
 }

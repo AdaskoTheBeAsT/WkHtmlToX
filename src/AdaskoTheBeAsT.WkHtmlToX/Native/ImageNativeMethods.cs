@@ -61,7 +61,7 @@ internal static class ImageNativeMethods
     /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
-    internal static extern int wkhtmltoimage_destroy_global_settings(IntPtr settings);
+    internal static extern void wkhtmltoimage_destroy_global_settings(IntPtr settings);
 
     /// <summary>
     /// wkhtmltoimage_set_global_setting.
@@ -119,7 +119,7 @@ internal static class ImageNativeMethods
     /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
-    internal static extern int wkhtmltoimage_set_warning_callback(
+    internal static extern void wkhtmltoimage_set_warning_callback(
         IntPtr converter,
         [MarshalAs(UnmanagedType.FunctionPtr)] StringCallback callback);
 
@@ -131,7 +131,7 @@ internal static class ImageNativeMethods
     /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
-    internal static extern int wkhtmltoimage_set_error_callback(
+    internal static extern void wkhtmltoimage_set_error_callback(
         IntPtr converter,
         [MarshalAs(UnmanagedType.FunctionPtr)] StringCallback callback);
 
@@ -143,7 +143,7 @@ internal static class ImageNativeMethods
     /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
-    internal static extern int wkhtmltoimage_set_phase_changed_callback(
+    internal static extern void wkhtmltoimage_set_phase_changed_callback(
         IntPtr converter,
         [MarshalAs(UnmanagedType.FunctionPtr)] VoidCallback callback);
 
@@ -155,9 +155,9 @@ internal static class ImageNativeMethods
     /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
-    internal static extern int wkhtmltoimage_set_progress_changed_callback(
+    internal static extern void wkhtmltoimage_set_progress_changed_callback(
         IntPtr converter,
-        [MarshalAs(UnmanagedType.FunctionPtr)] VoidCallback callback);
+        [MarshalAs(UnmanagedType.FunctionPtr)] IntCallback callback);
 
     /// <summary>
     /// wkhtmltoimage_set_finished_callback.
@@ -167,7 +167,7 @@ internal static class ImageNativeMethods
     /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
-    internal static extern int wkhtmltoimage_set_finished_callback(
+    internal static extern void wkhtmltoimage_set_finished_callback(
         IntPtr converter,
         [MarshalAs(UnmanagedType.FunctionPtr)] IntCallback callback);
 

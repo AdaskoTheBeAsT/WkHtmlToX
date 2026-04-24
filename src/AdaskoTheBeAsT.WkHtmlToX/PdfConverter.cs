@@ -8,24 +8,10 @@ using AdaskoTheBeAsT.WkHtmlToX.WorkItems;
 
 namespace AdaskoTheBeAsT.WkHtmlToX;
 
-public class PdfConverter
+public class PdfConverter(IWkHtmlToXEngine engine)
     : IPdfConverter
 {
-    private readonly IWkHtmlToXEngine _engine;
-
-    public PdfConverter(IWkHtmlToXEngine engine)
-    {
-#if NETSTANDARD2_0
-        if (engine == null)
-        {
-            throw new ArgumentNullException(nameof(engine));
-        }
-#endif
-#if NET8_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(engine);
-#endif
-        _engine = engine;
-    }
+    private readonly IWkHtmlToXEngine _engine = engine ?? throw new ArgumentNullException(nameof(engine));
 
     public Task<bool> ConvertAsync(
         IHtmlToPdfDocument document,

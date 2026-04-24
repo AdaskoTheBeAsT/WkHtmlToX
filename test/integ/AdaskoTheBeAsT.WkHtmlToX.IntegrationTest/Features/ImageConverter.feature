@@ -13,3 +13,10 @@ Scenario Outline: Convert Image
     | Simple.html | 5           |
     | Simple.html | 10          |
     | Large.html  | 10          |
+
+Scenario: Convert image raises lifecycle callbacks
+	Given I have SynchronizedImageConverter with callback tracking
+    And I have sample html to convert 'Simple.html'
+    And I created HtmlToImageDocument
+	When I convert html to image 1 times
+	Then image lifecycle callbacks should be raised

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;net9.0;net8.0;net481;net48;net472;net471;net47;net462</TargetFrameworks>
+    <ProjectGuid>C414ADF1-A8B6-478F-8359-C9D40EFF9966</ProjectGuid>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.WkHtmlToX\AdaskoTheBeAsT.WkHtmlToX.csproj" />
+    <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.WkHtmlToX.DependencyInjection\AdaskoTheBeAsT.WkHtmlToX.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.WkHtmlToX.Hosting\AdaskoTheBeAsT.WkHtmlToX.Hosting.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

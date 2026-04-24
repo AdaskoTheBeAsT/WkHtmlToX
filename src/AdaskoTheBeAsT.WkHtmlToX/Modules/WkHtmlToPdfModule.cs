@@ -24,7 +24,7 @@ internal sealed class WkHtmlToPdfModule
 
     public override IntPtr CreateGlobalSettings() => PdfNativeMethods.wkhtmltopdf_create_global_settings();
 
-    public override int DestroyGlobalSetting(
+    public override void DestroyGlobalSetting(
         IntPtr settings) =>
         PdfNativeMethods.wkhtmltopdf_destroy_global_settings(settings);
 
@@ -41,40 +41,30 @@ internal sealed class WkHtmlToPdfModule
         IntPtr converter) =>
         PdfNativeMethods.wkhtmltopdf_destroy_converter(converter);
 
-    public override int SetWarningCallback(
+    public override void SetWarningCallback(
         IntPtr converter,
-        StringCallback callback)
-    {
-        return PdfNativeMethods.wkhtmltopdf_set_warning_callback(converter, callback);
-    }
+        StringCallback callback) =>
+        PdfNativeMethods.wkhtmltopdf_set_warning_callback(converter, callback);
 
-    public override int SetErrorCallback(
+    public override void SetErrorCallback(
         IntPtr converter,
-        StringCallback callback)
-    {
-        return PdfNativeMethods.wkhtmltopdf_set_error_callback(converter, callback);
-    }
+        StringCallback callback) =>
+        PdfNativeMethods.wkhtmltopdf_set_error_callback(converter, callback);
 
-    public override int SetPhaseChangedCallback(
+    public override void SetPhaseChangedCallback(
         IntPtr converter,
-        VoidCallback callback)
-    {
-        return PdfNativeMethods.wkhtmltopdf_set_phase_changed_callback(converter, callback);
-    }
+        VoidCallback callback) =>
+        PdfNativeMethods.wkhtmltopdf_set_phase_changed_callback(converter, callback);
 
-    public override int SetProgressChangedCallback(
+    public override void SetProgressChangedCallback(
         IntPtr converter,
-        VoidCallback callback)
-    {
-        return PdfNativeMethods.wkhtmltopdf_set_progress_changed_callback(converter, callback);
-    }
+        IntCallback callback) =>
+        PdfNativeMethods.wkhtmltopdf_set_progress_changed_callback(converter, callback);
 
-    public override int SetFinishedCallback(
+    public override void SetFinishedCallback(
         IntPtr converter,
-        IntCallback callback)
-    {
-        return PdfNativeMethods.wkhtmltopdf_set_finished_callback(converter, callback);
-    }
+        IntCallback callback) =>
+        PdfNativeMethods.wkhtmltopdf_set_finished_callback(converter, callback);
 
     public override bool Convert(
         IntPtr converter) =>
@@ -94,7 +84,7 @@ internal sealed class WkHtmlToPdfModule
 
     public IntPtr CreateObjectSettings() => PdfNativeMethods.wkhtmltopdf_create_object_settings();
 
-    public int DestroyObjectSetting(
+    public void DestroyObjectSetting(
         IntPtr settings) =>
         PdfNativeMethods.wkhtmltopdf_destroy_object_settings(settings);
 
@@ -153,7 +143,7 @@ internal sealed class WkHtmlToPdfModule
         string name,
         byte[] buffer)
     {
-#if NETSTANDARD2_0
+#if !NET8_0_OR_GREATER
         if (buffer is null)
         {
             throw new ArgumentNullException(nameof(buffer));

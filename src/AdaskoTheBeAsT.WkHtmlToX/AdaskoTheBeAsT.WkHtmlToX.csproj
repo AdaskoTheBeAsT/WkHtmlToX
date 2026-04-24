@@ -1,14 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net8.0;net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net9.0;net8.0;net481;net48;net472;net471;net47;net462</TargetFrameworks>
     <ProjectGuid>D4842FD1-D8B6-432C-98AB-EBF7E839A3D0</ProjectGuid>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryType>github</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <Description>AdaskoTheBeAsT.WkHtmlToX c# wrapper</Description>
-    <PackageVersion>10.0.0</PackageVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Authors>Adam "AdaskoTheBeAsT" Pluciński</Authors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -34,6 +33,17 @@
       <Exclude>all</Exclude>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="AdaskoTheBeAsT.Interop.Unmanaged" Version="[3.0.0,)" />
+    <PackageReference Include="AdaskoTheBeAsT.Interop.Execution" Version="[1.0.0,)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AdaskoTheBeAsT.WkHtmlToX.Test" />
+    <InternalsVisibleTo Include="AdaskoTheBeAsT.WkHtmlToX.DependencyInjection" />
+    <InternalsVisibleTo Include="AdaskoTheBeAsT.WkHtmlToX.DependencyInjection.Test" />
+    <InternalsVisibleTo Include="AdaskoTheBeAsT.WkHtmlToX.Hosting" />
+    <InternalsVisibleTo Include="AdaskoTheBeAsT.WkHtmlToX.Hosting.Test" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
 </Project>

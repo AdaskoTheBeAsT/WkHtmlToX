@@ -1,6 +1,7 @@
 using System;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
+using AdaskoTheBeAsT.WkHtmlToX.Utils;
 using AutoFixture;
 using AwesomeAssertions;
 using AwesomeAssertions.Execution;
@@ -107,5 +108,31 @@ public partial class ImageProcessorTest
             resultFunc.Should().NotBeNull();
             result.Should().Be(intVal);
         }
+    }
+
+    [Fact]
+    public void RegisterEventsShouldKeepCallbacksRootedUntilReleased()
+    {
+        // Arrange
+        _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
+
+        var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
+        {
+            ErrorAction = _ => { },
+        };
+
+        var sut = new ImageProcessor(configuration, _module.Object);
+
+        // Act
+        sut.RegisterEvents(new IntPtr(12));
+
+        // Assert
+        sut.HasRegisteredCallbacks.Should().BeTrue();
+
+        // Act
+        sut.ReleaseRegisteredCallbacks();
+
+        // Assert
+        sut.HasRegisteredCallbacks.Should().BeFalse();
     }
 }
