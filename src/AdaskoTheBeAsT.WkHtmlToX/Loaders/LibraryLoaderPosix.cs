@@ -69,12 +69,17 @@ internal abstract class LibraryLoaderPosix
     public override void Release()
     {
         var libraryToDispose = _library;
-#pragma warning disable IDISP003 // Dispose previous before re-assigning.
-        _library = null;
-#pragma warning restore IDISP003
+        if (libraryToDispose is null)
+        {
+            return;
+        }
+
         try
         {
-            libraryToDispose?.Dispose();
+            libraryToDispose.Dispose();
+#pragma warning disable IDISP003 // Dispose previous before re-assigning.
+            _library = null;
+#pragma warning restore IDISP003
         }
         catch (Exception ex)
         {
