@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using AdaskoTheBeAsT.WkHtmlToX.Settings;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
@@ -10,6 +11,16 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Settings;
 
 public sealed class PechkinPaperSizeTest
 {
+    public static IEnumerable<PaperKind> GetConvertiblePaperKinds()
+    {
+#if NET5_0_OR_GREATER
+        var paperKinds = Enum.GetValues<PaperKind>();
+#else
+        var paperKinds = Enum.GetValues(typeof(PaperKind)).Cast<PaperKind>();
+#endif
+        return paperKinds.Where(pk => pk != PaperKind.Custom);
+    }
+
     [Fact]
     public void FromPaperKindShouldThrowExceptionWhenPaperKindUnknown()
     {
@@ -25,10 +36,7 @@ public sealed class PechkinPaperSizeTest
     public void FromPaperKindShouldReturnNonEmptyValueWhenPaperKindConvertible()
     {
         // Arrange
-        var paperKinds =
-            Enum.GetValues(typeof(PaperKind))
-                .Cast<PaperKind>()
-                .Where(pk => pk != PaperKind.Custom);
+        var paperKinds = GetConvertiblePaperKinds();
 
         // Act and Assert
         using (new AssertionScope())
@@ -64,10 +72,7 @@ public sealed class PechkinPaperSizeTest
     public void ImplicitCastShouldReturnNonEmptyValueWhenPaperKindConvertible()
     {
         // Arrange
-        var paperKinds =
-            Enum.GetValues(typeof(PaperKind))
-                .Cast<PaperKind>()
-                .Where(pk => pk != PaperKind.Custom);
+        var paperKinds = GetConvertiblePaperKinds();
 
         // Act and Assert
         using (new AssertionScope())

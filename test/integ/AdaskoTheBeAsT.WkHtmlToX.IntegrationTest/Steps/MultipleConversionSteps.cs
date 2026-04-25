@@ -30,6 +30,15 @@ public sealed class MultipleConversionSteps
         _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
     }
 
+    public static CancellationToken GetCancellationToken()
+    {
+#if NET8_0_OR_GREATER
+        return TestContext.Current.CancellationToken;
+#else
+        return CancellationToken.None;
+#endif
+    }
+
     [Given("I have SynchronizedPdfConverter")]
     public void GivenIHaveSynchronizedPdfConverter()
     {
@@ -122,7 +131,7 @@ public sealed class MultipleConversionSteps
                             length);
                         return stream;
                     },
-                    CancellationToken.None)
+                    GetCancellationToken())
                 .ConfigureAwait(false);
 
             stream!.Position = 0;
