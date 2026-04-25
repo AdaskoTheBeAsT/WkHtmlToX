@@ -740,15 +740,18 @@ public partial class PdfProcessorTest
         }
     }
 
-    [Fact]
-    public void AddContentStreamShouldThrowExceptionWhenTooLargeStreamPassed()
+    [Theory]
+    [InlineData((long)int.MaxValue)]
+    [InlineData(int.MaxValue + 1L)]
+    public void AddContentStreamShouldThrowExceptionWhenTooLargeStreamPassed(
+        long streamLength)
     {
         // Arrange
         var converterPtr = new IntPtr(_fixture.Create<int>());
         var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
         var streamMock = new Mock<Stream>(MockBehavior.Strict);
         streamMock.SetupGet(s => s.Length)
-            .Returns(int.MaxValue + 1L);
+            .Returns(streamLength);
         streamMock.SetupGet(s => s.Position)
             .Returns(0L);
 

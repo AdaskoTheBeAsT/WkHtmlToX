@@ -63,7 +63,7 @@ public sealed class LibraryLoaderFactoryTest
 
     [Theory]
     [MemberData(nameof(GetTestData))]
-    public void CreateShouldReturnCorrectLoaderAndRuntimeIdentifierPassed(
+    public void CreateShouldReturnCorrectLoader(
         int platformId,
         WkHtmlToXRuntimeIdentifier? runtimeIdentifier,
         Type type)
