@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -68,10 +69,22 @@ internal abstract class LibraryLoaderPosix
     public override void Release()
     {
         var libraryToDispose = _library;
+        if (libraryToDispose is null)
+        {
+            return;
+        }
+
+        try
+        {
+            libraryToDispose.Dispose();
 #pragma warning disable IDISP003 // Dispose previous before re-assigning.
-        _library = null;
+            _library = null;
 #pragma warning restore IDISP003
-        libraryToDispose?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            throw new DllUnloadFailedException($"dlclose failed: {ex.Message}", ex);
+        }
     }
 
     protected override void Dispose(bool disposing)

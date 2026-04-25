@@ -155,16 +155,25 @@ public sealed class WkHtmlToXServiceCollectionExtensionsTest
         var services = new ServiceCollection();
         var configuration = new WkHtmlToXConfiguration(platformId: 0, runtimeIdentifier: null);
         const string customName = "custom-worker";
+        var invoked = false;
 
         // Act
         services.AddWkHtmlToX(
             configuration,
-            options => options.Name = customName);
+            options =>
+            {
+                options.Name = customName;
+                invoked = true;
+            });
 
         // Assert
         using var provider = services.BuildServiceProvider();
         var worker = provider.GetRequiredService<IExecutionWorker<WkHtmlToXSession>>();
-        worker.Should().NotBeNull();
+        using (new AssertionScope())
+        {
+            worker.Should().NotBeNull();
+            invoked.Should().BeTrue();
+        }
     }
 
     [Fact]
