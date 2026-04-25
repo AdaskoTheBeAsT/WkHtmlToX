@@ -16,26 +16,21 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Test.Engine;
 
 public partial class PdfProcessorTest
 {
-    public static TheoryData<CustomData> GetTestData()
+    public enum HtmlContentSource
     {
-        const string htmlContent = "<html><head><title>title</title></head><body></body></html>";
-        var htmlContentByteArray = Encoding.UTF8.GetBytes(htmlContent);
-#pragma warning disable IDISP001 // Dispose created.
-        var stream = new MemoryStream(htmlContentByteArray);
-#pragma warning restore IDISP001 // Dispose created.
-        return new TheoryData<CustomData>(
-            new CustomData(
-                htmlContent,
-                htmlContentByteArray: null,
-                htmlContentStream: null),
-            new CustomData(
-                htmlContent: null,
-                htmlContentByteArray,
-                htmlContentStream: null),
-            new CustomData(
-                htmlContent: null,
-                htmlContentByteArray: null,
-                stream));
+        String,
+        ByteArray,
+        Stream,
+    }
+
+    public static TheoryData<HtmlContentSource> GetTestData()
+    {
+        return
+        [
+            HtmlContentSource.String,
+            HtmlContentSource.ByteArray,
+            HtmlContentSource.Stream,
+        ];
     }
 
     [Fact]
@@ -452,9 +447,14 @@ public partial class PdfProcessorTest
     [Theory]
     [MemberData(nameof(GetTestData))]
     public void ConvertImplShouldReturnStreamWhenConverted(
-        CustomData data)
+        HtmlContentSource htmlContentSource)
     {
         // Arrange
+        const string htmlContent = "<html><head><title>title</title></head><body></body></html>";
+        var htmlContentByteArray = Encoding.UTF8.GetBytes(htmlContent);
+        using var htmlContentStream = htmlContentSource == HtmlContentSource.Stream
+            ? new MemoryStream(htmlContentByteArray)
+            : null;
         using var memoryStream = new MemoryStream();
         var globalSettingsPtr = new IntPtr(_fixture.Create<int>());
         var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
@@ -492,9 +492,9 @@ public partial class PdfProcessorTest
             new PdfObjectSettings
             {
                 CaptionText = captionText,
-                HtmlContent = data.HtmlContent,
-                HtmlContentByteArray = data.HtmlContentByteArray,
-                HtmlContentStream = data.HtmlContentStream,
+                HtmlContent = htmlContentSource == HtmlContentSource.String ? htmlContent : null,
+                HtmlContentByteArray = htmlContentSource == HtmlContentSource.ByteArray ? htmlContentByteArray : null,
+                HtmlContentStream = htmlContentStream,
             });
 
         // Act
@@ -618,7 +618,11 @@ public partial class PdfProcessorTest
             received.Should().NotBeNull();
             received.Should().NotBeSameAs(htmlContentByteArray);
             received!.Should().HaveCount(htmlContentByteArray.Length + 1);
+#if NETCOREAPP3_0_OR_GREATER
+            received[^1].Should().Be(byte.MinValue);
+#else
             received[received.Length - 1].Should().Be(byte.MinValue);
+#endif
             for (var i = 0; i < htmlContentByteArray.Length; i++)
             {
                 received[i].Should().Be(htmlContentByteArray[i]);
@@ -736,15 +740,18 @@ public partial class PdfProcessorTest
         }
     }
 
-    [Fact]
-    public void AddContentStreamShouldThrowExceptionWhenTooLargeStreamPassed()
+    [Theory]
+    [InlineData((long)int.MaxValue)]
+    [InlineData(int.MaxValue + 1L)]
+    public void AddContentStreamShouldThrowExceptionWhenTooLargeStreamPassed(
+        long streamLength)
     {
         // Arrange
         var converterPtr = new IntPtr(_fixture.Create<int>());
         var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
         var streamMock = new Mock<Stream>(MockBehavior.Strict);
         streamMock.SetupGet(s => s.Length)
-            .Returns(int.MaxValue + 1L);
+            .Returns(streamLength);
         streamMock.SetupGet(s => s.Position)
             .Returns(0L);
 
@@ -977,18 +984,6 @@ public partial class PdfProcessorTest
             result.Should().BeTrue();
             sut.HasRegisteredCallbacks.Should().BeFalse();
         }
-    }
-
-    public class CustomData(
-        string? htmlContent,
-        byte[]? htmlContentByteArray,
-        Stream? htmlContentStream)
-    {
-        public string? HtmlContent { get; } = htmlContent;
-
-        public byte[]? HtmlContentByteArray { get; } = htmlContentByteArray;
-
-        public Stream? HtmlContentStream { get; } = htmlContentStream;
     }
 
     private sealed class ChunkedMemoryStream

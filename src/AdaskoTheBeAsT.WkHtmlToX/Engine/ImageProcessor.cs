@@ -28,7 +28,9 @@ internal sealed class ImageProcessor
 #pragma warning restore RCS1256 // Invalid argument null check
 #endif
 #if NET8_0_OR_GREATER
+#pragma warning disable RCS1256 // Invalid argument null check
         ArgumentNullException.ThrowIfNull(document);
+#pragma warning restore RCS1256 // Invalid argument null check
 #endif
 
         if (document.ImageSettings is null)

@@ -208,7 +208,11 @@ internal sealed class PdfProcessor
         IntPtr objectSettings,
         byte[] htmlContentByteArray)
     {
+#if NETCOREAPP3_0_OR_GREATER
+        if (htmlContentByteArray.Length > 0 && htmlContentByteArray[^1] == byte.MinValue)
+#else
         if (htmlContentByteArray.Length > 0 && htmlContentByteArray[htmlContentByteArray.Length - 1] == byte.MinValue)
+#endif
         {
             PdfModule.AddObject(converter, objectSettings, htmlContentByteArray);
             return;
@@ -216,7 +220,11 @@ internal sealed class PdfProcessor
 
         var terminated = new byte[htmlContentByteArray.Length + 1];
         Array.Copy(htmlContentByteArray, terminated, htmlContentByteArray.Length);
+#if NETCOREAPP3_0_OR_GREATER
+        terminated[^1] = byte.MinValue;
+#else
         terminated[terminated.Length - 1] = byte.MinValue;
+#endif
         PdfModule.AddObject(converter, objectSettings, terminated);
     }
 
@@ -243,7 +251,7 @@ internal sealed class PdfProcessor
                 nameof(htmlContentStream));
         }
 
-        if (length > int.MaxValue)
+        if (length >= int.MaxValue)
         {
             throw new HtmlContentStreamTooLargeException();
         }
