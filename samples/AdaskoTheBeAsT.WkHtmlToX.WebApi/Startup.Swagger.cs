@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.WebApi
 {
@@ -29,8 +29,10 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApi
               });
         }
 
+#pragma warning disable S2325 // Methods and properties that don't access instance data should be static
         public void ConfigureSwagger(
             IApplicationBuilder app)
+#pragma warning restore S2325 // Methods and properties that don't access instance data should be static
         {
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();

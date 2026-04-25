@@ -7,7 +7,9 @@ namespace ImageConsoleApp
 {
     internal static class Program
     {
+#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
         private static async Task Main()
+#pragma warning restore CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
         {
             var streamManager = new RecyclableMemoryStreamManager();
             var configuration = new WkHtmlToXConfiguration(

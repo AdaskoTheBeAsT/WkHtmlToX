@@ -8,8 +8,10 @@ using System.Web.Http.Filters;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin.Handlers
 {
+#pragma warning disable S3993
     public sealed class ExceptionSpecialFilterAttribute
         : ExceptionFilterAttribute
+#pragma warning restore S3993
     {
         public override void OnException(HttpActionExecutedContext actionExecutedContext)
         {

@@ -1,0 +1,25 @@
+<Solution>
+  <Folder Name="/.props/">
+    <File Path="../.editorconfig" />
+    <File Path="../.gitignore" />
+    <File Path="../AdaskoTheBeAsT.WkHtmlToX.ruleset" />
+    <File Path="../Directory.Build.props" />
+    <File Path="../global.json" />
+    <File Path="../LICENSE" />
+    <File Path="../README.md" />
+    <File Path="../SecurityCodeScan.config.yml" />
+    <File Path="../Settings.StyleCop" />
+    <File Path="../stylecop.json" />
+  </Folder>
+  <Project Path="../src/AdaskoTheBeAsT.WkHtmlToX.DependencyInjection/AdaskoTheBeAsT.WkHtmlToX.DependencyInjection.csproj" Id="8f72ba8a-f4df-4949-b0fd-66fd90737cbd" />
+  <Project Path="../src/AdaskoTheBeAsT.WkHtmlToX.Hosting/AdaskoTheBeAsT.WkHtmlToX.Hosting.csproj" Id="523db5b2-c526-4266-a044-6d5a3517cf58" />
+  <Project Path="../src/AdaskoTheBeAsT.WkHtmlToX/AdaskoTheBeAsT.WkHtmlToX.csproj" />
+  <Project Path="AdaskoTheBeAsT.WkHtmlToX.BusinessLogic/AdaskoTheBeAsT.WkHtmlToX.BusinessLogic.csproj" />
+  <Project Path="AdaskoTheBeAsT.WkHtmlToX.ConsoleApp/AdaskoTheBeAsT.WkHtmlToX.ConsoleApp.csproj" />
+  <Project Path="AdaskoTheBeAsT.WkHtmlToX.WebApi/AdaskoTheBeAsT.WkHtmlToX.WebApi.csproj" />
+  <Project Path="AdaskoTheBeAsT.WkHtmlToX.WebApiFull/AdaskoTheBeAsT.WkHtmlToX.WebApiFull.csproj" Id="d527b4e6-a785-46d9-b2ff-1bec3f50d219" />
+  <Project Path="AdaskoTheBeAsT.WkHtmlToX.WebApiFull2/AdaskoTheBeAsT.WkHtmlToX.WebApiFull2.csproj" Id="2fecdf68-d611-4256-a27c-b85e5d8e7812" />
+  <Project Path="AdaskoTheBeAsT.WkHtmlToX.WebApiOwin/AdaskoTheBeAsT.WkHtmlToX.WebApiOwin.csproj" Id="bdf03c1e-e5e1-42d2-9e80-f6a223e78ef1" />
+  <Project Path="AdaskoTheBeAsT.WkHtmlToX.WebApiOwin2/AdaskoTheBeAsT.WkHtmlToX.WebApiOwin2.csproj" Id="66622bcb-70d8-42c1-8805-834021854dbd" />
+  <Project Path="ImageConsoleApp/ImageConsoleApp.csproj" />
+</Solution>

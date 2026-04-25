@@ -29,18 +29,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2025.2.4">
-      <Exclude>all</Exclude>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="AdaskoTheBeAsT.Interop.Execution" Version="[1.0.0,)" />
     <PackageReference Include="AdaskoTheBeAsT.Interop.Execution.DependencyInjection" Version="[1.0.0,)" />
     <PackageReference Include="AdaskoTheBeAsT.Interop.Execution.Hosting" Version="[1.0.0,)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.6,11.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[10.0.6,11.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.7,11.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[10.0.7,11.0.0)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
@@ -54,8 +50,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net481' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net472' OR '$(TargetFramework)' == 'net471' OR '$(TargetFramework)' == 'net47' OR '$(TargetFramework)' == 'net462'">
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.6,11.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[10.0.6,11.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.7,11.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[10.0.7,11.0.0)" />
   </ItemGroup>
 
   <ItemGroup>

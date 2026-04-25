@@ -1,0 +1,97 @@
+﻿<Project Sdk="MSBuild.SDK.SystemWeb/4.0.107">
+
+  <PropertyGroup>
+    <!-- Order here does matter - different order can cause azure pipelines to break -->
+    <TargetFramework>net481</TargetFramework>
+    <UseIISExpress>true</UseIISExpress>
+    <NoWarn>$(NoWarn);CC0091</NoWarn>
+    <!-- Use the .NET SDK's Core Roslyn (running on .NET 10) instead of the
+         net9-targeted csc shipped with Microsoft.Net.Compilers.Toolset 5.3.0.
+         Required so analyzers built against System.Collections.Immutable v10
+         (e.g. AdaskoTheBeAsT.CodeCracker.CSharp 1.1.0.100) can load. -->
+    <RoslynCompilerType>Core</RoslynCompilerType>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <!--<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>-->
+    <GeneratedBindingRedirectsAction>Overwrite</GeneratedBindingRedirectsAction>
+    <!--<AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>-->
+    <MicrosoftNetCompilersToolset_Version>5.3.0</MicrosoftNetCompilersToolset_Version>
+    <MicrosoftCodeDomProvidersDotNetCompilerPlatform_Version>4.1.0</MicrosoftCodeDomProvidersDotNetCompilerPlatform_Version>
+    <VisualStudioVersion>18.0</VisualStudioVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.native.win.x64" Version="0.12.6" />
+    <PackageReference Include="DotNetEnv" Version="3.1.1" />
+    <!--<PackageReference Include="IdentityModel" Version="6.2.0" />-->
+    <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.3.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />    
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.3.0" />    
+    <PackageReference Include="Microsoft.AspNet.WebApi.Owin" Version="5.3.0" />    
+    <PackageReference Include="Microsoft.AspNet.WebApi.WebHost" Version="5.3.0" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Owin" Version="4.2.3" />
+    <PackageReference Include="Microsoft.Owin.Cors" Version="4.2.3" />
+    <PackageReference Include="Microsoft.Owin.Host.SystemWeb" Version="4.2.3" />
+    <PackageReference Include="Microsoft.Owin.Security.OAuth" Version="4.2.3" />
+    <PackageReference Include="Microsoft.VisualStudio.SlowCheetah" Version="4.0.50">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Owin" Version="1.0.0" />
+    <PackageReference Include="Serilog" Version="4.3.1" />
+    <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
+    <PackageReference Include="Serilog.Settings.AppSettings" Version="3.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="SerilogWeb.Classic" Version="5.1.66" />
+    <PackageReference Include="SimpleInjector" Version="5.5.1" />
+    <PackageReference Include="SimpleInjector.Integration.WebApi" Version="5.5.0" />
+    <PackageReference Include="Swashbuckle.Core" Version="5.6.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="Thinktecture.IdentityModel.Owin" Version="2.1.1" />
+    <PackageReference Include="Thinktecture.IdentityModel.WebApi" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="_PublishedWebsites\**" />
+    <Content Remove="_PublishedWebsites\**" />
+    <EmbeddedResource Remove="_PublishedWebsites\**" />
+    <None Remove="_PublishedWebsites\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Properties\launchSettings.json" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(BuildingInsideVisualStudio)' == 'true'">
+    <Content Include="Web.Debug.config">
+      <IsTransformFile>true</IsTransformFile>
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <IsTransformFile>true</IsTransformFile>
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\AdaskoTheBeAsT.WkHtmlToX\AdaskoTheBeAsT.WkHtmlToX.csproj" />
+    <ProjectReference Include="..\AdaskoTheBeAsT.WkHtmlToX.BusinessLogic\AdaskoTheBeAsT.WkHtmlToX.BusinessLogic.csproj" />
+  </ItemGroup>
+
+  <!-- Conditionally set VSToolsPath_WebApplications only if not in Visual Studio -->
+  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' != 'true'">
+    <VSToolsPath Condition="Exists('C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VisualStudio\v17.0') and '$(VSToolsPath)' == ''">C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\VisualStudio\v17.0</VSToolsPath>
+    <VSToolsPath Condition="Exists('C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Microsoft\VisualStudio\v17.0') and '$(VSToolsPath)' == ''">C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Microsoft\VisualStudio\v17.0</VSToolsPath>
+    <VSToolsPath Condition="Exists('C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VisualStudio\v17.0') and '$(VSToolsPath)' == ''">C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VisualStudio\v17.0</VSToolsPath>
+    <VSToolsPath Condition="Exists('C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Microsoft\VisualStudio\v18.0') and '$(VSToolsPath)' == ''">C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Microsoft\VisualStudio\v18.0</VSToolsPath>
+    <VSToolsPath Condition="Exists('C:\Program Files\Microsoft Visual Studio\18\Professional\MSBuild\Microsoft\VisualStudio\v18.0') and '$(VSToolsPath)' == ''">C:\Program Files\Microsoft Visual Studio\18\Professional\MSBuild\Microsoft\VisualStudio\v18.0</VSToolsPath>
+    <VSToolsPath Condition="Exists('C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VisualStudio\v18.0') and '$(VSToolsPath)' == ''">C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VisualStudio\v18.0</VSToolsPath>
+    <VSToolsPath_WebApplications Condition="'$(VSToolsPath_WebApplications)' == ''">$(VSToolsPath)\WebApplications</VSToolsPath_WebApplications>
+  </PropertyGroup>
+
+  <!-- Conditionally import Microsoft.WebApplication.targets only if not in Visual Studio -->
+  <Import Project="$(VSToolsPath_WebApplications)\Microsoft.WebApplication.targets" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
+
+</Project>

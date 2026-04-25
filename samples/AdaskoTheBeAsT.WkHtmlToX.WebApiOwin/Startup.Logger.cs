@@ -13,7 +13,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
     public partial class Startup
     {
 #pragma warning disable CC0091 // Use static method
+#pragma warning disable S2325 // Methods and properties that don't access instance data should be static
         public void ConfigureLogger(HttpConfiguration config)
+#pragma warning restore S2325 // Methods and properties that don't access instance data should be static
 #pragma warning restore CC0091 // Use static method
         {
             // Use Serilog for logging

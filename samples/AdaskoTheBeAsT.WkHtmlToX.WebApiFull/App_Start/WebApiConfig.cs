@@ -29,7 +29,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiFull
             // Register your types, for instance using the scoped lifestyle:
             container.RegisterSingleton<IHtmlGenerator, SmallHtmlGenerator>();
             container.RegisterSingleton<IHtmlToPdfDocumentGenerator, HtmlToPdfDocumentGenerator>();
-            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
+            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null);
             container.RegisterInstance(configuration);
             container.RegisterSingleton<IWkHtmlToXEngine, WkHtmlToXEngine>();
             container.RegisterSingleton<IPdfConverter, PdfConverter>();
