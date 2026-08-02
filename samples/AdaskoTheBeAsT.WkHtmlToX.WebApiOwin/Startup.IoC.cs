@@ -16,7 +16,9 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
     public partial class Startup
     {
 #pragma warning disable CC0091 // Use static method
+#pragma warning disable S2325 // Methods and properties that don't access instance data should be static
         private Container ConfigureIoC(IAppBuilder app, HttpConfiguration httpConfiguration)
+#pragma warning restore S2325 // Methods and properties that don't access instance data should be static
 #pragma warning restore CC0091 // Use static method
         {
             var container = new Container();
@@ -40,7 +42,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
                 Lifestyle.Scoped);
             container.RegisterSingleton<IHtmlGenerator, SmallHtmlGenerator>();
             container.RegisterSingleton<IHtmlToPdfDocumentGenerator, HtmlToPdfDocumentGenerator>();
-            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
+            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null);
             container.RegisterInstance(configuration);
             container.RegisterSingleton<IWkHtmlToXEngine, WkHtmlToXEngine>();
             container.RegisterSingleton<IPdfConverter, PdfConverter>();

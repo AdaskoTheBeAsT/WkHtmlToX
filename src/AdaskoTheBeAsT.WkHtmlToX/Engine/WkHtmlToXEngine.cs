@@ -107,7 +107,7 @@ public sealed class WkHtmlToXEngine
 
         if (task.IsFaulted)
         {
-            item.TaskCompletionSource.TrySetException(task.Exception!.InnerExceptions);
+            item.TaskCompletionSource.TrySetException(task.Exception.InnerExceptions);
             return;
         }
 

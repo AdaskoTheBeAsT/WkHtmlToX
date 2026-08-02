@@ -1,23 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.native.win.x64" Version="0.12.6" />
-        <PackageReference Include="JetBrains.dotMemoryUnit" Version="3.2.20220510" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.native.win.x64" Version="0.12.6" />
+    <PackageReference Include="JetBrains.dotMemoryUnit" Version="3.2.20220510" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.WkHtmlToX\AdaskoTheBeAsT.WkHtmlToX.csproj" />
-        <ProjectReference Include="..\AdaskoTheBeAsT.WkHtmlToX.NativeMemoryProbe\AdaskoTheBeAsT.WkHtmlToX.NativeMemoryProbe.csproj" ReferenceOutputAssembly="false" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.WkHtmlToX\AdaskoTheBeAsT.WkHtmlToX.csproj" />
+    <ProjectReference Include="..\AdaskoTheBeAsT.WkHtmlToX.NativeMemoryProbe\AdaskoTheBeAsT.WkHtmlToX.NativeMemoryProbe.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <None Update="xunit.runner.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>

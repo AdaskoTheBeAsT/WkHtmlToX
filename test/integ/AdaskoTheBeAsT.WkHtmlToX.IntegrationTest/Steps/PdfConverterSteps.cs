@@ -91,6 +91,7 @@ public sealed class PdfConverterSteps
         {
 #pragma warning disable RCS1212 // Remove redundant assignment.
             Stream? stream = null;
+#pragma warning disable S8969 // Null-forgiving operators should not be redundant
             await _sut!.ConvertAsync(
                 _htmlToPdfDocument!,
                 length =>
@@ -102,6 +103,7 @@ public sealed class PdfConverterSteps
                     return stream;
                 },
                 CancellationToken.None).ConfigureAwait(false);
+#pragma warning restore S8969 // Null-forgiving operators should not be redundant
 #pragma warning restore RCS1212 // Remove redundant assignment.
 
 #if NET8_0_OR_GREATER

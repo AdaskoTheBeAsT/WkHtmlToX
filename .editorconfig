@@ -6,8 +6,29 @@ root = true
 # All files
 [*]
 indent_style = space
-insert_final_newline = true
 charset = utf-8
+
+
+#csproj files
+[*.csproj]
+indent_size = 2
+
+#props files
+[*.props]
+indent_size = 2
+
+#targets files
+[*.targets]
+indent_size = 2
+
+# Code files
+[*.{cs,csx,vb,vbx}]
+indent_size = 4
+insert_final_newline = true
+
+#runsettings files
+[*.runsettings]
+indent_size = 2
 
 # ReSharper properties
 resharper_csharp_wrap_after_declaration_lpar = true

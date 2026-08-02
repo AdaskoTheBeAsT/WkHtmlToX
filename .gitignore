@@ -355,6 +355,9 @@ MigrationBackup/
 .sarif/*
 !.sarif/.gitkeep
 
+**/.sarif/*
+!**/.sarif/.gitkeep
+
 .dotcover/*
 !.dotcover/.gitkeep
 NDependOut/

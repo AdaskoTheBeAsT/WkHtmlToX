@@ -90,10 +90,14 @@ public sealed class NativePrivateBytesMemoryTest
 
         resultLine.Should().NotBeNullOrWhiteSpace();
 
+#pragma warning disable S8969 // Null-forgiving operators should not be redundant
         var payload = resultLine!["RESULT:".Length..];
+#pragma warning restore S8969 // Null-forgiving operators should not be redundant
         var probeResult = JsonSerializer.Deserialize<NativeMemoryProbeResult>(payload);
         probeResult.Should().NotBeNull();
+#pragma warning disable S8969 // Null-forgiving operators should not be redundant
         return probeResult!;
+#pragma warning restore S8969 // Null-forgiving operators should not be redundant
     }
 
     private static string GetProbeAssemblyPath()

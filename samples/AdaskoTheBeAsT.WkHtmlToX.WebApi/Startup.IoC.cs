@@ -40,7 +40,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApi
         {
             _container.RegisterSingleton<IHtmlGenerator, SmallHtmlGenerator>();
             _container.RegisterSingleton<IHtmlToPdfDocumentGenerator, HtmlToPdfDocumentGenerator>();
-            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
+            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null);
             _container.RegisterInstance(configuration);
             _container.RegisterSingleton<IWkHtmlToXEngine, WkHtmlToXEngine>();
             _container.RegisterSingleton<IPdfConverter, PdfConverter>();

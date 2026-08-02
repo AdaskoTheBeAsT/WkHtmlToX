@@ -357,7 +357,7 @@ public partial class PdfProcessorTest
             using (new AssertionScope())
             {
                 result!.Document.Should().Be(doc);
-                result!.Message.Should().Be(errorMessage);
+                result.Message.Should().Be(errorMessage);
             }
         }
         finally
@@ -372,7 +372,7 @@ public partial class PdfProcessorTest
         using (new AssertionScope())
         {
             result!.Document.Should().Be(doc);
-            result!.Message.Should().Be(errorMessage);
+            result.Message.Should().Be(errorMessage);
         }
 #endif
     }
@@ -432,7 +432,7 @@ public partial class PdfProcessorTest
             using (new AssertionScope())
             {
                 result!.Document.Should().Be(doc);
-                result!.Message.Should().Be(warningMessage);
+                result.Message.Should().Be(warningMessage);
             }
         }
         finally
@@ -447,7 +447,7 @@ public partial class PdfProcessorTest
         using (new AssertionScope())
         {
             result!.Document.Should().Be(doc);
-            result!.Message.Should().Be(warningMessage);
+            result.Message.Should().Be(warningMessage);
         }
 #endif
     }
@@ -488,7 +488,7 @@ public partial class PdfProcessorTest
         using (new AssertionScope())
         {
             result!.Document.Should().Be(doc);
-            result!.Success.Should().Be(code == 1);
+            result.Success.Should().Be(code == 1);
         }
     }
 
@@ -536,9 +536,9 @@ public partial class PdfProcessorTest
         using (new AssertionScope())
         {
             result!.Document.Should().Be(doc);
-            result!.PhaseCount.Should().Be(phaseCount);
-            result!.CurrentPhase.Should().Be(currentPhase);
-            result!.Description.Should().Be(phaseDescription);
+            result.PhaseCount.Should().Be(phaseCount);
+            result.CurrentPhase.Should().Be(currentPhase);
+            result.Description.Should().Be(phaseDescription);
         }
     }
 
@@ -581,8 +581,8 @@ public partial class PdfProcessorTest
         using (new AssertionScope())
         {
             result!.Document.Should().Be(doc);
-            result!.Progress.Should().Be(progressValue);
-            result!.Description.Should().Be(progressDescription);
+            result.Progress.Should().Be(progressValue);
+            result.Description.Should().Be(progressDescription);
         }
     }
 

@@ -58,7 +58,6 @@ internal static class ImageNativeMethods
     /// wkhtmltoimage_destroy_global_settings.
     /// </summary>
     /// <param name="settings"></param>
-    /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
     internal static extern void wkhtmltoimage_destroy_global_settings(IntPtr settings);
@@ -116,7 +115,6 @@ internal static class ImageNativeMethods
     /// </summary>
     /// <param name="converter"></param>
     /// <param name="callback"></param>
-    /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
     internal static extern void wkhtmltoimage_set_warning_callback(
@@ -128,7 +126,6 @@ internal static class ImageNativeMethods
     /// </summary>
     /// <param name="converter"></param>
     /// <param name="callback"></param>
-    /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
     internal static extern void wkhtmltoimage_set_error_callback(
@@ -140,7 +137,6 @@ internal static class ImageNativeMethods
     /// </summary>
     /// <param name="converter"></param>
     /// <param name="callback"></param>
-    /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
     internal static extern void wkhtmltoimage_set_phase_changed_callback(
@@ -152,7 +148,6 @@ internal static class ImageNativeMethods
     /// </summary>
     /// <param name="converter"></param>
     /// <param name="callback"></param>
-    /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
     internal static extern void wkhtmltoimage_set_progress_changed_callback(
@@ -164,7 +159,6 @@ internal static class ImageNativeMethods
     /// </summary>
     /// <param name="converter"></param>
     /// <param name="callback"></param>
-    /// <returns></returns>
     [SuppressUnmanagedCodeSecurity]
     [DllImport(NativeLib.DllName, CharSet = NativeLib.Charset)]
     internal static extern void wkhtmltoimage_set_finished_callback(

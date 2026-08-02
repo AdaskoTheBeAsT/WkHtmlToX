@@ -34,7 +34,8 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
                 if (string.IsNullOrWhiteSpace(IssuerCertThumbprint))
                 {
                     Log.Error(
-                        $"Using Settings.Auth.IssuerCertificate before setting up a '{Constants.Settings.Auth.CertThumbprint}' value in the web.config");
+                        "Using Settings.Auth.IssuerCertificate before setting up a '{CertThumbprint}' value in the web.config",
+                        Constants.Settings.Auth.CertThumbprint);
                     throw new IssuerCertificateException(
                         $"Your have to set up a '{Constants.Settings.Auth.CertThumbprint}' value in the web.config before using Settings.Auth.IssuerCertificate");
                 }
@@ -43,7 +44,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin
 
                 if (signingCertificate == null)
                 {
-                    Log.Error("Can't find certificate with a thumbprint '{cert}'", IssuerCertThumbprint);
+                    Log.Error("Can't find certificate with a thumbprint '{IssuerCertThumbprint}'", IssuerCertThumbprint);
                     throw new IssuerCertificateException(
                         $"Can't find certificate with a thumbprint '{IssuerCertThumbprint}'");
                 }

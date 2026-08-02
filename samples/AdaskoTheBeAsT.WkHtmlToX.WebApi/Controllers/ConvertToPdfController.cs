@@ -37,7 +37,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.WebApiCore.Controllers
 #pragma warning disable SEC0120 // Missing Authorization Attribute
 #pragma warning disable SCS0012 // Controller method is potentially vulnerable to authorization bypass.
 #pragma warning disable VSTHRD200 // Use "Async" suffix for async methods
-        public async Task<IActionResult> Convert()
+        public async Task<IActionResult> ConvertAsync()
 #pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
 #pragma warning restore SCS0012 // Controller method is potentially vulnerable to authorization bypass.
 #pragma warning restore SEC0120 // Missing Authorization Attribute

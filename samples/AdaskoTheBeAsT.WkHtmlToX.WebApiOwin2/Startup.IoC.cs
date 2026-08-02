@@ -1,0 +1,56 @@
+using System;
+using System.Net.Http;
+using System.Web.Http;
+using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
+using AdaskoTheBeAsT.WkHtmlToX.BusinessLogic;
+using AdaskoTheBeAsT.WkHtmlToX.Engine;
+using AdaskoTheBeAsT.WkHtmlToX.WebApiOwin2.Handlers;
+using Microsoft.Owin;
+using Owin;
+using SimpleInjector;
+using SimpleInjector.Integration.WebApi;
+using SimpleInjector.Lifestyles;
+
+namespace AdaskoTheBeAsT.WkHtmlToX.WebApiOwin2
+{
+    public partial class Startup
+    {
+#pragma warning disable CC0091 // Use static method
+#pragma warning disable S2325 // Methods and properties that don't access instance data should be static
+        private Container ConfigureIoC(IAppBuilder app, HttpConfiguration httpConfiguration)
+#pragma warning restore S2325 // Methods and properties that don't access instance data should be static
+#pragma warning restore CC0091 // Use static method
+        {
+            var container = new Container();
+
+            app.Use(async (_, next) =>
+            {
+                using (AsyncScopedLifestyle.BeginScope(container))
+                {
+#pragma warning disable CC0031 // Check for null before calling a delegate
+#pragma warning disable MA0004 // Use .ConfigureAwait(false)
+                    await next();
+#pragma warning restore MA0004 // Use .ConfigureAwait(false)
+#pragma warning restore CC0031 // Check for null before calling a delegate
+                }
+            });
+
+            container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+            container.Register(
+                () =>
+                    container.GetInstance<CurrentRequest>().Value.GetOwinContext(),
+                Lifestyle.Scoped);
+            container.RegisterSingleton<IHtmlGenerator, SmallHtmlGenerator>();
+            container.RegisterSingleton<IHtmlToPdfDocumentGenerator, HtmlToPdfDocumentGenerator>();
+            var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null);
+            container.RegisterInstance(configuration);
+            container.RegisterSingleton<IWkHtmlToXEngine, WkHtmlToXEngine>();
+            container.RegisterSingleton<IPdfConverter, PdfConverter>();
+            container.RegisterInitializer<IWkHtmlToXEngine>(e => e.Initialize());
+            container.RegisterWebApiControllers(httpConfiguration);
+
+            httpConfiguration.DependencyResolver = new SimpleInjectorWebApiDependencyResolver(container);
+            return container;
+        }
+    }
+}

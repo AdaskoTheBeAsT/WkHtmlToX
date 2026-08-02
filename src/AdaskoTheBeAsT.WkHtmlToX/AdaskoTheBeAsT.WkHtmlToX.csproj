@@ -29,10 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2025.2.4">
-      <Exclude>all</Exclude>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="AdaskoTheBeAsT.Interop.Unmanaged" Version="[3.0.0,)" />
     <PackageReference Include="AdaskoTheBeAsT.Interop.Execution" Version="[1.0.0,)" />
   </ItemGroup>
