@@ -10,8 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.native.win.x64" Version="0.12.6" />
-    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
-    <PackageReference Include="System.Private.Uri" Version="4.3.2" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="[3.0.1,4.0.0)" />
+    <PackageReference Include="System.Private.Uri" Version="[4.3.2,5.0.0)" />
   </ItemGroup>
 
   <ItemGroup>

@@ -95,7 +95,9 @@ public sealed class MultipleConversionSteps
         _ownedEngine = null;
     }
 
+#pragma warning disable MA0051 // Method is too long
     private async Task<byte[]> GenerateContentAsync()
+#pragma warning restore MA0051 // Method is too long
     {
         _htmlToPdfDocument = new HtmlToPdfDocument
         {
@@ -119,6 +121,7 @@ public sealed class MultipleConversionSteps
 
         try
         {
+#pragma warning disable S8969 // Null-forgiving operators should not be redundant
             await _sut!.ConvertAsync(
                     _htmlToPdfDocument!,
                     length =>
@@ -133,7 +136,7 @@ public sealed class MultipleConversionSteps
                     },
                     GetCancellationToken())
                 .ConfigureAwait(false);
-
+#pragma warning restore S8969 // Null-forgiving operators should not be redundant
             stream!.Position = 0;
 #if NET8_0_OR_GREATER
             await stream.CopyToAsync(ms, TestContext.Current.CancellationToken).ConfigureAwait(false);

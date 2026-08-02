@@ -23,15 +23,13 @@ public partial class PdfProcessorTest
         Stream,
     }
 
-    public static TheoryData<HtmlContentSource> GetTestData()
-    {
-        return
-        [
+#pragma warning disable MA0005
+    public static TheoryData<HtmlContentSource> GetTestData() => [
             HtmlContentSource.String,
             HtmlContentSource.ByteArray,
             HtmlContentSource.Stream,
         ];
-    }
+#pragma warning restore MA0005
 
     [Fact]
     public void GetApplySettingFuncShouldReturnGlobalApplySettingWhenIsGlobalTruePassed()
@@ -617,7 +615,7 @@ public partial class PdfProcessorTest
         {
             received.Should().NotBeNull();
             received.Should().NotBeSameAs(htmlContentByteArray);
-            received!.Should().HaveCount(htmlContentByteArray.Length + 1);
+            received.Should().HaveCount(htmlContentByteArray.Length + 1);
 #if NETCOREAPP3_0_OR_GREATER
             received[^1].Should().Be(byte.MinValue);
 #else
@@ -730,7 +728,7 @@ public partial class PdfProcessorTest
         using (new AssertionScope())
         {
             received.Should().NotBeNull();
-            received!.Should().HaveCountGreaterThanOrEqualTo(html.Length + 1);
+            received.Should().HaveCountGreaterThanOrEqualTo(html.Length + 1);
             for (var i = 0; i < html.Length; i++)
             {
                 received[i].Should().Be(html[i]);

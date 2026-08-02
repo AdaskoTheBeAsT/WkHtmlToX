@@ -84,6 +84,7 @@ public sealed class ImageConverterStepDefinitions
         {
 #pragma warning disable RCS1212 // Remove redundant assignment.
             Stream? stream = null;
+#pragma warning disable S8969 // Null-forgiving operators should not be redundant
             await _sut!.ConvertAsync(
                     _htmlToImageDocument!,
                     length =>
@@ -96,6 +97,7 @@ public sealed class ImageConverterStepDefinitions
                     },
                     CancellationToken.None)
                 .ConfigureAwait(false);
+#pragma warning restore S8969 // Null-forgiving operators should not be redundant
 #pragma warning restore RCS1212 // Remove redundant assignment.
 
 #if NET8_0_OR_GREATER
