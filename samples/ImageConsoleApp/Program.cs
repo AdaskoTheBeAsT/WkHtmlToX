@@ -25,7 +25,7 @@ namespace ImageConsoleApp
                 {
                     In = "https://adaskothebeast.com/",
                     Format = "jpg",
-                    Out = "c:\\temp\\google.jpg",
+                    Out = Path.Combine(Path.GetTempPath(), "google.jpg"),
                     WebSettings =
                     {
                         LoadImages = true,

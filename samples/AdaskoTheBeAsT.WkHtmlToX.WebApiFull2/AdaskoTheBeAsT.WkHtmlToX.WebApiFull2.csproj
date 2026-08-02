@@ -14,7 +14,7 @@
     <!--<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>-->
     <GeneratedBindingRedirectsAction>Overwrite</GeneratedBindingRedirectsAction>
     <!--<AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>-->
-    <MicrosoftNetCompilersToolset_Version>5.3.0</MicrosoftNetCompilersToolset_Version>
+    <MicrosoftNetCompilersToolset_Version>5.6.0</MicrosoftNetCompilersToolset_Version>
     <MicrosoftCodeDomProvidersDotNetCompilerPlatform_Version>4.1.0</MicrosoftCodeDomProvidersDotNetCompilerPlatform_Version>
     <VisualStudioVersion>18.0</VisualStudioVersion>
     <MvcBuildViews>false</MvcBuildViews>

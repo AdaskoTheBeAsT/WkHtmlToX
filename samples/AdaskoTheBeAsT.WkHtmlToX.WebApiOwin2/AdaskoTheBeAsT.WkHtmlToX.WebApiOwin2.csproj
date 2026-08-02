@@ -14,7 +14,7 @@
     <!--<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>-->
     <GeneratedBindingRedirectsAction>Overwrite</GeneratedBindingRedirectsAction>
     <!--<AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>-->
-    <MicrosoftNetCompilersToolset_Version>5.3.0</MicrosoftNetCompilersToolset_Version>
+    <MicrosoftNetCompilersToolset_Version>5.6.0</MicrosoftNetCompilersToolset_Version>
     <MicrosoftCodeDomProvidersDotNetCompilerPlatform_Version>4.1.0</MicrosoftCodeDomProvidersDotNetCompilerPlatform_Version>
     <VisualStudioVersion>18.0</VisualStudioVersion>
     <MvcBuildViews>false</MvcBuildViews>
@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.native.win.x64" Version="0.12.6" />
-    <PackageReference Include="DotNetEnv" Version="3.1.1" />
+    <PackageReference Include="DotNetEnv" Version="3.2.0" />
     <!--<PackageReference Include="IdentityModel" Version="6.2.0" />-->
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.3.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />    
@@ -40,15 +40,16 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Owin" Version="1.0.0" />
-    <PackageReference Include="Serilog" Version="4.3.1" />
+    <PackageReference Include="Serilog" Version="4.4.0" />
     <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
     <PackageReference Include="Serilog.Settings.AppSettings" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="SerilogWeb.Classic" Version="5.1.66" />
-    <PackageReference Include="SimpleInjector" Version="5.5.1" />
+    <PackageReference Include="SimpleInjector" Version="5.6.0" />
     <PackageReference Include="SimpleInjector.Integration.WebApi" Version="5.5.0" />
     <PackageReference Include="Swashbuckle.Core" Version="5.6.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
     <PackageReference Include="Thinktecture.IdentityModel.Owin" Version="2.1.1" />
     <PackageReference Include="Thinktecture.IdentityModel.WebApi" Version="2.0.1" />
   </ItemGroup>
