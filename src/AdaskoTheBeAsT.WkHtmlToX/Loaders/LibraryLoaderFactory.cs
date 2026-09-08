@@ -28,7 +28,7 @@ internal sealed class LibraryLoaderFactory
         return Path.IsPathFullyQualified(path);
 #else
         var root = Path.GetPathRoot(path);
-        return Path.IsPathRooted(path) && root is not null && root.Length > 1 && root.EndsWith("\\", StringComparison.Ordinal);
+        return Path.IsPathRooted(path) && root?.Length > 1 && root.EndsWith("\\", StringComparison.Ordinal);
 #endif
     }
 

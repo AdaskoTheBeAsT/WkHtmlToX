@@ -304,24 +304,15 @@ internal abstract class ProcessorBase
         var type = value.GetType();
 
         var setter = GetApplySettingFunc(useGlobal);
-        void ApplySetting(IntPtr pointer, string key, string? text)
-        {
-            if (setter(pointer, key, text) != 1)
-            {
-                // Never include setting values (which can contain credentials or HTML).
-                throw new ArgumentException($"The native renderer rejected setting '{key}'.");
-            }
-        }
-
         var localName = string.IsNullOrEmpty(prefix) ? name : $"{prefix}.{name}";
 
         if (typeof(bool) == type)
         {
-            ApplySetting(config, localName, (bool)value ? "true" : "false");
+            ApplySetting(setter, config, localName, (bool)value ? "true" : "false");
         }
         else if (typeof(double) == type)
         {
-            ApplySetting(config, localName, ((double)value).ToString("0.##", CultureInfo.InvariantCulture));
+            ApplySetting(setter, config, localName, ((double)value).ToString("0.##", CultureInfo.InvariantCulture));
         }
 #pragma warning disable REFL040
         else if (typeof(Dictionary<string, string>).IsAssignableFrom(type))
@@ -338,15 +329,15 @@ internal abstract class ProcessorBase
                 }
 
                 // https://github.com/wkhtmltopdf/wkhtmltopdf/blob/c754e38b074a75a51327df36c4a53f8962020510/src/lib/reflect.hh#L192
-                ApplySetting(config, $"{localName}.append", text: null);
-                ApplySetting(config, $"{localName}[{index.ToString(CultureInfo.InvariantCulture)}]", $"{pair.Key}\n{pair.Value}");
+                ApplySetting(setter, config, $"{localName}.append", text: null);
+                ApplySetting(setter, config, $"{localName}[{index.ToString(CultureInfo.InvariantCulture)}]", $"{pair.Key}\n{pair.Value}");
 
                 index++;
             }
         }
         else
         {
-            ApplySetting(config, localName, value.ToString());
+            ApplySetting(setter, config, localName, value.ToString());
         }
     }
 
@@ -382,6 +373,19 @@ internal abstract class ProcessorBase
     protected internal abstract void SetFinishedCallback(
         IntPtr converter,
         IntCallback callback);
+
+    private static void ApplySetting(
+        Func<IntPtr, string, string?, int> setter,
+        IntPtr pointer,
+        string key,
+        string? text)
+    {
+        if (setter.Invoke(pointer, key, text) != 1)
+        {
+            // Never include setting values (which can contain credentials or HTML).
+            throw new ArgumentException($"The native renderer rejected setting '{key}'.");
+        }
+    }
 
     private static (ConversionFailureKind kind, Exception? failure) WriteOutput(
         IWkHtmlToXModule module,
