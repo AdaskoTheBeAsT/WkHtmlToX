@@ -1,6 +1,6 @@
 # 0027 - Migrate solution to `.slnx` and CI from Azure Pipelines to GitHub Actions
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-04-21
 - Traceability: uncommitted on `framework/new-worker`:
   deletion of `AdaskoTheBeAsT.WkHtmlToX.sln`, `AdaskoTheBeAsT.WkHtmlToX.ndproj`,

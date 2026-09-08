@@ -1,6 +1,6 @@
 # 0028 - Extract `WkHtmlToXSession` and `WkHtmlToXSessionFactory` from the engine
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-04-21
 - Traceability: uncommitted on `framework/new-worker`:
   new `src/AdaskoTheBeAsT.WkHtmlToX/Engine/WkHtmlToXSession.cs`,

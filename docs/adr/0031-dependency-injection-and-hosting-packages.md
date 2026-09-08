@@ -1,6 +1,6 @@
 # 0031 - Ship `DependencyInjection` and `Hosting` packages (Phase 3)
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-04-21
 - Traceability: `docs/plan.md` Section 2 / 3 Phase 3; uncommitted
   new projects `src/AdaskoTheBeAsT.WkHtmlToX.DependencyInjection/` and
@@ -16,6 +16,18 @@ Today's README tells consumers to
 consumer and easy to get wrong around disposal.
 
 ## Decision
+
+The package split is implemented. Current registration takes an explicit
+`WkHtmlToXConfiguration`, snapshotted at registration, and an optional worker
+options delegate. Engine/worker services are singletons; converter facades are
+transient. Configuration is not bound automatically from `appsettings.json`.
+
+[ADR 0038](0038-pipeline-aware-shutdown.md) replaces the generic worker hosted
+service with an engine hosted service. Host stop joins the entire pipeline,
+and the engine coordinates worker disposal even when container disposal follows
+a timed-out synchronous wait. A canceled host wait does not establish completion.
+
+### Original integration proposal
 
 - Ship `AdaskoTheBeAsT.WkHtmlToX.DependencyInjection` with a single
   `AddWkHtmlToX(this IServiceCollection services, Action<WkHtmlToXConfiguration>? configure = null)`

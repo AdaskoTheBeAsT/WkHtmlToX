@@ -23,6 +23,8 @@ public partial class PdfProcessorTest
     {
         _fixture = new Fixture();
         _module = new Mock<IWkHtmlToPdfModule>(MockBehavior.Strict);
+        _module.Setup(m => m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
+        _module.Setup(m => m.GetHttpErrorCode(It.IsAny<IntPtr>())).Returns(0);
         _module.Setup(
             m =>
                 m.AddObject(It.IsAny<IntPtr>(), It.IsAny<IntPtr>(), It.IsAny<string>()));
@@ -40,7 +42,7 @@ public partial class PdfProcessorTest
             .Returns(IntPtr.Zero);
         _module.Setup(m =>
                 m.SetGlobalSetting(It.IsAny<nint>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _sut = new PdfProcessor(
             new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null),
             _module.Object);
@@ -114,7 +116,7 @@ public partial class PdfProcessorTest
                     m.SetWarningCallback(
                         It.IsAny<IntPtr>(),
                         It.IsAny<StringCallback>()),
-                Times.Never);
+                Times.Once);
             _module.Verify(
                 m =>
                     m.SetFinishedCallback(
@@ -610,12 +612,12 @@ public partial class PdfProcessorTest
         if (useGlobal)
         {
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(0);
+                .Returns(1);
         }
         else
         {
             _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(0);
+                .Returns(1);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());
@@ -659,12 +661,12 @@ public partial class PdfProcessorTest
         if (useGlobal)
         {
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(value: 0);
+                .Returns(1);
         }
         else
         {
             _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(value: 0);
+                .Returns(1);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());
@@ -711,12 +713,12 @@ public partial class PdfProcessorTest
         if (useGlobal)
         {
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(0);
+                .Returns(1);
         }
         else
         {
             _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(0);
+                .Returns(1);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());
@@ -783,12 +785,12 @@ public partial class PdfProcessorTest
         if (useGlobal)
         {
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(0);
+                .Returns(1);
         }
         else
         {
             _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(0);
+                .Returns(1);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());
@@ -832,12 +834,12 @@ public partial class PdfProcessorTest
         if (useGlobal)
         {
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(0);
+                .Returns(1);
         }
         else
         {
             _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(0);
+                .Returns(1);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());
@@ -887,12 +889,12 @@ public partial class PdfProcessorTest
         if (useGlobal)
         {
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(0);
+                .Returns(1);
         }
         else
         {
             _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(0);
+                .Returns(1);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());
@@ -936,12 +938,12 @@ public partial class PdfProcessorTest
         if (useGlobal)
         {
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(0);
+                .Returns(1);
         }
         else
         {
             _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(0);
+                .Returns(1);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());
@@ -980,12 +982,12 @@ public partial class PdfProcessorTest
         if (useGlobal)
         {
             _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(0);
+                .Returns(1);
         }
         else
         {
             _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-                .Returns(0);
+                .Returns(1);
         }
 
         var intPtr = new IntPtr(_fixture.Create<int>());

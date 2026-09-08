@@ -1,489 +1,428 @@
 # WkHtmlToX
 
-🚀 A high-performance, thread-safe C# wrapper for [wkhtmltopdf](https://wkhtmltopdf.org) that converts HTML to PDF and images with ease.
+A C# wrapper for [wkhtmltopdf](https://wkhtmltopdf.org), with one dedicated
+native execution thread for HTML-to-PDF and HTML-to-image conversion.
 
-[![CodeFactor](https://www.codefactor.io/repository/github/adaskothebeast/wkhtmltox/badge/master)](https://www.codefactor.io/repository/github/adaskothebeast/wkhtmltox/overview/master)
-[![Build Status](https://adaskothebeast.visualstudio.com/AdaskoTheBeAsT.WkHtmlToX/_apis/build/status/AdaskoTheBeAsT.WkHtmlToX?branchName=master)](https://adaskothebeast.visualstudio.com/AdaskoTheBeAsT.WkHtmlToX/_build/latest?definitionId=8&branchName=master)
-![Azure DevOps tests](https://img.shields.io/azure-devops/tests/AdaskoTheBeAsT/AdaskoTheBeAsT.WkHtmlToX/18)
-![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/AdaskoTheBeAsT/AdaskoTheBeAsT.WkHtmlToX/18?style=plastic)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX&metric=alert_status)](https://sonarcloud.io/dashboard?id=AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX)
-![Nuget](https://img.shields.io/nuget/dt/AdaskoTheBeAsT.WkHtmlToX)
-![Sonar Coverage](https://img.shields.io/sonar/coverage/AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX?server=https%3A%2F%2Fsonarcloud.io&style=plastic)
+[![NuGet](https://img.shields.io/nuget/v/AdaskoTheBeAsT.WkHtmlToX)](https://www.nuget.org/packages/AdaskoTheBeAsT.WkHtmlToX)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX&metric=alert_status)](https://sonarcloud.io/dashboard?id=AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX)
 
-## ✨ Features
+## Why this major release is better
 
-- **Cross-Platform Support** - Works on Windows (x64/x86), macOS, and Linux (multiple distributions)
-- **Thread-Safe** - Built with concurrency in mind using modern .NET patterns
-- **Memory Efficient** - Leverages `ArrayPool<byte>` and supports [RecyclableMemoryStream](https://github.com/microsoft/Microsoft.IO.RecyclableMemoryStream)
-- **Async/Await** - Fully asynchronous API with `CancellationToken` support
-- **Multi-Target** - Supports .NET Framework 4.6.2+, .NET 8.0, .NET 9.0, and .NET 10.0
-- **Production Ready** - Comprehensive test coverage and extensive static analysis
-- **Event Callbacks** - Track conversion progress, phases, warnings, and errors
-- **HTML to PDF** - Convert HTML content, streams, or byte arrays to PDF
-- **HTML to Image** - Convert HTML to various image formats
+Version **13.0.0 (unreleased)** makes ownership and failure handling explicit:
 
-## 📦 Installation
+- A second native engine fails fast instead of allowing concurrent access to
+  process-global Qt state.
+- Application callback exceptions cannot escape into native code. Results
+  distinguish invalid input, rendering, stream I/O, callback, and native failures.
+- Submitted settings, dictionaries, paper sizes, and byte arrays are snapshotted.
+  Later changes cannot silently alter a queued conversion.
+- Slow input reads and destination writes no longer occupy the native thread.
+  Request admission and aggregate managed input/output buffering have explicit limits.
+- Shutdown coordinates the entire pipeline, not just the native queue. Host
+  deadlines stop waiting without prematurely releasing streams or native ownership.
+- Rejected native settings are reported rather than silently ignored.
+- Async lifecycle and health APIs use the corrected Interop.Execution 2.x
+  worker. Cleanup failures are observable; incomplete native teardown requires
+  a process restart.
+- Native loading uses one pinned library binding, not an unload/reload promise
+  that conflicts with cached P/Invoke addresses.
 
-```bash
-# Core package
+See the [migration guide](#migration-to-1300) and [CHANGELOG](CHANGELOG.md).
+No throughput improvement is claimed without benchmarks.
+
+## Installation
+
+```shell
 dotnet add package AdaskoTheBeAsT.WkHtmlToX
-
-# Optional: plain Microsoft.Extensions.DependencyInjection integration
+# Choose the native binary for the actual process architecture:
+dotnet add package AdaskoTheBeAsT.WkHtmlToX.native.win.x64 --version 0.12.6
+# Optional integrations:
 dotnet add package AdaskoTheBeAsT.WkHtmlToX.DependencyInjection
-
-# Optional: generic-host (IHostedService) driven lifecycle
 dotnet add package AdaskoTheBeAsT.WkHtmlToX.Hosting
 ```
 
-## 🚀 Quick Start
+Keep the three managed packages on the same release. The core package does not
+include a renderer binary. Never render untrusted HTML in your application
+process: [upstream explicitly warns against it](https://wkhtmltopdf.org/status.html).
+A child process is useful for crash containment but is not itself a security sandbox.
 
-### Console Application
+## Console example
+
+This complete example is compiled and run by `scripts/verify-packages.ps1`.
+Call `ConsoleExample.RunAsync(cancellationToken)` from your application.
 
 ```csharp
-using AdaskoTheBeAsT.WkHtmlToX;
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using AdaskoTheBeAsT.WkHtmlToX.Documents;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AdaskoTheBeAsT.WkHtmlToX.Settings;
+using AdaskoTheBeAsT.WkHtmlToX.Utils;
 
-var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null);
-
-using var engine = new WkHtmlToXEngine(configuration);
-engine.Initialize();
-
-var converter = new PdfConverter(engine);
-
-// Create document with HTML content
-var document = new HtmlToPdfDocument
+public static class ConsoleExample
 {
-    GlobalSettings = new PdfGlobalSettings
+    public static async Task RunAsync(CancellationToken cancellationToken)
     {
-        ColorMode = ColorMode.Color,
-        Orientation = Orientation.Portrait,
-        PaperSize = PaperKind.A4
-    },
-    ObjectSettings =
-    {
-        new PdfObjectSettings
+        var configuration = new WkHtmlToXConfiguration
         {
-            HtmlContent = "<html><body><h1>Hello World!</h1></body></html>",
-            WebSettings = { DefaultEncoding = "utf-8" }
-        }
-    }
-};
-
-// Convert to PDF
-using var stream = new FileStream("output.pdf", FileMode.Create);
-var result = await converter.ConvertAsync(
-    document, 
-    _ => stream, 
-    CancellationToken.None);
-
-Console.WriteLine(result ? "Success!" : "Failed!");
-```
-
-### ASP.NET Core Web API with Dependency Injection
-
-Starting with v11.0.0, DI and Hosting integration is shipped as two small
-companion packages built on top of
-[`AdaskoTheBeAsT.Interop.Execution`](https://www.nuget.org/packages/AdaskoTheBeAsT.Interop.Execution/).
-See the [Migration guide](#-migration-guide-v10x--v1100) below if you are
-upgrading from v10.x.
-
-#### Option A - `AdaskoTheBeAsT.WkHtmlToX.Hosting` (recommended)
-
-The hosted service drives worker `InitializeAsync` / `DisposeAsync`
-through the generic host, so your app never calls `engine.Initialize()`
-manually.
-
-```csharp
-// Program.cs
-using AdaskoTheBeAsT.WkHtmlToX.Engine;
-using AdaskoTheBeAsT.WkHtmlToX.Hosting;
-
-var builder = WebApplication.CreateBuilder(args);
-
-var wkhtmlConfiguration = new WkHtmlToXConfiguration(
-    (int)Environment.OSVersion.Platform,
-    runtimeIdentifier: null);
-
-builder.Services.AddWkHtmlToXHostedService(wkhtmlConfiguration, options =>
-{
-    options.MaxOperationsPerSession = 500;
-    options.RecycleSessionOnFailure = true;
-});
-
-var app = builder.Build();
-app.Run();
-```
-
-#### Option B - `AdaskoTheBeAsT.WkHtmlToX.DependencyInjection`
-
-Use this when you are not running on the generic host (e.g. OWIN /
-ASP.NET 4.8 on full framework). Call `InitializeAsync` on the resolved
-engine during application startup and dispose it on shutdown.
-
-```csharp
-using AdaskoTheBeAsT.WkHtmlToX.DependencyInjection;
-using AdaskoTheBeAsT.WkHtmlToX.Engine;
-
-services.AddWkHtmlToX(new WkHtmlToXConfiguration(
-    (int)Environment.OSVersion.Platform,
-    runtimeIdentifier: null));
-```
-
-Both packages register `IWkHtmlToXEngine`, `IPdfConverter` and
-`IImageConverter` for injection.
-
-#### Controller Implementation
-
-```csharp
-[ApiController]
-[Route("api/[controller]")]
-public class PdfController : ControllerBase
-{
-    private readonly IPdfConverter _pdfConverter;
-    private readonly RecyclableMemoryStreamManager _memoryManager;
-
-    public PdfController(IPdfConverter pdfConverter)
-    {
-        _pdfConverter = pdfConverter;
-        _memoryManager = new RecyclableMemoryStreamManager();
-    }
-
-    [HttpPost("convert")]
-    public async Task<IActionResult> ConvertToPdf([FromBody] string htmlContent)
-    {
+            RequestOptions = new WkHtmlToXRequestOptions
+            {
+                MaxConcurrentRequests = 16,
+                MaxInputBytes = 8 * 1024 * 1024,
+                MaxBufferedInputBytes = 32 * 1024 * 1024,
+                MaxOutputBytes = 16 * 1024 * 1024,
+                MaxBufferedOutputBytes = 64 * 1024 * 1024,
+            },
+        };
+        await using var engine = new WkHtmlToXEngine(configuration);
+        await engine.InitializeAsync(cancellationToken);
         var document = new HtmlToPdfDocument
         {
-            GlobalSettings = new PdfGlobalSettings(),
-            ObjectSettings = 
-            { 
-                new PdfObjectSettings { HtmlContent = htmlContent } 
-            }
-        };
-
-        Stream? stream = null;
-        var converted = await _pdfConverter.ConvertAsync(
-            document,
-            length =>
+            GlobalSettings = new PdfGlobalSettings { PaperSize = PaperKind.A4 },
+            ObjectSettings =
             {
-                stream = _memoryManager.GetStream(
-                    Guid.NewGuid(), 
-                    "wkhtmltox", 
-                    length);
-                return stream;
+                new PdfObjectSettings { HtmlContent = "<html><body>Hello!</body></html>" },
             },
-            HttpContext.RequestAborted);
-
-        if (converted && stream != null)
+        };
+        using var output = new MemoryStream();
+        var result = await engine.ConvertPdfAsync(document, _ => output, cancellationToken);
+        if (!result.Success || output.Length == 0)
         {
-            stream.Position = 0;
-            return File(stream, "application/pdf", "output.pdf");
+            throw new InvalidOperationException("PDF conversion failed: " + result.FailureKind);
         }
 
-        return BadRequest("Conversion failed");
+        // The stream remains yours. Rewind before reading or sending it.
+        output.Position = 0;
     }
 }
 ```
 
-## 🔧 Advanced Configuration
+`ConvertImageAsync` uses `HtmlToImageDocument.ImageSettings.In` (URL or file path).
+For headers and footers, use `SectionSettings.Left`, `Center`, `Right`, or
+`HtmlUrl`, not a nonexistent `HtmlContent` setting.
 
-### Linux Platform Configuration
+## Generic host
 
-For Linux environments, specify the runtime identifier:
-
-```csharp
-var configuration = new WkHtmlToXConfiguration(
-    (int)PlatformID.Unix, 
-    WkHtmlToXRuntimeIdentifier.Ubuntu2004X64);
-```
-
-### Supported Linux Distributions
-
-- Ubuntu (14.04, 16.04, 18.04, 20.04) - x64/x86
-- Debian (9, 10) - x64/x86
-- CentOS (6, 7, 8)
-- Amazon Linux 2
-- OpenSUSE Leap 15
-
-### Event Callbacks
-
-Monitor conversion progress and handle warnings/errors:
+The hosting package initializes the engine and shuts down its whole conversion
+pipeline before stopping the native worker. The engine and
+worker are singletons; `IPdfConverter` and `IImageConverter` are transient
+facades sharing that engine. `IWkHtmlToXEngine` and `IWkHtmlToXAsyncEngine`
+resolve to the same singleton.
 
 ```csharp
-var configuration = new WkHtmlToXConfiguration(
-    (int)Environment.OSVersion.Platform, 
-    null)
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using AdaskoTheBeAsT.WkHtmlToX.Documents;
+using AdaskoTheBeAsT.WkHtmlToX.Engine;
+using AdaskoTheBeAsT.WkHtmlToX.Hosting;
+using AdaskoTheBeAsT.WkHtmlToX.Settings;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+public static class HostedExample
 {
-    PhaseChangedAction = args => 
-        Console.WriteLine($"Phase {args.CurrentPhase}/{args.PhaseCount}: {args.Description}"),
-    
-    ProgressChangedAction = args => 
-        Console.WriteLine($"Progress: {args.Description}"),
-    
-    WarningAction = args => 
-        Console.WriteLine($"Warning: {args.Message}"),
-    
-    ErrorAction = args => 
-        Console.WriteLine($"Error: {args.Message}"),
-    
-    FinishedAction = args => 
-        Console.WriteLine($"Finished: {(args.Success ? "Success" : "Failed")}")
-};
-```
-
-### Custom PDF Settings
-
-```csharp
-var document = new HtmlToPdfDocument
-{
-    GlobalSettings = new PdfGlobalSettings
+    public static async Task RunAsync(CancellationToken cancellationToken)
     {
-        ColorMode = ColorMode.Color,
-        Orientation = Orientation.Landscape,
-        PaperSize = PaperKind.A4,
-        Margins = new MarginSettings
-        {
-            Top = 10,
-            Bottom = 10,
-            Left = 10,
-            Right = 10,
-            Unit = Unit.Millimeters
-        },
-        DocumentTitle = "My Document",
-        UseCompression = true
-    },
-    ObjectSettings =
-    {
-        new PdfObjectSettings
-        {
-            HtmlContent = htmlContent,
-            WebSettings = 
-            { 
-                DefaultEncoding = "utf-8",
-                EnableJavascript = true,
-                LoadImages = true
-            },
-            HeaderSettings = new SectionSettings
+        using var host = new HostBuilder()
+            .ConfigureServices(services => services.AddWkHtmlToXHostedService(
+                new WkHtmlToXConfiguration(),
+                worker => worker.MaxOperationsPerSession = 500))
+            .Build();
+        await host.StartAsync(cancellationToken);
+        var engine = host.Services.GetRequiredService<IWkHtmlToXAsyncEngine>();
+        using var output = new MemoryStream();
+        var result = await engine.ConvertImageAsync(
+            new HtmlToImageDocument
             {
-                HtmlContent = "<div>Header Content</div>"
+                ImageSettings = new ImageSettings { In = "about:blank", Format = "png" },
             },
-            FooterSettings = new SectionSettings
-            {
-                HtmlContent = "<div>Page [page] of [toPage]</div>"
-            }
+            _ => output,
+            cancellationToken);
+        if (!result.Success || output.Length == 0)
+        {
+            throw new InvalidOperationException("Image conversion failed: " + result.FailureKind);
         }
+
+        await host.StopAsync(cancellationToken);
     }
-};
+}
 ```
 
-### Memory-Efficient Stream Handling
+For ASP.NET Core, call the same registration extension on `builder.Services`.
+Return a completed, rewound stream to the HTTP response, rather than assuming
+the native renderer can be interrupted by `HttpContext.RequestAborted`.
 
-The library supports custom stream creation, allowing integration with `RecyclableMemoryStream` to minimize memory allocations:
+## Plain dependency injection
 
-```csharp
-var memoryManager = new RecyclableMemoryStreamManager();
-
-Stream? stream = null;
-var result = await converter.ConvertAsync(
-    document,
-    length =>
-    {
-        // RecyclableMemoryStream reuses memory blocks
-        stream = memoryManager.GetStream(Guid.NewGuid(), "wkhtmltox", length);
-        return stream;
-    },
-    cancellationToken);
-```
-
-## 🔀 Migration guide (v10.x → v11.0.0)
-
-v11.0.0 is a breaking release that moves infrastructure concerns onto
-the shared `AdaskoTheBeAsT.Interop.*` toolbox and splits DI / Hosting
-into dedicated packages. There is **no compatibility shim** - follow
-this guide when upgrading.
-
-### TL;DR
-
-| Area | v10.x (before) | v11.0.0 (after) |
-| --- | --- | --- |
-| Target frameworks | `netstandard2.0`, `net8.0`, `net9.0`, `net10.0` | `net462`, `net472`, `net48`, `net481`, `net8.0`, `net9.0`, `net10.0` |
-| DI registration | hand-written `AddSingleton<IWkHtmlToXEngine>(...)` in the core package | `AddWkHtmlToX(...)` / `AddWkHtmlToXHostedService(...)` in companion packages |
-| Engine worker | custom `BlockingCollection` + STA `Thread` inside `WkHtmlToXEngine` | `ExecutionWorker<WkHtmlToXSession>` from `AdaskoTheBeAsT.Interop.Execution` |
-| Native loader | `Loaders/` + `Native/*NativeMethods.cs` | `UnmanagedLibrary` from `AdaskoTheBeAsT.Interop.Unmanaged` |
-| `ProgressChangedEventArgs` ctor | `(document, description)` | `(document, progress, description)` + new `Progress` property |
-| CI | Azure Pipelines (`azure-pipelines.yml`) | GitHub Actions (`.github/workflows/ci.yml`) |
-| Solution format | `AdaskoTheBeAsT.WkHtmlToX.sln` | `AdaskoTheBeAsT.WkHtmlToX.slnx` |
-
-### 1. `netstandard2.0` is dropped
-
-The core package no longer targets `netstandard2.0`. Supported TFMs are
-`net462`, `net472`, `net48`, `net481`, `net8.0`, `net9.0`, `net10.0`.
-If you still need `netstandard2.0`, stay on the v10.x line.
-
-### 2. DI / Hosting moved to separate packages
-
-In v10.x the recommended pattern was to new up the engine and call
-`Initialize()` yourself:
+Use this without a generic host. Initialize the async engine at startup.
+Dispose the service provider at application shutdown; the shared engine coordinates
+pipeline shutdown and worker disposal, regardless of container disposal order.
+Do not dispose an injected engine per request.
 
 ```csharp
-// v10.x
-services.AddSingleton(sp =>
-    new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null));
+using System.Threading;
+using System.Threading.Tasks;
+using AdaskoTheBeAsT.Interop.Execution;
+using AdaskoTheBeAsT.WkHtmlToX.DependencyInjection;
+using AdaskoTheBeAsT.WkHtmlToX.Engine;
+using Microsoft.Extensions.DependencyInjection;
 
-services.AddSingleton<IWkHtmlToXEngine>(sp =>
+public static class DiExample
 {
-    var engine = new WkHtmlToXEngine(
-        sp.GetRequiredService<WkHtmlToXConfiguration>());
-    engine.Initialize();
-    return engine;
-});
-
-services.AddSingleton<IPdfConverter, PdfConverter>();
-services.AddSingleton<IImageConverter, ImageConverter>();
+    public static async Task RunAsync(CancellationToken cancellationToken)
+    {
+        var services = new ServiceCollection();
+        services.AddWkHtmlToX(new WkHtmlToXConfiguration());
+        await using var provider = services.BuildServiceProvider();
+        var engine = provider.GetRequiredService<IWkHtmlToXAsyncEngine>();
+        await engine.InitializeAsync(cancellationToken);
+        // At application shutdown. Drain is the default; CancelPending skips
+        // requests not yet in native execution, without aborting active work.
+        await engine.ShutdownAsync(ExecutionShutdownMode.Drain, cancellationToken);
+    }
+}
 ```
 
-In v11.0.0 pick one of the two companion packages:
+## Request ownership and resource limits
 
-```csharp
-// v11.0.0 - generic host (recommended for ASP.NET Core / worker services)
-services.AddWkHtmlToXHostedService(
-    new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null));
+### Admission and input
 
-// v11.0.0 - plain DI (OWIN, non-hosted apps)
-services.AddWkHtmlToX(
-    new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, null));
-```
+- Do not mutate a document while calling the conversion method. Once it returns
+  its task, built-in settings, object collections, byte arrays, encodings, and
+  dictionaries have been copied. Settings subclasses are rejected because the
+  library cannot guarantee ownership of arbitrary additional state.
+- PDF objects require **exactly one** input: nonempty `HtmlContent`,
+  `HtmlContentByteArray`, `HtmlContentStream`, `Page`, or `Xsl`.
+  A PDF requires at least one non-null object. Image requests require `In`.
+  Standard input (`"-"`) and native file/stdout output (`Out`) are rejected.
+- HTML streams are **borrowed**, must be readable and seekable, and are read from
+  their current position. Do not read, seek, mutate, or dispose them until the
+  conversion task is terminal. Non-seekable input is rejected before native
+  initialization; buffer it yourself with an application-defined limit.
+- Stream reads use managed async I/O before native admission. Requests reach the
+  native queue when input is ready; concurrent requests need not retain submission
+  order. The native worker itself still executes one conversion at a time.
+- Configuration and callback delegates are snapshotted at engine construction,
+  or at DI registration. Changing the original configuration does not reconfigure
+  a running engine. Captured state inside application delegates is still yours.
 
-Both extensions register `IWkHtmlToXEngine`, `IPdfConverter` and
-`IImageConverter`. Remove any leftover `AddSingleton<IPdfConverter, ...>`
-/ `AddSingleton<IImageConverter, ...>` lines - they are done for you.
+### Output and callbacks
 
-### 3. `WkHtmlToXEngine` constructor changed
+- Native output-pointer copying stays on the owning thread, before converter
+  destruction. Only a detached managed buffer crosses the native boundary.
+- The destination factory runs on managed thread-pool execution after native
+  conversion and destruction. Writes and flushes are awaited outside the worker.
+  The library **never disposes** the destination stream.
+- Task completion includes actual input processing and output delivery. After
+  success, cancellation, or failure, the library no longer uses the borrowed
+  streams. A failed or canceled delivery can leave partial output.
+- Native progress/phase/finished/warning/error callbacks run on the native thread.
+  Keep them short. Do not reenter the engine, initialize/dispose it, or wait for
+  another conversion. Reentry is rejected and callback exceptions are contained.
+  The callback document is the request snapshot, not the caller's original object.
+  Do not block waiting for engine disposal from a destination factory either.
+- `FinishedAction` describes native completion, **not** completion of output
+  delivery. Await the conversion task for that guarantee.
 
-`WkHtmlToXEngine` no longer owns the worker thread itself. It takes an
-`IExecutionWorker<WkHtmlToXSession>` and optionally a flag that says
-whether it owns the worker lifetime.
+Default limits (`WkHtmlToXConfiguration.RequestOptions`):
 
-```csharp
-// v10.x
-using var engine = new WkHtmlToXEngine(configuration);
-engine.Initialize();
+| Option | Default | Scope |
+| --- | ---: | --- |
+| `MaxConcurrentRequests` | 32 | All admitted requests, including input and slow output |
+| `MaxInputBytes` | 32 MiB | Sum of inline HTML bytes across one PDF request |
+| `MaxBufferedInputBytes` | 128 MiB | Inline input reservations across the engine |
+| `MaxOutputBytes` | 64 MiB | One detached managed output |
+| `MaxBufferedOutputBytes` | 128 MiB | Detached output across the engine |
 
-// v11.0.0 - via DI (preferred)
-//   resolve IWkHtmlToXEngine from the container; Hosting package drives
-//   InitializeAsync / DisposeAsync for you.
+Admission rejects immediately with `Overloaded`; there is no extra unbounded
+backlog of requests waiting for a slot. Per-request input limit violations return
+`InvalidInput`; aggregate input or output budget violations return `ResourceLimit`.
+These are non-recycling failures. All limits must be positive; each shared budget
+must cover its corresponding per-request maximum.
 
-// v11.0.0 - manual wiring (console apps / tests)
-var loaderFactory = new LibraryLoaderFactory();
-var sessionFactory = new WkHtmlToXSessionFactory(configuration, loaderFactory);
-await using var worker = new ExecutionWorker<WkHtmlToXSession>(
-    sessionFactory,
-    new ExecutionWorkerOptions { UseStaThread = true });
-await worker.InitializeAsync();
-using var engine = new WkHtmlToXEngine(worker, ownsWorker: true);
-```
+The engine reserves the complete PDF input before cloning byte arrays or
+allocating stream buffers. It counts encoded `HtmlContent` bytes, byte-array
+lengths, and remaining stream lengths. Page/Xsl and image paths reserve no inline
+payload. Reservations remain held through output delivery and are released on
+success, failure, or cancellation. Input streams that grow beyond the reservation
+fail during preparation rather than exceeding the budget.
 
-### 4. `ProgressChangedEventArgs` now carries the numeric progress
+No temporary-file spooling is used, so spool usage is zero. These limits do
+**not** measure total managed heap usage or cap memory already allocated inside
+wkhtmltox, caller-held objects, UTF-16/settings strings, temporary marshalling
+copies/pools, remote resources, images, files, or network traffic. Native output is
+size-checked after rendering, before managed allocation. Budget native memory
+separately and use supervised processes for hostile or memory-intensive input.
+The optional worker `QueueCapacity` only bounds the native queue; the wrapper's
+request limit also covers input and delivery.
 
-The progress integer reported by the native callback used to be
-ignored. It is now surfaced on the event args.
+## Cancellation, shutdown, and health
 
-```csharp
-// v10.x
-new ProgressChangedEventArgs(document, description);
+- A pre-canceled request never starts native work. Managed reads/writes and queued
+  execution observe the request token. An active synchronous native conversion
+  **cannot** be interrupted; its task remains pending until the native call exits
+  and borrowed-resource use ends.
+- Canceling `InitializeAsync` cancels that caller's wait, not shared startup.
+- `ShutdownAsync` closes admission immediately. `Drain` finishes all admitted
+  input preparation, native conversions, and output delivery, then tears down
+  the worker. A successfully completed host stop has the same guarantee.
+- `CancelPending` skips requests that have not crossed the native-start gate.
+  Active stream reads finish before their requests become canceled. Queued tasks
+  may wait for the active native delegate to exit before becoming canceled.
+  Already-started conversions and their output delivery finish normally unless
+  their own request token is canceled.
+- Configure the default policy with `worker.ShutdownMode` in DI/hosting, or use
+  `ShutdownAsync(ExecutionShutdownMode.CancelPending, cancellationToken)` explicitly.
+  The first shutdown/disposal call selects the policy; later calls only join it.
+- Shutdown and host-stop tokens limit **waiting**, not cleanup ownership. Even
+  an already-canceled token starts shutdown. After a canceled/timed-out wait,
+  retain conversion tasks and borrowed streams, then join shutdown again.
+- `DisposeAsync` joins actual pipeline completion. Synchronous disposal uses
+  `worker.DisposeTimeout` (infinite by default) for the whole pipeline and can
+  return early. Later container/worker disposal cannot bypass that pipeline.
+  Do not unload native code or block on shutdown from a stream method/factory
+  belonging to an active request.
+- Inspect `IsFaulted` and `Fault` for terminal worker/session failure.
+  `QueueDepth` is native queue depth, not total managed requests.
+  A normal failed conversion does not necessarily fault the engine.
 
-// v11.0.0
-new ProgressChangedEventArgs(document, progress, description);
+Prefer one engine for the **entire process lifetime**, not one per conversion.
+On Windows x64/wkhtmltox 0.12.6, replacing engines on new threads reproduces
+Qt `QObject::startTimer` and `QApplication` warnings in both the previous and
+current implementations, even though every worker is STA. STA configures COM,
+not Qt's thread/event dispatcher. Controlled probes using one engine, including
+session recycling on that same thread, did not emit the warnings.
+Successful output does not establish that skipped timers are harmless.
+See the Qt comparison in [astra_plan.md](astra_plan.md).
 
-configuration.ProgressChangedAction = args =>
-    Console.WriteLine($"{args.Progress}% - {args.Description}");
-```
+`ConversionResult` includes `FailureKind`, `HttpErrorCode`, bounded `Warnings`,
+`Exception`, and `CallbackException`. Only `NativeRuntimeError` triggers
+failure-based session recycling. A rejected setting, native conversion returning
+false, or application stream/callback exception does not automatically recycle.
+Warnings and exceptions can contain application data: redact before logging.
 
-If you subclassed `ProgressChangedEventArgs` or constructed it yourself
-(mocks, custom tests), update the constructor call-sites.
+Hard deadlines, safe parallel rendering, crash recovery, and untrusted content
+require separately supervised renderer processes with filesystem/network/privilege
+restrictions. They are not implemented by this in-process package.
 
-### 5. Removed types
+## Native deployment and supported targets
 
-The following internals are gone - delete any references from consumer
-code or CI filters:
+Managed targets: `net472`, `net48`, `net481`, `net8.0`, `net9.0`, `net10.0`.
+There is no `netstandard2.0` or `net462` asset in this release.
 
-- `SafeLibraryHandle`, `LoadLibraryFlags`,
-  `SystemPosixNativeMethods`, `SystemWindowsNativeMethods` -
-  replaced by `AdaskoTheBeAsT.Interop.Unmanaged.UnmanagedLibrary`.
-- `AssemblyInfo.cs` - attributes are emitted by the SDK.
-- `azure-pipelines.yml`, `.runsettings`, legacy `.sln` -
-  replaced by GitHub Actions, `coverage.settings.xml` and `.slnx`.
+| Native environment | Status |
+| --- | --- |
+| Windows x64 | Real-native unit/integration and packaged-consumer validation target |
+| Windows x86 | Loader retained; not validated in the current release checks |
+| Linux x64/x86 | Loader retained; distribution/system dependencies require deployment validation |
+| macOS x64 | Loader retained; not validated in the current release checks |
+| ARM/ARM64 process | Rejected; bitness alone does not identify a compatible binary |
+| .NET Framework outside Windows | Not supported |
 
-### 6. Observability
+Use the parameterless configuration for OS detection. Linux needs either a
+legacy `WkHtmlToXRuntimeIdentifier` matching its native package or an explicit
+`NativeLibraryPath`. The legacy distribution names are package layout identifiers,
+not a promise of support for obsolete distributions.
 
-The new execution worker emits `ActivitySource` / `Meter` telemetry
-named `AdaskoTheBeAsT.Interop.Execution`. Hook it into OpenTelemetry
-with two lines:
+`NativeLibraryPath` must be an absolute path to a **trusted** binary compatible
+with the process architecture. Without it, loaders look under
+`AppContext.BaseDirectory/runtimes/<rid>/native/` and then the application base
+directory. They do not search the current working directory or `/usr/lib`.
+Missing explicit paths do not fall back silently.
 
-```csharp
-builder.Services.AddOpenTelemetry()
-    .WithTracing(t => t.AddSource("AdaskoTheBeAsT.Interop.Execution"))
-    .WithMetrics(m => m.AddMeter("AdaskoTheBeAsT.Interop.Execution"));
-```
+On .NET 8+, the assembly's DllImport resolver routes all wkhtmltox imports to the
+selected handle. On .NET Framework, Windows preloading requires `wkhtmltox.dll`
+and rejects a module already loaded outside this wrapper. The selected library
+remains loaded for the process lifetime; changing the path requires a restart.
+Session initialization/termination and recycling remain thread-owned.
 
-### 7. See also
+For single-file deployment, keep the native binary and its dependencies beside
+the application or supply `NativeLibraryPath`; automatic extraction paths are
+not inferred. Trimming and Native AOT are not supported (settings use reflection).
+Do not load multiple copies of this wrapper or wkhtmltox through different
+assembly load contexts/AppDomains to circumvent ownership checks.
 
-- [`docs/plan.md`](docs/plan.md) - the migration plan this release implements.
-- [`docs/adr/`](docs/adr) - architecture decision records for every step.
+## Migration to 13.0.0
 
-## 🏗️ Architecture
+This is a **major release**. Upgrade the core, DI, and Hosting packages together,
+then follow these steps:
 
-- **Clean Separation** - Abstractions, Engine, Loaders, Modules, and Settings
-- **Resource Management** - Proper `IDisposable` implementation with thread-safe disposal
-- **Cross-Platform Loading** - Platform-specific library loaders (Windows, Linux, macOS)
-- **Worker Thread Pattern** - `ExecutionWorker<WkHtmlToXSession>` from
-  `AdaskoTheBeAsT.Interop.Execution` owns the STA thread, queue,
-  startup handshake, fault signalling and session recycling
-- **Visitor Pattern** - Extensible work item processing
+1. **Use supported TFMs and dependencies.** Retarget older applications to at
+   least .NET Framework 4.7.2 or .NET 8. Interop.Execution dependencies are
+   constrained to `[2.0.0,3.0.0)` and Interop.Unmanaged to `[3.0.0,4.0.0)`.
+2. **Keep one engine per process.** Reuse the DI singleton across PDF and image
+   facades. A second engine now throws, including while the first is recycling
+   or still shutting down. Failed native teardown requires a process restart.
+3. **Move to `IWkHtmlToXAsyncEngine`.** Use `InitializeAsync`, `ConvertPdfAsync`,
+   `ConvertImageAsync`, and `DisposeAsync`, as in the compiled examples above.
+   The public `new WkHtmlToXEngine(configuration)` constructor still exists.
+   Native sessions, loaders, and worker injection constructors are internal.
+4. **Stop constructing work items.** `AddConvertWorkItem`, public work-item
+   classes, visitor interfaces, and caller-writable completion sources are
+   obsolete migration shims, planned for removal in the next major release.
+   They still work with deprecation warnings. The visitor API is not a supported
+   plugin mechanism. `PdfConverter`/`ImageConverter` and their `Task<bool>` APIs
+   remain available and use the direct async engine when possible.
+5. **Handle structured results.** `false` from native conversion becomes
+   `ConversionError`, with HTTP status and warnings. Use `Overloaded` and
+   `ResourceLimit` for explicit overload handling; do not blindly retry forever.
+   Legacy bool converters return false for these outcomes and rethrow retained
+   exceptions where applicable. Cancellation still produces a canceled task.
+6. **Choose one input form and use built-in settings.** Remove ambiguous inputs,
+   null PDF objects, stdin, native `Out`, and custom settings subclasses.
+   Invalid combinations are rejected before native startup. Check return-code
+   failures for setting names that your native build does not support.
+7. **Respect stream lifetimes and execution changes.** Settings and buffers
+   become snapshots, but streams remain borrowed until task completion. Factories
+   now run off the native thread; `FinishedAction` precedes output delivery.
+   Replace reference-equality comparisons against callback documents. Do not
+   dispose streams merely because a separate timeout stopped waiting.
+8. **Set explicit capacity budgets.** Previously unbounded workloads can now
+   receive overload/size failures. Tune `RequestOptions` before construction or
+   registration, including the new `MaxBufferedInputBytes` aggregate budget.
+   Slow output retains input reservations as well as admission/output capacity,
+   not the native worker. No temporary files are created.
+9. **Remove `RecycleSessionOnFailure` from worker-option examples.** It is not an
+   `ExecutionWorkerOptions` property. This wrapper classifies recovery internally;
+   `MaxOperationsPerSession` remains the periodic-recycling option.
+10. **Review native deployment.** Configure a trusted absolute path when needed,
+    deploy the correct architecture, and stop relying on ambient OS search paths,
+    `Assembly.Location`, or unloading/replacing the native DLL during runtime.
+11. **Update lifecycle expectations.** Cleanup waits and fault reporting use the
+    corrected Interop 2.x contracts. Host stop now coordinates input and delivery
+    before native teardown. Choose drain or cancel-pending deliberately; host
+    deadlines bound waiting, not running work. Resolve the async engine interface
+    for `InitializeAsync` and `ShutdownAsync`. Prefer asynchronous provider disposal.
 
-## 🧪 Code Quality
+For older v10.x applications, DI and Hosting are now separate packages; remove
+duplicate hand-written converter registrations. Converters are transient, not
+singleton registrations. `ProgressChangedEventArgs` includes numeric `Progress`
+and its constructor takes `(document, progress, description)`.
 
-This project maintains high code quality standards with:
+## Development and release checks
 
-- 20+ static code analyzers (Roslyn, SonarAnalyzer, StyleCop, etc.)
-- Comprehensive test coverage (unit, integration, memory tests)
-- Strict null reference checks enabled
-- Treats warnings as errors
-- Continuous Integration with GitHub Actions
-- SonarCloud / SonarQube quality gate
+- The repository enables analyzers and warnings-as-errors.
+- `packages.lock.json` records exact restore graphs; CI uses locked restore.
+  Update lock files deliberately with dependency changes, then verify with
+  `dotnet restore AdaskoTheBeAsT.WkHtmlToX.slnx --locked-mode`.
+- The SDK and test runner are selected by `global.json`. Run a targeted suite
+  with `dotnet run --project <test.csproj> --framework net10.0 -- --progress off`.
+  This invokes the xUnit v3 Microsoft.Testing.Platform runner directly.
+- `scripts/verify-packages.ps1` packs all three libraries, extracts **every C# code
+  block in this README**, compiles them against the local packages in a fresh
+  consumer, and runs the examples on Windows x64. It also checks a single-file
+  .NET 10 consumer. It never publishes packages.
+  If local executable scanning prevents that check, `-SkipSingleFile` explicitly
+  skips it while retaining all six normal and explicit-native-path consumer checks.
+  The skip is reported and does not establish single-file runtime support.
+- [Architecture decisions](docs/adr/README.md) record implementation status.
+  [astra_plan.md](astra_plan.md) records validation results and remaining limits.
 
-## 🤝 Contributing
+## License and acknowledgments
 
-Contributions are welcome! Please ensure:
-
-1. Code follows existing patterns and conventions
-2. All tests pass
-3. Code analyzers produce no warnings
-4. XML documentation is provided for public APIs
-
-## 📄 License
-
-This project is licensed under the terms specified in the [LICENSE](LICENSE) file.
-
-## 🙏 Acknowledgments
-
-This library is built upon [DinkToPdf](https://github.com/rdvojmoc/DinkToPdf) with a completely reworked interoperability layer to address memory management and thread-safety concerns.
-
-## 📚 Additional Resources
-
-- [wkhtmltopdf Documentation](https://wkhtmltopdf.org/usage/wkhtmltopdf.txt)
-- [Sample Projects](./samples) - Console, Web API, and OWIN examples
-- [Issue Tracker](https://github.com/AdaskoTheBeAsT/WkHtmlToX/issues)
-
-## 💡 Tips & Best Practices
-
-1. **Use the DI / Hosting packages** - prefer `AddWkHtmlToXHostedService`
-   (or `AddWkHtmlToX` for non-hosted apps) over newing up the engine
-2. **Singleton engine** - never construct more than one
-   `WkHtmlToXEngine` in a process; the worker serializes native calls
-3. **Session recycling** - set `MaxOperationsPerSession` for long-running
-   processes to periodically reset native state
-4. **Memory Management** - Use `RecyclableMemoryStream` for high-throughput scenarios
-5. **Cancellation** - Always pass `CancellationToken` for responsive cancellation
-6. **Linux Deployment** - Ensure correct runtime identifier for your Linux distribution
+See [LICENSE](LICENSE). Built on [DinkToPdf](https://github.com/rdvojmoc/DinkToPdf)
+and [wkhtmltopdf](https://wkhtmltopdf.org).

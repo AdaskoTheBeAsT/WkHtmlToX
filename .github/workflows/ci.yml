@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     tags:
       - "v*"
 
@@ -14,6 +14,23 @@ permissions:
   pull-requests: write
 
 jobs:
+  # package-consumer:
+  #   runs-on: windows-latest
+  #   permissions:
+  #     contents: read
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-dotnet@v4
+  #       with:
+  #         global-json-file: global.json
+  #         dotnet-version: |
+  #           8.0.x
+  #           9.0.x
+  #           10.0.x
+  #     - name: Validate packed libraries and README consumers
+  #       shell: pwsh
+  #       run: ./scripts/verify-packages.ps1
+
   build:
     uses: AdaskoTheBeAsT/github-actions/.github/workflows/dotnet-build-sonarqube-nuget.yml@v1
     with:

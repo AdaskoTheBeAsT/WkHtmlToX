@@ -1,3 +1,4 @@
+#pragma warning disable CS0618 // Intentional legacy compatibility implementation or regression coverage.
 using System;
 using System.IO;
 using System.Threading;
@@ -18,6 +19,11 @@ public class ImageConverter(IWkHtmlToXEngine engine)
         Func<int, Stream> createStreamFunc,
         CancellationToken token)
     {
+        if (_engine is IWkHtmlToXAsyncEngine asyncEngine)
+        {
+            return WkHtmlToXEngine.ToLegacyResultAsync(asyncEngine.ConvertImageAsync(document, createStreamFunc, token));
+        }
+
         var item = new ImageConvertWorkItem(document, createStreamFunc);
         _engine.AddConvertWorkItem(item, token);
 #pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
@@ -25,3 +31,5 @@ public class ImageConverter(IWkHtmlToXEngine engine)
 #pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
     }
 }
+
+#pragma warning restore CS0618

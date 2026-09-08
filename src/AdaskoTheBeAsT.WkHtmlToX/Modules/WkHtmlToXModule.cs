@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
+using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
 
@@ -153,15 +154,18 @@ internal abstract class WkHtmlToXModule
         ArgumentNullException.ThrowIfNull(createStreamFunc);
 #endif
         var totalLength = GetOutputImpl(converter, out IntPtr data);
+        if (totalLength < 0 || (totalLength > 0 && data == IntPtr.Zero))
+        {
+            throw new InvalidOperationException("The native renderer returned an invalid output buffer.");
+        }
+
         if (totalLength == 0)
         {
             return;
         }
 
 #pragma warning disable IDISP001 // Dispose created.
-#pragma warning disable CC0031 // Check for null before calling a delegate
-        var stream = createStreamFunc(totalLength) ?? throw new ArgumentException("Create stream returned null");
-#pragma warning restore CC0031 // Check for null before calling a delegate
+        var stream = CreateOutputStream(createStreamFunc, totalLength);
 #pragma warning restore IDISP001 // Dispose created.
 
         (totalLength, var length) = CopyBuffer(data, stream, totalLength);
@@ -172,7 +176,14 @@ internal abstract class WkHtmlToXModule
             (totalLength, length) = CopyBuffer(data, stream, totalLength);
         }
 
-        stream.Flush();
+        try
+        {
+            stream.Flush();
+        }
+        catch (Exception exception)
+        {
+            throw new OutputWriteException(exception);
+        }
     }
 
     protected abstract int GetGlobalSettingImpl(
@@ -193,6 +204,18 @@ internal abstract class WkHtmlToXModule
     protected abstract IntPtr GetProgressStringImpl(
         IntPtr converter);
 
+    private static Stream CreateOutputStream(Func<int, Stream> createStreamFunc, int totalLength)
+    {
+        try
+        {
+            return createStreamFunc.Invoke(totalLength) ?? throw new ArgumentException("Create stream returned null");
+        }
+        catch (Exception exception)
+        {
+            throw new OutputWriteException(exception);
+        }
+    }
+
     private static (int totalLength, int length) CopyBuffer(
         IntPtr data,
         Stream stream,
@@ -203,7 +226,14 @@ internal abstract class WkHtmlToXModule
         try
         {
             Marshal.Copy(data, buffer, 0, length);
-            stream.Write(buffer, 0, length);
+            try
+            {
+                stream.Write(buffer, 0, length);
+            }
+            catch (Exception exception)
+            {
+                throw new OutputWriteException(exception);
+            }
         }
         finally
         {

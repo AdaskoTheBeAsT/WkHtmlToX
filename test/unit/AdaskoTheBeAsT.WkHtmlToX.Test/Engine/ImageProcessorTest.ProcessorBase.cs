@@ -20,6 +20,8 @@ public partial class ImageProcessorTest
     {
         _fixture = new Fixture();
         _module = new Mock<IWkHtmlToImageModule>(MockBehavior.Strict);
+        _module.Setup(m => m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
+        _module.Setup(m => m.GetHttpErrorCode(It.IsAny<IntPtr>())).Returns(0);
         var globalSettingsPtr = new IntPtr(_fixture.Create<int>());
         var converterPtr = new IntPtr(_fixture.Create<int>());
         _module.Setup(m =>

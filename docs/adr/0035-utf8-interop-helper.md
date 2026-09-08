@@ -1,6 +1,6 @@
 # 0035 - Add `Utf8Interop` helper for zero-allocation native string marshaling
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-04-21
 - Traceability: uncommitted new file
   `src/AdaskoTheBeAsT.WkHtmlToX/Utils/Utf8Interop.cs`.

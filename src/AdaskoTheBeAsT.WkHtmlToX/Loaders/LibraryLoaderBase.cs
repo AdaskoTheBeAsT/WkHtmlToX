@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Reflection;
+using System.Runtime.InteropServices;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Loaders;
@@ -12,6 +12,8 @@ internal abstract class LibraryLoaderBase
     private const string NativeFolder = "native";
     private const string RuntimesFolder = "runtimes";
 
+    internal string? ExplicitPath { get; set; }
+
     public abstract void Load();
 
     public abstract void Release();
@@ -22,21 +24,19 @@ internal abstract class LibraryLoaderBase
         GC.SuppressFinalize(this);
     }
 
-    protected static string GetCurrentDir()
+    internal static string GetProcessorArchitecture(Architecture architecture)
     {
-#if NET8_0_OR_GREATER
-        var uri = new Uri(Assembly.GetExecutingAssembly().Location);
-#else
-        var uri = new Uri(Assembly.GetExecutingAssembly().GetName().CodeBase!);
-#endif
-
-        return Path.GetDirectoryName(uri.LocalPath) ?? "./";
+        return architecture switch
+        {
+            Architecture.X64 => "x64",
+            Architecture.X86 => "x86",
+            _ => throw new PlatformNotSupportedException("Only x64 and x86 native renderer processes are supported."),
+        };
     }
 
-    protected static string GetProcessorArchitecture()
-    {
-        return Environment.Is64BitProcess ? "x64" : "x86";
-    }
+    protected static string GetCurrentDir() => AppContext.BaseDirectory;
+
+    protected static string GetProcessorArchitecture() => GetProcessorArchitecture(RuntimeInformation.ProcessArchitecture);
 
     protected static string GetRuntimeLibraryPath(
         string rootDirectory,
@@ -51,6 +51,20 @@ internal abstract class LibraryLoaderBase
         string libraryName)
     {
         return Path.Combine(rootDirectory, libraryName);
+    }
+
+    protected string[] GetPaths(string runtimeIdentifier, string libraryName)
+    {
+        if (ExplicitPath is not null)
+        {
+            return [ExplicitPath];
+        }
+
+        return
+        [
+            GetRuntimeLibraryPath(GetCurrentDir(), runtimeIdentifier, libraryName),
+            GetCurrentDirectoryLibraryPath(GetCurrentDir(), libraryName),
+        ];
     }
 
     protected abstract void Dispose(bool disposing);

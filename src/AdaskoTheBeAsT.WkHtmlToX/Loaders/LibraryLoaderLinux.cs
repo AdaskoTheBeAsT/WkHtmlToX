@@ -1,3 +1,4 @@
+using System;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Loaders;
@@ -15,7 +16,18 @@ internal sealed class LibraryLoaderLinux
 
     protected override string GetLibraryName() => "libwkhtmltox.so.0.12.6";
 
-    protected override string GetRuntimeIdentifier() => $"{GetLinuxVersion()}";
+    protected override string GetRuntimeIdentifier()
+    {
+        var identifier = GetLinuxVersion();
+        var architecture = GetProcessorArchitecture();
+        var expected = identifier.EndsWith("-x86", StringComparison.Ordinal) ? "x86" : "x64";
+        if (!string.Equals(architecture, expected, StringComparison.Ordinal))
+        {
+            throw new PlatformNotSupportedException("The Linux native package identifier does not match the process architecture.");
+        }
+
+        return identifier;
+    }
 
     private string GetLinuxVersion() => _runtimeIdentifier switch
     {

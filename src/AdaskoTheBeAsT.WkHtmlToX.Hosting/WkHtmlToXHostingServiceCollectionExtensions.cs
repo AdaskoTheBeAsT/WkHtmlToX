@@ -1,6 +1,5 @@
 using System;
 using AdaskoTheBeAsT.Interop.Execution;
-using AdaskoTheBeAsT.Interop.Execution.Hosting;
 using AdaskoTheBeAsT.WkHtmlToX.DependencyInjection;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +9,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Hosting;
 /// <summary>
 /// <see cref="IServiceCollection"/> extensions that register the WkHtmlToX
 /// engine, converters and an <c>IHostedService</c> wrapper that drives the
-/// underlying execution worker lifecycle through the generic host.
+/// whole engine pipeline lifecycle through the generic host.
 /// </summary>
 public static class WkHtmlToXHostingServiceCollectionExtensions
 {
@@ -18,7 +17,7 @@ public static class WkHtmlToXHostingServiceCollectionExtensions
     /// Registers <see cref="IWkHtmlToXEngine"/>, <see cref="Abstractions.IPdfConverter"/>,
     /// <see cref="Abstractions.IImageConverter"/>, the underlying
     /// <see cref="IExecutionWorker{TSession}"/> and a hosted service wrapper
-    /// that initializes / disposes the worker on host start / stop.
+    /// that initializes the engine on start and joins its pipeline on stop.
     /// </summary>
     /// <param name="services">The service collection to mutate.</param>
     /// <param name="configuration">WkHtmlToX runtime configuration.</param>
@@ -47,16 +46,8 @@ public static class WkHtmlToXHostingServiceCollectionExtensions
         }
 #endif
 
-        WkHtmlToXServiceCollectionExtensions.RegisterCoreServices(services, configuration);
-
-        services.AddExecutionWorkerHostedService<WkHtmlToXSession>(options =>
-        {
-            options.Name = WkHtmlToXServiceCollectionExtensions.DefaultWorkerName;
-            options.UseStaThread = true;
-            configureWorker?.Invoke(options);
-        });
-
-        WkHtmlToXServiceCollectionExtensions.RegisterEngineAndConverters(services);
+        services.AddWkHtmlToX(configuration, configureWorker);
+        services.AddHostedService<WkHtmlToXHostedService>();
 
         return services;
     }

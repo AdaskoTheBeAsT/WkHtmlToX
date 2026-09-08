@@ -21,7 +21,7 @@ internal interface IWkHtmlToPdfModule
     void AddObject(
         IntPtr converter,
         IntPtr objectSettings,
-        byte[] data);
+        byte[]? data);
 
     void AddObject(
         IntPtr converter,

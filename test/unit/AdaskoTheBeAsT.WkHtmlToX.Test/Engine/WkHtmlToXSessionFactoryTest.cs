@@ -44,7 +44,8 @@ public sealed class WkHtmlToXSessionFactoryTest
             _configuration,
             _libraryLoaderFactoryMock.Object,
             () => _pdfProcessorMock.Object,
-            () => _imageProcessorMock.Object);
+            () => _imageProcessorMock.Object,
+            new NativeRuntimeOwnership());
     }
 
     [Fact]
@@ -141,7 +142,7 @@ public sealed class WkHtmlToXSessionFactoryTest
     }
 
     [Fact]
-    public void CreateSessionShouldReuseNativeRuntimeAcrossMultipleActiveSessions()
+    public void CreateSessionShouldRejectMultipleActiveSessions()
     {
         // Arrange
         _libraryLoaderMock.Setup(l => l.Load());
@@ -151,43 +152,22 @@ public sealed class WkHtmlToXSessionFactoryTest
         _imageModuleMock.Setup(p => p.Terminate()).Returns(1);
 
         var firstSession = _sut.CreateSession(CancellationToken.None);
-        var secondSession = _sut.CreateSession(CancellationToken.None);
-
         try
         {
+            Action createSecond = () => _sut.CreateSession(CancellationToken.None);
+            createSecond.Should().Throw<InvalidOperationException>();
+
             // Assert
             using (new AssertionScope())
             {
                 _pdfModuleMock.Verify(p => p.Initialize(It.IsAny<int>()), Times.Once);
                 _imageModuleMock.Verify(p => p.Initialize(It.IsAny<int>()), Times.Once);
-                _libraryLoaderMock.Verify(l => l.Load(), Times.Exactly(2));
-            }
-
-            // Act
-            _sut.DisposeSession(firstSession);
-
-            // Assert
-            _pdfModuleMock.Verify(p => p.Terminate(), Times.Never);
-            _imageModuleMock.Verify(p => p.Terminate(), Times.Never);
-
-            // Act
-            _sut.DisposeSession(secondSession);
-            secondSession = null!;
-
-            // Assert
-            using (new AssertionScope())
-            {
-                _pdfModuleMock.Verify(p => p.Terminate(), Times.Once);
-                _imageModuleMock.Verify(p => p.Terminate(), Times.Once);
-                _libraryLoaderMock.Verify(l => l.Dispose(), Times.Exactly(2));
+                _libraryLoaderMock.Verify(l => l.Load(), Times.Once);
             }
         }
         finally
         {
-            if (secondSession is not null)
-            {
-                _sut.DisposeSession(secondSession);
-            }
+            _sut.DisposeSession(firstSession);
         }
     }
 

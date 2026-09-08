@@ -1,6 +1,6 @@
 # 0032 - Opt-in use of `AdaskoTheBeAsT.Interop.Threading` utilities (Phase 4)
 
-- Status: Proposed
+- Status: Rejected (2026-09-07)
 - Date: 2026-04-21
 - Traceability: `docs/plan.md` Section 2.2 / 3 Phase 4.
 
@@ -13,6 +13,14 @@
 (ADR 0030), so Threading is complementary, not mandatory.
 
 ## Decision
+
+The proposed extra dependency is not adopted. The execution worker already owns
+the dedicated thread. A timeout helper only stops waiting and cannot interrupt
+wkhtmltox; a cross-process mutex does not isolate process-global Qt state or
+prove safe parallel rendering. Add such a dependency only for a demonstrated,
+separate requirement. See [ADR 0036](0036-request-ownership-and-native-binding.md).
+
+### Historical proposal (not implemented)
 
 Take on `AdaskoTheBeAsT.Interop.Threading` only behind Windows TFMs
 (`net*-windows`) and only to enable specific features:
@@ -31,6 +39,5 @@ Do not unconditionally force the dependency on non-Windows TFMs.
 
 ## Consequences
 
-- Optional timeout / mutex / STA scheduler primitives for hosts that
-  need them.
-- Linux / macOS builds are not forced to pull a Windows-only package.
+- No additional Threading dependency or misleading hard-timeout API.
+- Isolation, hard deadlines, and process supervision remain separate work.

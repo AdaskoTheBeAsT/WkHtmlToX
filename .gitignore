@@ -361,3 +361,4 @@ MigrationBackup/
 .dotcover/*
 !.dotcover/.gitkeep
 NDependOut/
+astra_plan.md

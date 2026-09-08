@@ -129,7 +129,7 @@ internal sealed class WkHtmlToPdfModule
     public void AddObject(
         IntPtr converter,
         IntPtr objectSettings,
-        byte[] data) =>
+        byte[]? data) =>
         PdfNativeMethods.wkhtmltopdf_add_object(converter, objectSettings, data);
 
     public void AddObject(

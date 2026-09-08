@@ -1,14 +1,17 @@
+#pragma warning disable CS0618 // Intentional legacy compatibility implementation or regression coverage.
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.Interop.Execution;
+using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Loaders;
 using AdaskoTheBeAsT.WkHtmlToX.WorkItems;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Engine;
 
-public sealed class WkHtmlToXEngine
-    : IWkHtmlToXEngine
+public sealed partial class WkHtmlToXEngine
+    : IWkHtmlToXAsyncEngine
 {
     private const string WorkerName = "WkHtmlToX Engine Worker";
 
@@ -18,20 +21,63 @@ public sealed class WkHtmlToXEngine
     public WkHtmlToXEngine(WkHtmlToXConfiguration configuration)
         : this(
             CreateDefaultWorker(configuration),
-            ownsWorker: true)
+            ownsWorker: true,
+            configuration.RequestOptions)
     {
     }
 
     internal WkHtmlToXEngine(
         IExecutionWorker<WkHtmlToXSession> worker,
-        bool ownsWorker = true)
+        bool ownsWorker = true,
+        WkHtmlToXRequestOptions? requestOptions = null)
     {
         _worker = worker ?? throw new ArgumentNullException(nameof(worker));
         _ownsWorker = ownsWorker;
+        _requestOptions = (requestOptions ?? new WkHtmlToXRequestOptions()).Snapshot();
+        if (ownsWorker && worker is WkHtmlToXWorker nativeWorker)
+        {
+            nativeWorker.CoordinateShutdown(this);
+        }
     }
+
+    public bool IsFaulted => _worker.IsFaulted;
+
+    public Exception? Fault => _worker.Fault;
+
+    public int QueueDepth => _worker.QueueDepth;
 
     public void Initialize() => _worker.Initialize();
 
+    public Task InitializeAsync(CancellationToken cancellationToken = default) =>
+        _worker.InitializeAsync(cancellationToken);
+
+    public Task<ConversionResult> ConvertPdfAsync(
+        IHtmlToPdfDocument document,
+        Func<int, Stream> createStreamFunc,
+        CancellationToken cancellationToken = default) =>
+        AdmitAsync(
+            reserve => RequestSnapshot.Create(document, _requestOptions.MaxInputBytes, reserve),
+            (snapshot, stream, token) => ExecuteConversionAsync(
+                (session, requestToken) => session.PdfProcessor.ConvertWithResult(snapshot, stream, requestToken),
+                token),
+            createStreamFunc,
+            cancellationToken);
+
+    public Task<ConversionResult> ConvertImageAsync(
+        IHtmlToImageDocument document,
+        Func<int, Stream> createStreamFunc,
+        CancellationToken cancellationToken = default) =>
+        AdmitAsync(
+            _ => RequestSnapshot.Create(document),
+            (snapshot, stream, token) => ExecuteConversionAsync(
+                (session, requestToken) => session.ImageProcessor.ConvertWithResult(snapshot, stream, requestToken),
+                token),
+            createStreamFunc,
+            cancellationToken);
+
+#pragma warning disable S1133 // Planned removal in the next major release; retained for migration.
+    [Obsolete("Use ConvertPdfAsync or ConvertImageAsync instead.")]
+#pragma warning restore S1133
     public void AddConvertWorkItem(
         ConvertWorkItemBase item,
         CancellationToken cancellationToken)
@@ -45,21 +91,13 @@ public sealed class WkHtmlToXEngine
         }
 #endif
 
-        var options = new ExecutionRequestOptions(recycleSessionOnFailure: true);
-
         Task<bool> executionTask;
         try
         {
             executionTask = item switch
             {
-                PdfConvertWorkItem pdf => _worker.ExecuteAsync(
-                    (session, _) => session.PdfProcessor.Convert(pdf.Document, pdf.StreamFunc),
-                    options,
-                    cancellationToken),
-                ImageConvertWorkItem image => _worker.ExecuteAsync(
-                    (session, _) => session.ImageProcessor.Convert(image.Document, image.StreamFunc),
-                    options,
-                    cancellationToken),
+                PdfConvertWorkItem pdf => ToLegacyResultAsync(ConvertPdfAsync(pdf.Document, pdf.StreamFunc, cancellationToken)),
+                ImageConvertWorkItem image => ToLegacyResultAsync(ConvertImageAsync(image.Document, image.StreamFunc, cancellationToken)),
 #pragma warning disable MA0025
                 _ => Task.FromException<bool>(
                     new NotSupportedException($"Unsupported item type: {item.GetType().FullName}")),
@@ -85,15 +123,10 @@ public sealed class WkHtmlToXEngine
             TaskScheduler.Default);
     }
 
-    public void Dispose()
-    {
-        if (_ownsWorker)
-        {
-#pragma warning disable IDISP007 // Don't dispose injected. Worker is owned when constructed via the public ctor.
-            _worker.Dispose();
-#pragma warning restore IDISP007
-        }
-    }
+    internal static async Task<bool> ToLegacyResultAsync(Task<ConversionResult> task) =>
+#pragma warning disable VSTHRD003 // Joins a conversion task owned by this engine's dedicated worker.
+        (await task.ConfigureAwait(false)).ToLegacyResult();
+#pragma warning restore VSTHRD003
 
     private static void ForwardResult(Task<bool> task, object? state)
     {
@@ -116,7 +149,7 @@ public sealed class WkHtmlToXEngine
 #pragma warning restore VSTHRD002
     }
 
-    private static ExecutionWorker<WkHtmlToXSession> CreateDefaultWorker(
+    private static WkHtmlToXWorker CreateDefaultWorker(
         WkHtmlToXConfiguration configuration)
     {
 #if NET8_0_OR_GREATER
@@ -129,13 +162,75 @@ public sealed class WkHtmlToXEngine
 #endif
 
         var sessionFactory = new WkHtmlToXSessionFactory(
-            configuration,
+            configuration.Snapshot(),
             new LibraryLoaderFactory());
 
         var options = new ExecutionWorkerOptions(
             name: WorkerName,
             useStaThread: true);
 
-        return new ExecutionWorker<WkHtmlToXSession>(sessionFactory, options);
+        return new WkHtmlToXWorker(sessionFactory, options);
     }
+
+    private async Task<ConversionResult> ExecuteConversionAsync(
+        Func<WkHtmlToXSession, CancellationToken, ConversionResult> convert,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _worker.ExecuteAsync(
+                (session, token) =>
+                {
+                    // This gate is the native-start boundary, serialized with shutdown.
+                    if (IsPendingCanceled())
+                    {
+                        return new ConversionResult(ConversionFailureKind.Cancellation);
+                    }
+
+                    ConversionResult result;
+                    try
+                    {
+                        result = convert.Invoke(session, token);
+                    }
+                    catch (ArgumentException exception)
+                    {
+                        return new ConversionResult(ConversionFailureKind.InvalidInput, exception: exception);
+                    }
+
+                    if (result.FailureKind == ConversionFailureKind.NativeRuntimeError)
+                    {
+                        throw new NativeConversionException(result);
+                    }
+
+                    if (result.FailureKind == ConversionFailureKind.Cancellation)
+                    {
+                        token.ThrowIfCancellationRequested();
+                    }
+
+                    return result;
+                },
+                new ExecutionRequestOptions(recycleSessionOnFailure: true),
+                cancellationToken).ConfigureAwait(false);
+            if (result.FailureKind == ConversionFailureKind.Cancellation)
+            {
+                throw new OperationCanceledException(new CancellationToken(canceled: true));
+            }
+
+            return result;
+        }
+        catch (NativeConversionException exception)
+        {
+            return exception.Result;
+        }
+    }
+
+#pragma warning disable S3871 // Private transport signal, caught inside the public conversion boundary.
+    private sealed class NativeConversionException(ConversionResult result)
+        : Exception("Native conversion failed.", result.Exception)
+    {
+        internal ConversionResult Result { get; } = result;
+    }
+#pragma warning restore S3871
 }
+
+#pragma warning restore CS0618
