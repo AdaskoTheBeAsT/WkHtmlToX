@@ -81,7 +81,7 @@ public static class WkHtmlToXServiceCollectionExtensions
             new WkHtmlToXWorker(
                 sp.GetRequiredService<IExecutionSessionFactory<WkHtmlToXSession>>(),
                 sp.GetRequiredService<IOptionsMonitor<ExecutionWorkerOptions>>()
-                    .Get(typeof(WkHtmlToXSession).FullName!)));
+                    .Get(typeof(WkHtmlToXSession).FullName)));
     }
 
     internal static void RegisterEngineAndConverters(IServiceCollection services)

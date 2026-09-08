@@ -116,6 +116,21 @@ public sealed class RequestOwnershipTest
         fixture.Loader.Verify(l => l.Load(), Times.Never);
     }
 
+    [Fact]
+    public async Task NullDestinationShouldRejectBeforeStartupAndReleaseAdmissionAsync()
+    {
+        var fixture = new NativeRuntimeTestFixture();
+        await using var engine = fixture.CreateEngine(requestOptions: new WkHtmlToXRequestOptions { MaxConcurrentRequests = 1 });
+        var document = NativeRuntimeTestFixture.PdfDocument();
+
+        var result = await engine.ConvertPdfAsync(document, createStreamFunc: null!, TestContext.Current.CancellationToken);
+
+        result.FailureKind.Should().Be(ConversionFailureKind.InvalidInput);
+        result.Exception.Should().BeOfType<ArgumentNullException>();
+        fixture.Loader.Verify(l => l.Load(), Times.Never);
+        (await engine.ConvertPdfAsync(document, _ => Stream.Null, TestContext.Current.CancellationToken)).Success.Should().BeTrue();
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

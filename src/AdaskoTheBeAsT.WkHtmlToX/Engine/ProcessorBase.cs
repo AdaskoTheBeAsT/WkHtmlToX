@@ -15,7 +15,7 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine;
 internal abstract class ProcessorBase
 {
     private readonly WkHtmlToXConfiguration _configuration;
-    private readonly List<string> _warnings = new();
+    private readonly List<string> _warnings = [];
     private Exception? _callbackFailure;
     private StringCallback? _warningCallback;
     private StringCallback? _errorCallback;
@@ -58,16 +58,16 @@ internal abstract class ProcessorBase
 
         if (_configuration.FinishedAction != null)
         {
-            _finishedCallback = (pointer, success) => CaptureCallback(() => OnFinished(pointer, success));
+            _finishedCallback = (_, success) => CaptureCallback(() => OnFinished(success));
             SetFinishedCallback(converter, _finishedCallback);
         }
 
-        _warningCallback = (pointer, message) => CaptureCallback(() => OnWarning(pointer, message));
+        _warningCallback = (_, message) => CaptureCallback(() => OnWarning(message));
         SetWarningCallback(converter, _warningCallback);
 
         if (_configuration.ErrorAction != null)
         {
-            _errorCallback = (pointer, message) => CaptureCallback(() => OnError(pointer, message));
+            _errorCallback = (_, message) => CaptureCallback(() => OnError(message));
             SetErrorCallback(converter, _errorCallback);
         }
     }
@@ -117,9 +117,7 @@ internal abstract class ProcessorBase
         _configuration.ProgressChangedAction?.Invoke(eventArgs);
     }
 
-#pragma warning disable CC0057 // Unused parameters
-    protected internal void OnFinished(IntPtr converter, int success)
-#pragma warning restore CC0057 // Unused parameters
+    protected internal void OnFinished(int success)
     {
         if (_configuration.FinishedAction == null)
         {
@@ -134,9 +132,7 @@ internal abstract class ProcessorBase
     }
 
 #if NET462
-#pragma warning disable CC0057 // Unused parameters
-    protected internal void OnError(IntPtr converter, IntPtr messagePointer)
-#pragma warning restore CC0057 // Unused parameters
+    protected internal void OnError(IntPtr messagePointer)
     {
         if (_configuration.ErrorAction == null)
         {
@@ -152,9 +148,7 @@ internal abstract class ProcessorBase
         _configuration.ErrorAction?.Invoke(eventArgs);
     }
 
-#pragma warning disable CC0057 // Unused parameters
-    protected internal void OnWarning(IntPtr converter, IntPtr messagePointer)
-#pragma warning restore CC0057 // Unused parameters
+    protected internal void OnWarning(IntPtr messagePointer)
     {
         var message = Utf8Interop.PtrToString(messagePointer);
         RecordWarning(message);
@@ -166,9 +160,7 @@ internal abstract class ProcessorBase
         _configuration.WarningAction?.Invoke(eventArgs);
     }
 #else
-#pragma warning disable CC0057 // Unused parameters
-    protected internal void OnError(IntPtr converter, string? message)
-#pragma warning restore CC0057 // Unused parameters
+    protected internal void OnError(string? message)
     {
         if (_configuration.ErrorAction == null)
         {
@@ -182,9 +174,7 @@ internal abstract class ProcessorBase
         _configuration.ErrorAction?.Invoke(eventArgs);
     }
 
-#pragma warning disable CC0057 // Unused parameters
-    protected internal void OnWarning(IntPtr converter, string? message)
-#pragma warning restore CC0057 // Unused parameters
+    protected internal void OnWarning(string? message)
     {
         RecordWarning(message ?? string.Empty);
 
@@ -457,7 +447,11 @@ internal abstract class ProcessorBase
     {
         if (_warnings.Count < 32)
         {
+#if NET8_0_OR_GREATER
+            _warnings.Add(message.Length <= 1024 ? message : message[..1024]);
+#else
             _warnings.Add(message.Length <= 1024 ? message : message.Substring(0, 1024));
+#endif
         }
     }
 }

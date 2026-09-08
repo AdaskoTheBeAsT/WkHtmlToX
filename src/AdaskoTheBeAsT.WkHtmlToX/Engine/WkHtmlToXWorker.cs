@@ -94,7 +94,7 @@ internal sealed class WkHtmlToXWorker : IExecutionWorker<WkHtmlToXSession>
         _worker.Dispose();
 
         // A synchronous timeout abandons only this wait. Keep the lease until exit.
-        _ = DisposeAsync();
+        _ = DisposeAsync().AsTask();
     }
 
 #pragma warning disable IDISP007 // The engine coordinates disposal of this worker and its admitted pipeline.

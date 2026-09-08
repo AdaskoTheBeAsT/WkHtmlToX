@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,11 @@ internal sealed class RequestTestStream(bool gateReads = false, bool gateWrites 
 
     internal bool FailRead { get; set; }
 
+#if NET8_0_OR_GREATER
+    public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+#else
     public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+#endif
     {
         if (gateReads)
         {
@@ -24,20 +29,32 @@ internal sealed class RequestTestStream(bool gateReads = false, bool gateWrites 
             throw new IOException("Test read failure.");
         }
 
+#if NET8_0_OR_GREATER
+        return await base.ReadAsync(buffer, cancellationToken);
+#else
         return await base.ReadAsync(buffer, offset, count, cancellationToken);
+#endif
     }
 
+#if NET8_0_OR_GREATER
+    public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+#else
     public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+#endif
     {
         if (gateWrites)
         {
             await WaitForReleaseAsync();
         }
 
+#if NET8_0_OR_GREATER
+        await base.WriteAsync(buffer, cancellationToken);
+#else
         await base.WriteAsync(buffer, offset, count, cancellationToken);
+#endif
     }
 
-    private Task WaitForReleaseAsync()
+    private Task<bool> WaitForReleaseAsync()
     {
         Entered.TrySetResult(true);
 #pragma warning disable VSTHRD003 // The test releases the simulated I/O operation explicitly.

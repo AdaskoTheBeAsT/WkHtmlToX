@@ -188,13 +188,16 @@ public sealed class RequestBudgetTest
         }
     }
 
-    [Fact]
-    public void InvalidLaterObjectMustNotReserveOrCloneEarlierPayload()
+    [Theory]
+    [InlineData(double.NaN)]
+    [InlineData(double.PositiveInfinity)]
+    [InlineData(double.NegativeInfinity)]
+    public void InvalidLaterObjectMustNotReserveOrCloneEarlierPayload(double spacing)
     {
         var document = NativeRuntimeTestFixture.PdfDocument();
         document.ObjectSettings[0].HtmlContent = null;
         document.ObjectSettings[0].HtmlContentByteArray = new byte[4];
-        document.ObjectSettings.Add(new PdfObjectSettings { HtmlContent = "x", HeaderSettings = { Spacing = double.NaN } });
+        document.ObjectSettings.Add(new PdfObjectSettings { HtmlContent = "x", HeaderSettings = { Spacing = spacing } });
         var reserved = false;
         Action action = () => RequestSnapshot.Create(document, 8, _ => reserved = true);
         action.Should().Throw<ArgumentException>();

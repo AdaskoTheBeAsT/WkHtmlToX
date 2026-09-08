@@ -258,6 +258,41 @@ public sealed class AdapterCorrectnessTest
         engine.IsFaulted.Should().BeFalse();
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(7)]
+    [InlineData(1024)]
+    [InlineData(1025)]
+    public async Task WarningsShouldBeBoundedWithoutApplicationCallbackAndResetBetweenRequestsAsync(int length)
+    {
+        var fixture = new NativeRuntimeTestFixture();
+        var message = new string('w', length);
+        StringCallback? warning = null;
+        fixture.Pdf.Setup(m => m.SetWarningCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()))
+            .Callback<IntPtr, StringCallback>((_, callback) => warning = callback);
+        fixture.Pdf.Setup(m => m.Convert(It.IsAny<IntPtr>())).Returns(() =>
+        {
+            warning.Should().NotBeNull();
+            for (var i = 0; i < 33; i++)
+            {
+                warning.Invoke(new IntPtr(2), message);
+            }
+
+            return true;
+        });
+        await using var engine = fixture.CreateEngine();
+
+        var result = await ConvertAsync(engine, image: false);
+
+        result.Success.Should().BeTrue();
+        result.Warnings.Should().HaveCount(32);
+        var expected = new string('w', Math.Min(length, 1024));
+        result.Warnings.Should().OnlyContain(value => value == expected);
+        fixture.Pdf.Setup(m => m.Convert(It.IsAny<IntPtr>())).Returns(value: true);
+        (await ConvertAsync(engine, image: false)).Warnings.Should().BeEmpty();
+        result.Warnings.Should().HaveCount(32);
+    }
+
     [Fact]
     public async Task CallbackReentrancyShouldFailWithoutDeadlockingAsync()
     {

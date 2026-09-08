@@ -32,12 +32,16 @@ public sealed partial class WkHtmlToXEngine
 #pragma warning disable IDISP001 // The destination is borrowed; ownership stays with the caller.
             var stream = destination.Invoke(output.Length);
 #pragma warning restore IDISP001
-            if (stream is null || !stream.CanWrite)
+            if (stream?.CanWrite != true)
             {
                 throw new ArgumentException("The destination factory must return a writable stream.");
             }
 
+#if NET8_0_OR_GREATER
+            await stream.WriteAsync(output.AsMemory(), cancellationToken).ConfigureAwait(false);
+#else
             await stream.WriteAsync(output, 0, output.Length, cancellationToken).ConfigureAwait(false);
+#endif
             await stream.FlushAsync(cancellationToken).ConfigureAwait(false);
             return result;
         }
@@ -88,16 +92,20 @@ public sealed partial class WkHtmlToXEngine
         }
 
         long reservedInputBytes = 0;
+        T request;
         try
         {
+#if NET8_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(destination);
+#else
             if (destination is null)
             {
                 throw new ArgumentNullException(nameof(destination));
             }
+#endif
 
             // Capture before returning to the caller, not when the native queue is read.
-            var request = snapshot.Invoke(bytes => reservedInputBytes = ReserveInput(bytes));
-            return RunRequestAsync(request, reservedInputBytes, convert, destination, cancellationToken);
+            request = snapshot.Invoke(bytes => reservedInputBytes = ReserveInput(bytes));
         }
         catch (InputLimitException)
         {
@@ -114,6 +122,8 @@ public sealed partial class WkHtmlToXEngine
             ReleaseRequest(reservedInputBytes);
             throw;
         }
+
+        return RunRequestAsync(request, reservedInputBytes, convert, destination, cancellationToken);
     }
 
     private async Task<ConversionResult> RunRequestAsync<T>(
@@ -228,7 +238,7 @@ public sealed partial class WkHtmlToXEngine
             }
         }
 
-        internal Stream Create(int length)
+        internal MemoryStream Create(int length)
         {
             if (length < 0 || length > engine._requestOptions.MaxOutputBytes)
             {

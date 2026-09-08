@@ -90,7 +90,7 @@ public partial class PdfProcessorTest
     }
 
     [Fact]
-    public void RegisterEventsShouldNotRegisterWhereEventsNotAttached()
+    public void RegisterEventsShouldOnlyRegisterWarningsWhenNoCallbacksAreAttached()
     {
         // Arrange
         _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
@@ -111,6 +111,8 @@ public partial class PdfProcessorTest
                         It.IsAny<IntPtr>(),
                         It.IsAny<StringCallback>()),
                 Times.Never);
+
+            // Warnings always populate ConversionResult, even without an application callback.
             _module.Verify(
                 m =>
                     m.SetWarningCallback(
@@ -311,7 +313,7 @@ public partial class PdfProcessorTest
         const string errorMessage = "zażółć gęślą jaźń";
 #if NET462
         var errorMessagePointer = StringToUtf8Pointer(errorMessage);
-        Action action = () => _sut.OnError(new IntPtr(1), errorMessagePointer);
+        Action action = () => _sut.OnError(errorMessagePointer);
 
         // Act and Assert
         try
@@ -323,7 +325,7 @@ public partial class PdfProcessorTest
             Marshal.FreeHGlobal(errorMessagePointer);
         }
 #else
-        Action action = () => _sut.OnError(new IntPtr(1), errorMessage);
+        Action action = () => _sut.OnError(errorMessage);
 
         // Act and Assert
         action.Should().NotThrow();
@@ -353,7 +355,7 @@ public partial class PdfProcessorTest
         try
         {
             // Act
-            sut.OnError(new IntPtr(1), errorMessagePointer);
+            sut.OnError(errorMessagePointer);
 
             // Assert
             using (new AssertionScope())
@@ -368,7 +370,7 @@ public partial class PdfProcessorTest
         }
 #else
         // Act
-        sut.OnError(new IntPtr(1), errorMessage);
+        sut.OnError(errorMessage);
 
         // Assert
         using (new AssertionScope())
@@ -386,7 +388,7 @@ public partial class PdfProcessorTest
         const string warningMessage = "zażółć gęślą jaźń";
 #if NET462
         var warningMessagePointer = StringToUtf8Pointer(warningMessage);
-        Action action = () => _sut.OnWarning(new IntPtr(1), warningMessagePointer);
+        Action action = () => _sut.OnWarning(warningMessagePointer);
 
         // Act and Assert
         try
@@ -398,7 +400,7 @@ public partial class PdfProcessorTest
             Marshal.FreeHGlobal(warningMessagePointer);
         }
 #else
-        Action action = () => _sut.OnWarning(new IntPtr(1), warningMessage);
+        Action action = () => _sut.OnWarning(warningMessage);
 
         // Act and Assert
         action.Should().NotThrow();
@@ -428,7 +430,7 @@ public partial class PdfProcessorTest
         try
         {
             // Act
-            sut.OnWarning(new IntPtr(1), warningMessagePointer);
+            sut.OnWarning(warningMessagePointer);
 
             // Assert
             using (new AssertionScope())
@@ -443,7 +445,7 @@ public partial class PdfProcessorTest
         }
 #else
         // Act
-        sut.OnWarning(new IntPtr(1), warningMessage);
+        sut.OnWarning(warningMessage);
 
         // Assert
         using (new AssertionScope())
@@ -459,7 +461,7 @@ public partial class PdfProcessorTest
     {
         // Arrange
         var code = _fixture.Create<int>();
-        Action action = () => _sut.OnFinished(new IntPtr(1), code);
+        Action action = () => _sut.OnFinished(code);
 
         // Act and Assert
         action.Should().NotThrow();
@@ -484,7 +486,7 @@ public partial class PdfProcessorTest
         };
 
         // Act
-        sut.OnFinished(new IntPtr(1), code);
+        sut.OnFinished(code);
 
         // Assert
         using (new AssertionScope())

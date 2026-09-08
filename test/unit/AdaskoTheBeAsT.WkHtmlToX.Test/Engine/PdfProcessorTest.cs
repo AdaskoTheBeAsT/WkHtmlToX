@@ -106,7 +106,7 @@ public partial class PdfProcessorTest
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // ReSharper disable once AssignmentIsFullyDiscarded
-        Action action = () => _ = _sut.CreateConverter(document: null);
+        Action action = () => _ = _sut.CreateConverter(document: null, TestContext.Current.CancellationToken);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // Act and Assert
@@ -300,7 +300,7 @@ public partial class PdfProcessorTest
         document.GlobalSettings.DocumentTitle = _fixture.Create<string>();
 
         // Act
-        Action action = () => _sut.CreateConverter(document);
+        Action action = () => _sut.CreateConverter(document, TestContext.Current.CancellationToken);
 
         // Assert
         using (new AssertionScope())
@@ -327,7 +327,7 @@ public partial class PdfProcessorTest
         var document = new HtmlToPdfDocument();
 
         // Act
-        Action action = () => _sut.CreateConverter(document);
+        Action action = () => _sut.CreateConverter(document, TestContext.Current.CancellationToken);
 
         // Assert
         using (new AssertionScope())
@@ -367,7 +367,7 @@ public partial class PdfProcessorTest
             });
 
         // Act
-        Action action = () => _sut.CreateConverter(document);
+        Action action = () => _sut.CreateConverter(document, TestContext.Current.CancellationToken);
 
         // Assert
         using (new AssertionScope())
@@ -403,7 +403,7 @@ public partial class PdfProcessorTest
         document.ObjectSettings.Add(new PdfObjectSettings());
 
         // Act
-        Action action = () => _sut.CreateConverter(document);
+        Action action = () => _sut.CreateConverter(document, TestContext.Current.CancellationToken);
 
         // Assert
         using (new AssertionScope())
@@ -536,7 +536,7 @@ public partial class PdfProcessorTest
         var converterPtr = new IntPtr(_fixture.Create<int>());
         var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        Action action = () => _sut.AddContent(converterPtr, objectSettingsPtr, pdfObjectSettings: null);
+        Action action = () => _sut.AddContent(converterPtr, objectSettingsPtr, pdfObjectSettings: null, TestContext.Current.CancellationToken);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // Act and Assert
@@ -557,7 +557,7 @@ public partial class PdfProcessorTest
             .Without(s => s.Xsl)
             .Create();
 
-        Action action = () => _sut.AddContent(converterPtr, objectSettingsPtr, pdfObjectSettings);
+        Action action = () => _sut.AddContent(converterPtr, objectSettingsPtr, pdfObjectSettings, TestContext.Current.CancellationToken);
 
         // Act and Assert
         action.Should().Throw<HtmlContentEmptyException>();
@@ -661,7 +661,7 @@ public partial class PdfProcessorTest
         var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, htmlContentStream: null);
+        Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, htmlContentStream: null, TestContext.Current.CancellationToken);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // Act and Assert
@@ -694,7 +694,7 @@ public partial class PdfProcessorTest
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // ReSharper disable once AccessToDisposedClosure
-        Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, memoryStream);
+        Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, memoryStream, TestContext.Current.CancellationToken);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // Act and Assert
@@ -758,7 +758,7 @@ public partial class PdfProcessorTest
             .Returns(0L);
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, streamMock.Object);
+        Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, streamMock.Object, TestContext.Current.CancellationToken);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // Act and Assert

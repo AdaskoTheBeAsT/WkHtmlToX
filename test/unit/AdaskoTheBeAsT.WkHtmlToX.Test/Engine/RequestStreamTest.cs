@@ -107,14 +107,22 @@ public sealed class RequestStreamTest
 
         internal TaskCompletionSource<bool> Release { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
+#if NET8_0_OR_GREATER
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+#else
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+#endif
         {
             Entered.TrySetResult(true);
 #pragma warning disable VSTHRD003 // Models a stream that does not observe cancellation until its read returns.
             await Release.Task;
 #pragma warning restore VSTHRD003
             cancellationToken.ThrowIfCancellationRequested();
+#if NET8_0_OR_GREATER
+            return await base.ReadAsync(buffer[..Math.Min(buffer.Length, 1)], cancellationToken);
+#else
             return await base.ReadAsync(buffer, offset, Math.Min(count, 1), cancellationToken);
+#endif
         }
     }
 }

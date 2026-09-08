@@ -31,10 +31,11 @@ public sealed class RequestShutdownTest
 #pragma warning disable VSTHRD003 // Deterministic input gate.
             await input.Entered.Task;
 #pragma warning restore VSTHRD003
-#pragma warning disable xUnit1051 // Uncancellable overloads deliberately verify shared shutdown task identity.
-            var shutdown = engine.ShutdownAsync();
-            var repeated = engine.ShutdownAsync(mode == ExecutionShutdownMode.Drain ? ExecutionShutdownMode.CancelPending : ExecutionShutdownMode.Drain);
-#pragma warning restore xUnit1051
+            // An uncancellable wait exposes the shared completion task rather than a per-caller wrapper.
+            var shutdown = engine.ShutdownAsync(CancellationToken.None);
+            var repeated = engine.ShutdownAsync(
+                mode == ExecutionShutdownMode.Drain ? ExecutionShutdownMode.CancelPending : ExecutionShutdownMode.Drain,
+                CancellationToken.None);
             repeated.Should().BeSameAs(shutdown);
             shutdown.IsCompleted.Should().BeFalse();
             fixture.Pdf.Verify(m => m.Terminate(), Times.Never);

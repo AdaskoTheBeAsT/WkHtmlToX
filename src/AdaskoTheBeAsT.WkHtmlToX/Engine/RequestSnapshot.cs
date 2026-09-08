@@ -96,7 +96,11 @@ internal static class RequestSnapshot
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 checkPending.Invoke();
+#if NET8_0_OR_GREATER
+                var read = await stream.ReadAsync(buffer.AsMemory(offset, length - offset), cancellationToken).ConfigureAwait(false);
+#else
                 var read = await stream.ReadAsync(buffer, offset, length - offset, cancellationToken).ConfigureAwait(false);
+#endif
                 if (read == 0)
                 {
                     throw new EndOfStreamException("The HTML input stream ended before its declared length.");
@@ -153,7 +157,7 @@ internal static class RequestSnapshot
             throw new ArgumentException("Standard input is not supported.");
         }
 
-        if (item.HtmlContent is not null && item.HtmlContent.Length > 0)
+        if (!string.IsNullOrEmpty(item.HtmlContent))
         {
             return (item.Encoding ?? Encoding.UTF8).GetByteCount(item.HtmlContent);
         }
@@ -163,7 +167,11 @@ internal static class RequestSnapshot
             return item.HtmlContentByteArray.Length;
         }
 
-        var stream = item.HtmlContentStream;
+        return GetStreamLength(item.HtmlContentStream);
+    }
+
+    private static long GetStreamLength(Stream? stream)
+    {
         if (stream is null)
         {
             return 0;
@@ -205,12 +213,7 @@ internal static class RequestSnapshot
         var type = value.GetType();
         if (type.IsValueType)
         {
-            if ((type.IsEnum && !Enum.IsDefined(type, value))
-                || (value is double number && (double.IsNaN(number) || double.IsInfinity(number))))
-            {
-                throw new ArgumentException("A setting contains an unsupported numeric value.");
-            }
-
+            ValidateNumericValue(type, value);
             return value;
         }
 
@@ -239,6 +242,15 @@ internal static class RequestSnapshot
         }
 
         return copy;
+    }
+
+    private static void ValidateNumericValue(Type type, object value)
+    {
+        if ((type.IsEnum && !Enum.IsDefined(type, value))
+            || (value is double number && (double.IsNaN(number) || double.IsInfinity(number))))
+        {
+            throw new ArgumentException("A setting contains an unsupported numeric value.");
+        }
     }
 
     private static object CreateSettings(Type type) => type switch
