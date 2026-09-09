@@ -97,8 +97,8 @@ $tfms = $Frameworks -join ';'
     <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.DependencyInjection" Version="[$version]" />
     <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.Hosting" Version="[$version]" />
     <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.native.win.x64" Version="[0.12.6]" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="[10.0.11]" Condition="'`$(TargetFramework)' != 'net8.0' and '`$(TargetFramework)' != 'net9.0'" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="[9.0.19]" Condition="'`$(TargetFramework)' == 'net9.0'" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="[10.0.12]" Condition="'`$(TargetFramework)' != 'net8.0' and '`$(TargetFramework)' != 'net9.0'" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="[9.0.20]" Condition="'`$(TargetFramework)' == 'net9.0'" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="[8.0.1]" Condition="'`$(TargetFramework)' == 'net8.0'" />
   </ItemGroup>
 </Project>

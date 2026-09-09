@@ -21,7 +21,7 @@ public static class WkHtmlToXHostingServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The service collection to mutate.</param>
     /// <param name="configuration">WkHtmlToX runtime configuration.</param>
-    /// <param name="configureWorker">Optional worker options configuration delegate.</param>
+    /// <param name="configureWorker">Optional advanced Interop configuration, applied after the snapshotted configuration.WorkerOptions.</param>
     /// <returns>The same <paramref name="services"/> for chaining.</returns>
     /// <exception cref="ArgumentNullException">
     /// <paramref name="services"/> or <paramref name="configuration"/> is <see langword="null"/>.

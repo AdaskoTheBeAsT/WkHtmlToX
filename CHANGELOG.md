@@ -13,6 +13,10 @@ Major-release hardening of the in-process renderer. See the
   bounded warnings, and separately retained callback errors.
 - `WkHtmlToXRequestOptions`: bounded request admission, inline PDF input size,
   per-request output size, and shared input/output memory budgets.
+- `WkHtmlToXWorkerOptions` and `WkHtmlToXShutdownMode`: wrapper-owned worker
+  naming, recycling, disposal-wait, and shutdown policy, available through
+  configuration for standalone, DI, and hosted engines. Advanced Interop
+  configuration delegates remain compatible and take precedence.
 - `ShutdownAsync`: whole-pipeline drain/cancel-pending policies with independently
   cancellable waits, used by generic-host stop and engine/provider disposal.
 - Parameterless OS-detecting configuration and an explicit trusted native path.
@@ -72,6 +76,8 @@ Major-release hardening of the in-process renderer. See the
   layout, not assembly location, current working directory, or system directories.
   ARM/ARM64 processes are rejected; unverified OS/architecture claims are narrowed.
 - Dependency ranges exclude future incompatible major versions.
+- Interop.Execution minimum is now 2.1.0. Package-consumer checks use matching
+  Microsoft.Extensions.Hosting 10.0.12/9.0.20 dependencies.
 
 ### Deprecated
 

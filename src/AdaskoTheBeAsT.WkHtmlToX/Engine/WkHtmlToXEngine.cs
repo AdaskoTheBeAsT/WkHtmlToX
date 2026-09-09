@@ -13,8 +13,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine;
 public sealed partial class WkHtmlToXEngine
     : IWkHtmlToXAsyncEngine
 {
-    private const string WorkerName = "WkHtmlToX Engine Worker";
-
     private readonly IExecutionWorker<WkHtmlToXSession> _worker;
     private readonly bool _ownsWorker;
 
@@ -161,13 +159,13 @@ public sealed partial class WkHtmlToXEngine
         }
 #endif
 
+        var snapshot = configuration.Snapshot();
         var sessionFactory = new WkHtmlToXSessionFactory(
-            configuration.Snapshot(),
+            snapshot,
             new LibraryLoaderFactory());
 
-        var options = new ExecutionWorkerOptions(
-            name: WorkerName,
-            useStaThread: true);
+        var options = new ExecutionWorkerOptions();
+        snapshot.WorkerOptions.ApplyTo(options);
 
         return new WkHtmlToXWorker(sessionFactory, options);
     }

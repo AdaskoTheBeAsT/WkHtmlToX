@@ -6,6 +6,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Loaders;
 using AwesomeAssertions;
 using AwesomeAssertions.Execution;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.DependencyInjection.Test;
@@ -190,5 +191,77 @@ public sealed class WkHtmlToXServiceCollectionExtensionsTest
 
         // Assert
         result.Should().BeSameAs(services);
+    }
+
+    [Fact]
+    public void AddWkHtmlToXShouldSnapshotWorkerOptionsAtRegistration()
+    {
+        var services = new ServiceCollection();
+        var configuration = new WkHtmlToXConfiguration
+        {
+            WorkerOptions = new WkHtmlToXWorkerOptions
+            {
+                Name = "renderer",
+                MaxOperationsPerSession = 42,
+                DisposeTimeout = TimeSpan.FromSeconds(3),
+                ShutdownMode = WkHtmlToXShutdownMode.CancelPending,
+            },
+        };
+        services.AddWkHtmlToX(configuration);
+        configuration.WorkerOptions.Name = "changed";
+        configuration.WorkerOptions.MaxOperationsPerSession = -1;
+        configuration.WorkerOptions.DisposeTimeout = TimeSpan.Zero;
+        configuration.WorkerOptions.ShutdownMode = WkHtmlToXShutdownMode.Drain;
+        using var provider = services.BuildServiceProvider();
+        var resolved = provider.GetRequiredService<WkHtmlToXConfiguration>();
+        resolved.WorkerOptions.Should().NotBeSameAs(configuration.WorkerOptions);
+        var options = provider.GetRequiredService<IOptionsMonitor<ExecutionWorkerOptions>>()
+            .Get(typeof(WkHtmlToXSession).FullName);
+        options.Name.Should().Be("renderer");
+        options.MaxOperationsPerSession.Should().Be(42);
+        options.DisposeTimeout.Should().Be(TimeSpan.FromSeconds(3));
+        options.ShutdownMode.Should().Be(ExecutionShutdownMode.CancelPending);
+        options.UseStaThread.Should().BeTrue();
+        var worker = provider.GetRequiredService<IExecutionWorker<WkHtmlToXSession>>();
+        worker.Name.Should().Be("renderer");
+    }
+
+    [Fact]
+    public void AdvancedWorkerConfigurationShouldOverrideWrapperPolicy()
+    {
+        var services = new ServiceCollection();
+        var configuration = new WkHtmlToXConfiguration
+        {
+            WorkerOptions = new WkHtmlToXWorkerOptions { Name = "base", MaxOperationsPerSession = 42 },
+        };
+        services.AddWkHtmlToX(configuration, options =>
+        {
+            options.Name.Should().Be("base");
+            options.MaxOperationsPerSession.Should().Be(42);
+            options.Name = "advanced";
+            options.MaxOperationsPerSession = 7;
+            options.QueueCapacity = 3;
+            options.ShutdownMode = ExecutionShutdownMode.CancelPending;
+        });
+        using var provider = services.BuildServiceProvider();
+        var options = provider.GetRequiredService<IOptionsMonitor<ExecutionWorkerOptions>>()
+            .Get(typeof(WkHtmlToXSession).FullName);
+        options.Name.Should().Be("advanced");
+        options.MaxOperationsPerSession.Should().Be(7);
+        options.QueueCapacity.Should().Be(3);
+        options.ShutdownMode.Should().Be(ExecutionShutdownMode.CancelPending);
+    }
+
+    [Fact]
+    public void InvalidWorkerPolicyShouldNotPartiallyRegisterServices()
+    {
+        var services = new ServiceCollection();
+        var configuration = new WkHtmlToXConfiguration
+        {
+            WorkerOptions = new WkHtmlToXWorkerOptions { MaxOperationsPerSession = -1 },
+        };
+        Action register = () => services.AddWkHtmlToX(configuration);
+        register.Should().Throw<ArgumentException>();
+        services.Should().BeEmpty();
     }
 }

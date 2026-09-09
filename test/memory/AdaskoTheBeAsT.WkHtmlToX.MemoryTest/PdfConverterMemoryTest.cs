@@ -36,7 +36,7 @@ public sealed class PdfConverterMemoryTest
         var progressChangedCallCount = 0;
         var finishedCallCount = 0;
 
-        using var engine = CreateInitializedEngine(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
+        await using var engine = CreateInitializedEngine(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
             PhaseChangedAction = _ => phaseChangedCallCount++,
             ProgressChangedAction = _ => progressChangedCallCount++,
@@ -142,7 +142,7 @@ public sealed class PdfConverterMemoryTest
     {
         for (var i = 0; i < count; i++)
         {
-            using var engine = CreateInitializedEngine(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null));
+            await using var engine = CreateInitializedEngine(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null));
             var converter = new PdfConverter(engine);
 
             await ConvertSingleDocumentAsync(converter).ConfigureAwait(false);

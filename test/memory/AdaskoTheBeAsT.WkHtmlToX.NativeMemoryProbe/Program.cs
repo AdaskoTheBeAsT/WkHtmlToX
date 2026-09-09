@@ -46,35 +46,39 @@ internal static class Program
 
         try
         {
-            using var engine = new WkHtmlToXEngine(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null));
-            engine.Initialize();
-
-            await RunWarmupAsync(engine, options.Mode, htmlFilePath, options.WarmupIterations).ConfigureAwait(false);
-
-            var baselinePrivateBytes = TakePrivateBytesSample();
-
-            for (var i = 0; i < options.MeasurementIterations; i++)
+            var engine = new WkHtmlToXEngine(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null));
+            await using (engine.ConfigureAwait(false))
             {
-                await ConvertAsync(engine, options.Mode, htmlFilePath).ConfigureAwait(false);
-                samplePrivateBytes.Add(TakePrivateBytesSample());
+                await engine.InitializeAsync().ConfigureAwait(false);
+
+                await RunWarmupAsync(engine, options.Mode, htmlFilePath, options.WarmupIterations)
+                    .ConfigureAwait(false);
+
+                var baselinePrivateBytes = TakePrivateBytesSample();
+
+                for (var i = 0; i < options.MeasurementIterations; i++)
+                {
+                    await ConvertAsync(engine, options.Mode, htmlFilePath).ConfigureAwait(false);
+                    samplePrivateBytes.Add(TakePrivateBytesSample());
+                }
+
+                var finalPrivateBytes = samplePrivateBytes.LastOrDefault(baselinePrivateBytes);
+                var peakPrivateBytes = samplePrivateBytes.Count == 0
+                    ? baselinePrivateBytes
+                    : Math.Max(baselinePrivateBytes, samplePrivateBytes.Max());
+
+                return new NativeMemoryProbeResult
+                {
+                    Mode = options.Mode,
+                    WarmupIterations = options.WarmupIterations,
+                    MeasurementIterations = options.MeasurementIterations,
+                    BaselinePrivateBytes = baselinePrivateBytes,
+                    FinalPrivateBytes = finalPrivateBytes,
+                    PeakPrivateBytes = peakPrivateBytes,
+                    GrowthBytes = finalPrivateBytes - baselinePrivateBytes,
+                    SamplePrivateBytes = [.. samplePrivateBytes],
+                };
             }
-
-            var finalPrivateBytes = samplePrivateBytes.LastOrDefault(baselinePrivateBytes);
-            var peakPrivateBytes = samplePrivateBytes.Count == 0
-                ? baselinePrivateBytes
-                : Math.Max(baselinePrivateBytes, samplePrivateBytes.Max());
-
-            return new NativeMemoryProbeResult
-            {
-                Mode = options.Mode,
-                WarmupIterations = options.WarmupIterations,
-                MeasurementIterations = options.MeasurementIterations,
-                BaselinePrivateBytes = baselinePrivateBytes,
-                FinalPrivateBytes = finalPrivateBytes,
-                PeakPrivateBytes = peakPrivateBytes,
-                GrowthBytes = finalPrivateBytes - baselinePrivateBytes,
-                SamplePrivateBytes = [.. samplePrivateBytes],
-            };
         }
         finally
         {
