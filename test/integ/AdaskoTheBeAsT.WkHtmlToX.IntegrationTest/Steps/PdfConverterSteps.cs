@@ -126,18 +126,19 @@ public sealed class PdfConverterSteps
         {
             _phaseChangedEvents.Should().NotBeEmpty();
             _phaseChangedEvents.Should().OnlyContain(
-                eventArgs => ReferenceEquals(eventArgs.Document, _htmlToPdfDocument)
+                eventArgs => ReferenceEquals(eventArgs.Document, _finishedEvents[0].Document)
                     && eventArgs.PhaseCount > 0
                     && eventArgs.CurrentPhase >= 0);
             _phaseChangedEvents.Should().Contain(eventArgs => !string.IsNullOrWhiteSpace(eventArgs.Description));
 
             _progressChangedEvents.Should().NotBeEmpty();
             _progressChangedEvents.Should().OnlyContain(
-                eventArgs => ReferenceEquals(eventArgs.Document, _htmlToPdfDocument));
+                eventArgs => ReferenceEquals(eventArgs.Document, _finishedEvents[0].Document));
             _progressChangedEvents.Should().Contain(eventArgs => !string.IsNullOrWhiteSpace(eventArgs.Description));
 
             _finishedEvents.Should().ContainSingle();
-            _finishedEvents[0].Document.Should().BeSameAs(_htmlToPdfDocument);
+            _finishedEvents[0].Document.Should().NotBeSameAs(_htmlToPdfDocument);
+            _finishedEvents[0].Document.Should().BeEquivalentTo(_htmlToPdfDocument);
             _finishedEvents[0].Success.Should().BeTrue();
         }
     }

@@ -1,3 +1,4 @@
+#pragma warning disable CS0618 // Intentional legacy compatibility implementation or regression coverage.
 using System;
 using System.IO;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
@@ -61,3 +62,5 @@ public sealed class PdfConvertWorkItemTest
         }
     }
 }
+
+#pragma warning restore CS0618

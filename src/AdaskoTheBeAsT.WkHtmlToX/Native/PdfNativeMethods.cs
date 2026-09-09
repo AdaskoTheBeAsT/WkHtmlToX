@@ -229,7 +229,7 @@ internal static class PdfNativeMethods
     internal static extern void wkhtmltopdf_add_object(
         IntPtr converter,
         IntPtr objectSettings,
-        byte[] data);
+        byte[]? data);
 
     /// <summary>
     /// wkhtmltopdf_add_object.

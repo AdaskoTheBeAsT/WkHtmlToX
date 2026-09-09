@@ -6,6 +6,7 @@ using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AdaskoTheBeAsT.WkHtmlToX.Loaders;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.DependencyInjection;
 
@@ -21,9 +22,9 @@ public static class WkHtmlToXServiceCollectionExtensions
     internal const string DefaultWorkerName = "WkHtmlToX Engine Worker";
 
     /// <summary>
-    /// Registers <see cref="IWkHtmlToXEngine"/>, <see cref="IPdfConverter"/>,
-    /// <see cref="IImageConverter"/> and the underlying
-    /// <see cref="IExecutionWorker{TSession}"/> as singletons.
+    /// Registers the engine and underlying worker as singletons.
+    /// <see cref="IPdfConverter"/> and <see cref="IImageConverter"/> are transient
+    /// facades sharing that one engine.
     /// </summary>
     /// <param name="services">The service collection to mutate.</param>
     /// <param name="configuration">WkHtmlToX runtime configuration.</param>
@@ -70,12 +71,17 @@ public static class WkHtmlToXServiceCollectionExtensions
         IServiceCollection services,
         WkHtmlToXConfiguration configuration)
     {
-        services.TryAddSingleton(configuration);
+        services.TryAddSingleton(configuration.Snapshot());
         services.TryAddSingleton<ILibraryLoaderFactory, LibraryLoaderFactory>();
         services.TryAddSingleton<IExecutionSessionFactory<WkHtmlToXSession>>(sp =>
             new WkHtmlToXSessionFactory(
-                sp.GetRequiredService<WkHtmlToXConfiguration>(),
+                sp.GetRequiredService<WkHtmlToXConfiguration>().Snapshot(),
                 sp.GetRequiredService<ILibraryLoaderFactory>()));
+        services.TryAddSingleton<IExecutionWorker<WkHtmlToXSession>>(sp =>
+            new WkHtmlToXWorker(
+                sp.GetRequiredService<IExecutionSessionFactory<WkHtmlToXSession>>(),
+                sp.GetRequiredService<IOptionsMonitor<ExecutionWorkerOptions>>()
+                    .Get(typeof(WkHtmlToXSession).FullName)));
     }
 
     internal static void RegisterEngineAndConverters(IServiceCollection services)
@@ -83,7 +89,10 @@ public static class WkHtmlToXServiceCollectionExtensions
         services.TryAddSingleton<IWkHtmlToXEngine>(sp =>
             new WkHtmlToXEngine(
                 sp.GetRequiredService<IExecutionWorker<WkHtmlToXSession>>(),
-                ownsWorker: false));
+                ownsWorker: true,
+                sp.GetRequiredService<WkHtmlToXConfiguration>().RequestOptions));
+        services.TryAddSingleton<IWkHtmlToXAsyncEngine>(sp =>
+            (IWkHtmlToXAsyncEngine)sp.GetRequiredService<IWkHtmlToXEngine>());
 
         services.TryAddTransient<IPdfConverter, PdfConverter>();
         services.TryAddTransient<IImageConverter, ImageConverter>();

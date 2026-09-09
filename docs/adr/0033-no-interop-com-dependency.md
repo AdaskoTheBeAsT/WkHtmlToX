@@ -1,6 +1,6 @@
 # 0033 - Do not depend on `AdaskoTheBeAsT.Interop.COM` from the core engine
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-04-21
 - Traceability: `docs/plan.md` Section 2.4.
 

@@ -40,12 +40,15 @@ ADRs use a lightweight [MADR](https://adr.github.io/madr/) layout.
 | 0024 | 2025-01-05 | Add .NET 9 target                                                              | Superseded by 0025 |
 | 0025 | 2025-11-16 | Add .NET 10 target and adopt raw string literals                               | Accepted    |
 | 0026 | 2026-04-04 | Tighten disposal contract across native owners                                 | Accepted    |
-| 0027 | 2026-04-21 | Migrate solution to `.slnx` and CI from Azure Pipelines to GitHub Actions     | Proposed    |
-| 0028 | 2026-04-21 | Extract `WkHtmlToXSession` and `WkHtmlToXSessionFactory` from the engine      | Proposed    |
-| 0029 | 2026-04-21 | Adopt `AdaskoTheBeAsT.Interop.Unmanaged` for native loading (Phase 1)         | Proposed    |
-| 0030 | 2026-04-21 | Adopt `AdaskoTheBeAsT.Interop.Execution.ExecutionWorker<TSession>` (Phase 2)  | Proposed    |
-| 0031 | 2026-04-21 | Ship `DependencyInjection` and `Hosting` packages (Phase 3)                   | Proposed    |
-| 0032 | 2026-04-21 | Opt-in use of `AdaskoTheBeAsT.Interop.Threading` utilities (Phase 4)          | Proposed    |
-| 0033 | 2026-04-21 | Do not depend on `AdaskoTheBeAsT.Interop.COM` from the core engine            | Proposed    |
-| 0034 | 2026-04-21 | Add native private-bytes memory probes                                        | Proposed    |
-| 0035 | 2026-04-21 | Add `Utf8Interop` helper for zero-allocation native string marshaling         | Proposed    |
+| 0027 | 2026-04-21 | Migrate solution to `.slnx` and CI from Azure Pipelines to GitHub Actions     | Accepted    |
+| 0028 | 2026-04-21 | Extract `WkHtmlToXSession` and `WkHtmlToXSessionFactory` from the engine      | Accepted    |
+| 0029 | 2026-04-21 | Adopt `AdaskoTheBeAsT.Interop.Unmanaged` for native loading (Phase 1)         | Accepted    |
+| 0030 | 2026-04-21 | Adopt `AdaskoTheBeAsT.Interop.Execution.ExecutionWorker<TSession>` (Phase 2)  | Accepted    |
+| 0031 | 2026-04-21 | Ship `DependencyInjection` and `Hosting` packages (Phase 3)                   | Accepted    |
+| 0032 | 2026-04-21 | Opt-in use of `AdaskoTheBeAsT.Interop.Threading` utilities (Phase 4)          | Rejected    |
+| 0033 | 2026-04-21 | Do not depend on `AdaskoTheBeAsT.Interop.COM` from the core engine            | Accepted    |
+| 0034 | 2026-04-21 | Add native private-bytes memory probes                                        | Accepted    |
+| 0035 | 2026-04-21 | Add `Utf8Interop` helper for zero-allocation native string marshaling         | Accepted    |
+| 0036 | 2026-09-07 | [Bounded request ownership and native binding](0036-request-ownership-and-native-binding.md) | Accepted |
+| 0037 | 2026-09-07 | [Aggregate input budget](0037-aggregate-input-budget.md) | Accepted |
+| 0038 | 2026-09-07 | [Pipeline-aware shutdown](0038-pipeline-aware-shutdown.md) | Accepted |

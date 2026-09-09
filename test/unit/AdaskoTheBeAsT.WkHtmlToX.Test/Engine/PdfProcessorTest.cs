@@ -106,7 +106,7 @@ public partial class PdfProcessorTest
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // ReSharper disable once AssignmentIsFullyDiscarded
-        Action action = () => _ = _sut.CreateConverter(document: null);
+        Action action = () => _ = _sut.CreateConverter(document: null, TestContext.Current.CancellationToken);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // Act and Assert
@@ -127,15 +127,15 @@ public partial class PdfProcessorTest
             .Returns(converterPtr);
         _module.Setup(m =>
                 m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(value: 0);
+            .Returns(1);
         _module.Setup(
             m =>
                 m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(value: 0);
+            .Returns(1);
         var document = new HtmlToPdfDocument();
 
         // Act
-        var result = _sut.CreateConverter(document);
+        var result = _sut.CreateConverter(document, TestContext.Current.CancellationToken);
 
         // Assert
         using (new AssertionScope())
@@ -177,17 +177,17 @@ public partial class PdfProcessorTest
         _module.Setup(
             m =>
                 m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _module.Setup(
             m =>
                 m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(value: 0);
+            .Returns(1);
         var document = new HtmlToPdfDocument();
         var documentTitle = _fixture.Create<string>();
         document.GlobalSettings.DocumentTitle = documentTitle;
 
         // Act
-        var result = _sut.CreateConverter(document);
+        var result = _sut.CreateConverter(document, TestContext.Current.CancellationToken);
 
         // Assert
         using (new AssertionScope())
@@ -231,14 +231,14 @@ public partial class PdfProcessorTest
         _module.Setup(
             m =>
                 m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _module.Setup(m =>
                 m.CreateObjectSettings())
             .Returns(objectSettingsPtr);
         _module.Setup(
             m =>
                 m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         var document = new HtmlToPdfDocument();
         var documentTitle = _fixture.Create<string>();
         var captionText = _fixture.Create<string>();
@@ -254,7 +254,7 @@ public partial class PdfProcessorTest
             });
 
         // Act
-        var result = _sut.CreateConverter(document);
+        var result = _sut.CreateConverter(document, TestContext.Current.CancellationToken);
 
         // Assert
         using (new AssertionScope())
@@ -300,7 +300,7 @@ public partial class PdfProcessorTest
         document.GlobalSettings.DocumentTitle = _fixture.Create<string>();
 
         // Act
-        Action action = () => _sut.CreateConverter(document);
+        Action action = () => _sut.CreateConverter(document, TestContext.Current.CancellationToken);
 
         // Assert
         using (new AssertionScope())
@@ -319,7 +319,7 @@ public partial class PdfProcessorTest
         _module.Setup(m => m.CreateGlobalSettings())
             .Returns(globalSettingsPtr);
         _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _module.Setup(m => m.CreateConverter(It.IsAny<IntPtr>()))
             .Returns(IntPtr.Zero);
         _module.Setup(m => m.DestroyGlobalSetting(It.IsAny<IntPtr>()));
@@ -327,7 +327,7 @@ public partial class PdfProcessorTest
         var document = new HtmlToPdfDocument();
 
         // Act
-        Action action = () => _sut.CreateConverter(document);
+        Action action = () => _sut.CreateConverter(document, TestContext.Current.CancellationToken);
 
         // Assert
         using (new AssertionScope())
@@ -350,7 +350,7 @@ public partial class PdfProcessorTest
         _module.Setup(m => m.CreateConverter(It.IsAny<IntPtr>()))
             .Returns(converterPtr);
         _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _module.Setup(m => m.CreateObjectSettings())
             .Returns(objectSettingsPtr);
         _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
@@ -367,7 +367,7 @@ public partial class PdfProcessorTest
             });
 
         // Act
-        Action action = () => _sut.CreateConverter(document);
+        Action action = () => _sut.CreateConverter(document, TestContext.Current.CancellationToken);
 
         // Assert
         using (new AssertionScope())
@@ -391,11 +391,11 @@ public partial class PdfProcessorTest
         _module.Setup(m => m.CreateConverter(It.IsAny<IntPtr>()))
             .Returns(converterPtr);
         _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _module.Setup(m => m.CreateObjectSettings())
             .Returns(objectSettingsPtr);
         _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _module.Setup(m => m.DestroyObjectSetting(It.IsAny<IntPtr>()));
         _module.Setup(m => m.DestroyConverter(It.IsAny<IntPtr>()));
 
@@ -403,7 +403,7 @@ public partial class PdfProcessorTest
         document.ObjectSettings.Add(new PdfObjectSettings());
 
         // Act
-        Action action = () => _sut.CreateConverter(document);
+        Action action = () => _sut.CreateConverter(document, TestContext.Current.CancellationToken);
 
         // Assert
         using (new AssertionScope())
@@ -468,7 +468,7 @@ public partial class PdfProcessorTest
         _module.Setup(
             m =>
                 m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
             .Returns(value: true);
         _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
@@ -480,7 +480,7 @@ public partial class PdfProcessorTest
         _module.Setup(
             m =>
                 m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _module.Setup(m => m.DestroyObjectSetting(It.IsAny<IntPtr>()));
         var document = new HtmlToPdfDocument();
         var documentTitle = _fixture.Create<string>();
@@ -536,7 +536,7 @@ public partial class PdfProcessorTest
         var converterPtr = new IntPtr(_fixture.Create<int>());
         var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        Action action = () => _sut.AddContent(converterPtr, objectSettingsPtr, pdfObjectSettings: null);
+        Action action = () => _sut.AddContent(converterPtr, objectSettingsPtr, pdfObjectSettings: null, TestContext.Current.CancellationToken);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // Act and Assert
@@ -553,9 +553,11 @@ public partial class PdfProcessorTest
             .Without(s => s.HtmlContent)
             .Without(s => s.HtmlContentByteArray)
             .Without(s => s.HtmlContentStream)
+            .Without(s => s.Page)
+            .Without(s => s.Xsl)
             .Create();
 
-        Action action = () => _sut.AddContent(converterPtr, objectSettingsPtr, pdfObjectSettings);
+        Action action = () => _sut.AddContent(converterPtr, objectSettingsPtr, pdfObjectSettings, TestContext.Current.CancellationToken);
 
         // Act and Assert
         action.Should().Throw<HtmlContentEmptyException>();
@@ -659,7 +661,7 @@ public partial class PdfProcessorTest
         var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, htmlContentStream: null);
+        Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, htmlContentStream: null, TestContext.Current.CancellationToken);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // Act and Assert
@@ -692,7 +694,7 @@ public partial class PdfProcessorTest
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // ReSharper disable once AccessToDisposedClosure
-        Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, memoryStream);
+        Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, memoryStream, TestContext.Current.CancellationToken);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // Act and Assert
@@ -722,7 +724,7 @@ public partial class PdfProcessorTest
             .Callback<IntPtr, IntPtr, byte[]>((_, _, data) => received = data);
 
         // Act
-        _sut.AddContentStream(converterPtr, objectSettingsPtr, stream);
+        _sut.AddContentStream(converterPtr, objectSettingsPtr, stream, TestContext.Current.CancellationToken);
 
         // Assert
         using (new AssertionScope())
@@ -748,13 +750,15 @@ public partial class PdfProcessorTest
         var converterPtr = new IntPtr(_fixture.Create<int>());
         var objectSettingsPtr = new IntPtr(_fixture.Create<int>());
         var streamMock = new Mock<Stream>(MockBehavior.Strict);
+        streamMock.SetupGet(s => s.CanRead).Returns(value: true);
+        streamMock.SetupGet(s => s.CanSeek).Returns(value: true);
         streamMock.SetupGet(s => s.Length)
             .Returns(streamLength);
         streamMock.SetupGet(s => s.Position)
             .Returns(0L);
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, streamMock.Object);
+        Action action = () => _sut.AddContentStream(converterPtr, objectSettingsPtr, streamMock.Object, TestContext.Current.CancellationToken);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // Act and Assert
@@ -806,7 +810,7 @@ public partial class PdfProcessorTest
         _module.Setup(
             m =>
                 m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
             .Returns(value: false);
         _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
@@ -818,7 +822,7 @@ public partial class PdfProcessorTest
         _module.Setup(
             m =>
                 m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _module.Setup(m => m.DestroyObjectSetting(It.IsAny<IntPtr>()));
         var document = new HtmlToPdfDocument();
         var documentTitle = _fixture.Create<string>();
@@ -882,7 +886,7 @@ public partial class PdfProcessorTest
         _module.Setup(
             m =>
                 m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
             .Returns(value: true);
         _module.Setup(m => m.GetOutput(It.IsAny<IntPtr>(), It.IsAny<Func<int, Stream>>()));
@@ -894,7 +898,7 @@ public partial class PdfProcessorTest
         _module.Setup(
             m =>
                 m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _module.Setup(m => m.DestroyObjectSetting(It.IsAny<IntPtr>()));
         var document = new HtmlToPdfDocument();
         var documentTitle = _fixture.Create<string>();
@@ -953,11 +957,11 @@ public partial class PdfProcessorTest
         _module.Setup(m => m.CreateConverter(It.IsAny<IntPtr>()))
             .Returns(converterPtr);
         _module.Setup(m => m.SetGlobalSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _module.Setup(m => m.CreateObjectSettings())
             .Returns(objectSettingsPtr);
         _module.Setup(m => m.SetObjectSetting(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<string?>()))
-            .Returns(0);
+            .Returns(1);
         _module.Setup(m => m.SetErrorCallback(It.IsAny<IntPtr>(), It.IsAny<StringCallback>()));
         _module.Setup(m => m.Convert(It.IsAny<IntPtr>()))
             .Returns(value: true);

@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net10.0;net9.0;net8.0;net481;net48;net472;net471;net47;net462</TargetFrameworks>
+    <TargetFrameworks>net10.0;net9.0;net8.0;net481;net48;net472</TargetFrameworks>
     <ProjectGuid>9C8E1FAE-DF53-4122-8C47-FF78D10723AE</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[10.0.10,11.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[10.0.11,11.0.0)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[9.0.18,10.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[9.0.19,10.0.0)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net481' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net472' OR '$(TargetFramework)' == 'net471' OR '$(TargetFramework)' == 'net47' OR '$(TargetFramework)' == 'net462'">
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[10.0.10,11.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[10.0.11,11.0.0)" />
   </ItemGroup>
 
   <ItemGroup>

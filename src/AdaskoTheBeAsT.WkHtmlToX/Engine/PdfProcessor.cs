@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 using AdaskoTheBeAsT.WkHtmlToX.Settings;
@@ -25,6 +26,12 @@ internal sealed class PdfProcessor
     public IWkHtmlToPdfModule PdfModule { get; }
 
     public bool Convert(IHtmlToPdfDocument document, Func<int, Stream> createStreamFunc)
+        => ConvertWithResult(document, createStreamFunc, CancellationToken.None).ToLegacyResult();
+
+    public ConversionResult ConvertWithResult(
+        IHtmlToPdfDocument document,
+        Func<int, Stream> createStreamFunc,
+        CancellationToken cancellationToken)
     {
 #if !NET8_0_OR_GREATER
         if (document is null)
@@ -52,39 +59,17 @@ internal sealed class PdfProcessor
                 "No objects is defined in document that was passed. At least one object must be defined.");
         }
 
-        ProcessingDocument = document;
-
-        var converterPtr = IntPtr.Zero;
-        try
-        {
-            var converterData = CreateConverter(document);
-            converterPtr = converterData.converterPtr;
-
-            RegisterEvents(converterPtr);
-
-            var converted = PdfModule.Convert(converterPtr);
-
-            if (converted)
-            {
-                PdfModule.GetOutput(converterPtr, createStreamFunc);
-            }
-
-            return converted;
-        }
-        finally
-        {
-            if (converterPtr != IntPtr.Zero)
-            {
-                PdfModule.DestroyConverter(converterPtr);
-            }
-
-            ReleaseRegisteredCallbacks();
-            ProcessingDocument = null;
-        }
+        return ExecuteConversion(
+            document,
+            () => CreateConverter(document, cancellationToken).converterPtr,
+            PdfModule,
+            createStreamFunc,
+            cancellationToken);
     }
 
     internal (IntPtr converterPtr, IntPtr globalSettingsPtr, List<IntPtr> objectSettingsPtrs) CreateConverter(
-        IHtmlToPdfDocument document)
+        IHtmlToPdfDocument document,
+        CancellationToken cancellationToken = default)
     {
 #if !NET8_0_OR_GREATER
         if (document is null)
@@ -108,6 +93,7 @@ internal sealed class PdfProcessor
             EnsureConverterCreated(converter);
             foreach (var obj in document.ObjectSettings)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 if (obj == null)
                 {
                     continue;
@@ -119,15 +105,15 @@ internal sealed class PdfProcessor
 
                 ApplyConfig(objectSettings, obj, useGlobal: false);
 
-                AddContent(converter, objectSettings, obj);
+                AddContent(converter, objectSettings, obj, cancellationToken);
                 unattachedObjectSettingsPtr.Remove(objectSettings);
             }
 
             return (converter, globalSettings, objectSettingsPtr);
         }
-        catch
+        catch (Exception exception)
         {
-            CleanupFailedCreateConverter(converter, globalSettings, unattachedObjectSettingsPtr);
+            CleanupFailedCreateConverter(converter, globalSettings, unattachedObjectSettingsPtr, exception);
             throw;
         }
     }
@@ -135,7 +121,8 @@ internal sealed class PdfProcessor
     internal void AddContent(
         IntPtr converter,
         IntPtr objectSettings,
-        PdfObjectSettings pdfObjectSettings)
+        PdfObjectSettings pdfObjectSettings,
+        CancellationToken cancellationToken = default)
     {
 #if !NET8_0_OR_GREATER
         if (pdfObjectSettings is null)
@@ -156,7 +143,11 @@ internal sealed class PdfProcessor
         }
         else if (pdfObjectSettings.HtmlContentStream != null)
         {
-            AddContentStream(converter, objectSettings, pdfObjectSettings.HtmlContentStream);
+            AddContentStream(converter, objectSettings, pdfObjectSettings.HtmlContentStream, cancellationToken);
+        }
+        else if (!string.IsNullOrEmpty(pdfObjectSettings.Page) || !string.IsNullOrEmpty(pdfObjectSettings.Xsl))
+        {
+            PdfModule.AddObject(converter, objectSettings, (byte[]?)null);
         }
         else
         {
@@ -231,7 +222,8 @@ internal sealed class PdfProcessor
     internal void AddContentStream(
         IntPtr converter,
         IntPtr objectSettings,
-        Stream htmlContentStream)
+        Stream htmlContentStream,
+        CancellationToken cancellationToken = default)
     {
 #if !NET8_0_OR_GREATER
         if (htmlContentStream is null)
@@ -242,6 +234,11 @@ internal sealed class PdfProcessor
 #if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(htmlContentStream);
 #endif
+
+        if (!htmlContentStream.CanRead || !htmlContentStream.CanSeek)
+        {
+            throw new ArgumentException("HTML input streams must be readable and seekable.", nameof(htmlContentStream));
+        }
 
         var length = htmlContentStream.Length - htmlContentStream.Position;
         if (length < 0)
@@ -261,7 +258,7 @@ internal sealed class PdfProcessor
         var buffer = ArrayPool<byte>.Shared.Rent(len + 1);
         try
         {
-            ReadExact(htmlContentStream, buffer, len);
+            ReadExact(htmlContentStream, buffer, len, cancellationToken);
             buffer[len] = 0;
             PdfModule.AddObject(converter, objectSettings, buffer);
         }
@@ -319,11 +316,12 @@ internal sealed class PdfProcessor
         IntCallback callback) =>
         PdfModule.SetFinishedCallback(converter, callback);
 
-    private static void ReadExact(Stream htmlContentStream, byte[] buffer, int length)
+    private static void ReadExact(Stream htmlContentStream, byte[] buffer, int length, CancellationToken cancellationToken)
     {
         var bytesRead = 0;
         while (bytesRead < length)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var read = htmlContentStream.Read(buffer, bytesRead, length - bytesRead);
             if (read == 0)
             {
@@ -346,23 +344,27 @@ internal sealed class PdfProcessor
     private void CleanupFailedCreateConverter(
         IntPtr converter,
         IntPtr globalSettings,
-        List<IntPtr> unattachedObjectSettingsPtr)
+        List<IntPtr> unattachedObjectSettingsPtr,
+        Exception originalFailure)
     {
+        var failures = new List<Exception>();
         foreach (var objectSettings in unattachedObjectSettingsPtr)
         {
             if (objectSettings != IntPtr.Zero)
             {
-                PdfModule.DestroyObjectSetting(objectSettings);
+                NativeCleanup.Attempt(() => PdfModule.DestroyObjectSetting(objectSettings), failures);
             }
         }
 
         if (converter != IntPtr.Zero)
         {
-            PdfModule.DestroyConverter(converter);
+            NativeCleanup.Attempt(() => PdfModule.DestroyConverter(converter), failures);
         }
         else if (globalSettings != IntPtr.Zero)
         {
-            PdfModule.DestroyGlobalSetting(globalSettings);
+            NativeCleanup.Attempt(() => PdfModule.DestroyGlobalSetting(globalSettings), failures);
         }
+
+        NativeCleanup.ThrowIfFailed(failures, originalFailure);
     }
 }

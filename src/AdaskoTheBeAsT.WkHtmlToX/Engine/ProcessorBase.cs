@@ -1,20 +1,32 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Reflection;
+using System.Threading;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.EventDefinitions;
+using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
+using ErrorEventArgs = AdaskoTheBeAsT.WkHtmlToX.EventDefinitions.ErrorEventArgs;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Engine;
 
-internal abstract class ProcessorBase(WkHtmlToXConfiguration configuration)
+internal abstract class ProcessorBase
 {
+    private readonly WkHtmlToXConfiguration _configuration;
+    private readonly List<string> _warnings = [];
+    private Exception? _callbackFailure;
     private StringCallback? _warningCallback;
     private StringCallback? _errorCallback;
     private VoidCallback? _phaseChangedCallback;
     private IntCallback? _progressChangedCallback;
     private IntCallback? _finishedCallback;
+
+    protected ProcessorBase(WkHtmlToXConfiguration configuration)
+    {
+        _configuration = configuration.Snapshot();
+    }
 
     public ISettings? ProcessingDocument { get; internal set; }
 
@@ -32,33 +44,30 @@ internal abstract class ProcessorBase(WkHtmlToXConfiguration configuration)
             throw new ArgumentException("converter pointer cannot be zero", nameof(converter));
         }
 
-        if (configuration.PhaseChangedAction != null)
+        if (_configuration.PhaseChangedAction != null)
         {
-            _phaseChangedCallback = OnPhaseChanged;
+            _phaseChangedCallback = pointer => CaptureCallback(() => OnPhaseChanged(pointer));
             SetPhaseChangedCallback(converter, _phaseChangedCallback);
         }
 
-        if (configuration.ProgressChangedAction != null)
+        if (_configuration.ProgressChangedAction != null)
         {
-            _progressChangedCallback = OnProgressChanged;
+            _progressChangedCallback = (pointer, progress) => CaptureCallback(() => OnProgressChanged(pointer, progress));
             SetProgressChangedCallback(converter, _progressChangedCallback);
         }
 
-        if (configuration.FinishedAction != null)
+        if (_configuration.FinishedAction != null)
         {
-            _finishedCallback = OnFinished;
+            _finishedCallback = (_, success) => CaptureCallback(() => OnFinished(success));
             SetFinishedCallback(converter, _finishedCallback);
         }
 
-        if (configuration.WarningAction != null)
-        {
-            _warningCallback = OnWarning;
-            SetWarningCallback(converter, _warningCallback);
-        }
+        _warningCallback = (_, message) => CaptureCallback(() => OnWarning(message));
+        SetWarningCallback(converter, _warningCallback);
 
-        if (configuration.ErrorAction != null)
+        if (_configuration.ErrorAction != null)
         {
-            _errorCallback = OnError;
+            _errorCallback = (_, message) => CaptureCallback(() => OnError(message));
             SetErrorCallback(converter, _errorCallback);
         }
     }
@@ -74,7 +83,7 @@ internal abstract class ProcessorBase(WkHtmlToXConfiguration configuration)
 
     protected internal void OnPhaseChanged(IntPtr converter)
     {
-        if (configuration.PhaseChangedAction == null)
+        if (_configuration.PhaseChangedAction == null)
         {
             return;
         }
@@ -89,12 +98,12 @@ internal abstract class ProcessorBase(WkHtmlToXConfiguration configuration)
             currentPhase,
             phaseDescription);
 
-        configuration.PhaseChangedAction?.Invoke(eventArgs);
+        _configuration.PhaseChangedAction?.Invoke(eventArgs);
     }
 
     protected internal void OnProgressChanged(IntPtr converter, int progress)
     {
-        if (configuration.ProgressChangedAction == null)
+        if (_configuration.ProgressChangedAction == null)
         {
             return;
         }
@@ -105,14 +114,12 @@ internal abstract class ProcessorBase(WkHtmlToXConfiguration configuration)
             progress,
             progressDescription);
 
-        configuration.ProgressChangedAction?.Invoke(eventArgs);
+        _configuration.ProgressChangedAction?.Invoke(eventArgs);
     }
 
-#pragma warning disable CC0057 // Unused parameters
-    protected internal void OnFinished(IntPtr converter, int success)
-#pragma warning restore CC0057 // Unused parameters
+    protected internal void OnFinished(int success)
     {
-        if (configuration.FinishedAction == null)
+        if (_configuration.FinishedAction == null)
         {
             return;
         }
@@ -121,15 +128,13 @@ internal abstract class ProcessorBase(WkHtmlToXConfiguration configuration)
             ProcessingDocument,
             success == 1);
 
-        configuration.FinishedAction?.Invoke(eventArgs);
+        _configuration.FinishedAction?.Invoke(eventArgs);
     }
 
 #if NET462
-#pragma warning disable CC0057 // Unused parameters
-    protected internal void OnError(IntPtr converter, IntPtr messagePointer)
-#pragma warning restore CC0057 // Unused parameters
+    protected internal void OnError(IntPtr messagePointer)
     {
-        if (configuration.ErrorAction == null)
+        if (_configuration.ErrorAction == null)
         {
             return;
         }
@@ -140,32 +145,24 @@ internal abstract class ProcessorBase(WkHtmlToXConfiguration configuration)
             ProcessingDocument,
             message);
 
-        configuration.ErrorAction?.Invoke(eventArgs);
+        _configuration.ErrorAction?.Invoke(eventArgs);
     }
 
-#pragma warning disable CC0057 // Unused parameters
-    protected internal void OnWarning(IntPtr converter, IntPtr messagePointer)
-#pragma warning restore CC0057 // Unused parameters
+    protected internal void OnWarning(IntPtr messagePointer)
     {
-        if (configuration.WarningAction == null)
-        {
-            return;
-        }
-
         var message = Utf8Interop.PtrToString(messagePointer);
+        RecordWarning(message);
 
         var eventArgs = new WarningEventArgs(
             ProcessingDocument,
             message);
 
-        configuration.WarningAction?.Invoke(eventArgs);
+        _configuration.WarningAction?.Invoke(eventArgs);
     }
 #else
-#pragma warning disable CC0057 // Unused parameters
-    protected internal void OnError(IntPtr converter, string? message)
-#pragma warning restore CC0057 // Unused parameters
+    protected internal void OnError(string? message)
     {
-        if (configuration.ErrorAction == null)
+        if (_configuration.ErrorAction == null)
         {
             return;
         }
@@ -174,25 +171,88 @@ internal abstract class ProcessorBase(WkHtmlToXConfiguration configuration)
             ProcessingDocument,
             message ?? string.Empty);
 
-        configuration.ErrorAction?.Invoke(eventArgs);
+        _configuration.ErrorAction?.Invoke(eventArgs);
     }
 
-#pragma warning disable CC0057 // Unused parameters
-    protected internal void OnWarning(IntPtr converter, string? message)
-#pragma warning restore CC0057 // Unused parameters
+    protected internal void OnWarning(string? message)
     {
-        if (configuration.WarningAction == null)
-        {
-            return;
-        }
+        RecordWarning(message ?? string.Empty);
 
         var eventArgs = new WarningEventArgs(
             ProcessingDocument,
             message ?? string.Empty);
 
-        configuration.WarningAction?.Invoke(eventArgs);
+        _configuration.WarningAction?.Invoke(eventArgs);
     }
 #endif
+
+    protected internal ConversionResult ExecuteConversion(
+        ISettings document,
+        Func<IntPtr> createConverter,
+        IWkHtmlToXModule module,
+        Func<int, Stream> createStreamFunc,
+        CancellationToken cancellationToken)
+    {
+        ProcessingDocument = document;
+        _callbackFailure = null;
+        _warnings.Clear();
+        var converter = IntPtr.Zero;
+        var failureKind = ConversionFailureKind.NativeRuntimeError;
+        Exception? failure = null;
+        var httpErrorCode = 0;
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            converter = createConverter.Invoke();
+            RegisterEvents(converter);
+            cancellationToken.ThrowIfCancellationRequested();
+            var converted = module.Convert(converter);
+            httpErrorCode = module.GetHttpErrorCode(converter);
+            if (converted)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                (failureKind, failure) = WriteOutput(module, converter, createStreamFunc, cancellationToken);
+            }
+            else
+            {
+                failureKind = ConversionFailureKind.ConversionError;
+            }
+        }
+        catch (OperationCanceledException exception) when (cancellationToken.IsCancellationRequested)
+        {
+            failureKind = ConversionFailureKind.Cancellation;
+            failure = exception;
+        }
+        catch (Exception exception)
+        {
+            if (converter == IntPtr.Zero)
+            {
+                failureKind = exception switch
+                {
+                    ArgumentException or HtmlContentEmptyException or HtmlContentStreamTooLargeException => ConversionFailureKind.InvalidInput,
+                    IOException => ConversionFailureKind.InputReadError,
+                    _ => ConversionFailureKind.NativeRuntimeError,
+                };
+            }
+
+            failure = exception;
+        }
+        finally
+        {
+            (failureKind, failure) = DestroyConverter(module, converter, failureKind, failure);
+        }
+
+        failureKind = _callbackFailure is not null && failureKind == ConversionFailureKind.None
+            ? ConversionFailureKind.CallbackError
+            : failureKind;
+
+        return new ConversionResult(
+            failureKind,
+            httpErrorCode,
+            failure,
+            _callbackFailure,
+            Array.AsReadOnly(_warnings.ToArray()));
+    }
 
     protected internal void ApplyConfig(IntPtr config, ISettings? settings, bool useGlobal, string? prefix = null)
     {
@@ -243,16 +303,16 @@ internal abstract class ProcessorBase(WkHtmlToXConfiguration configuration)
 #endif
         var type = value.GetType();
 
-        var applySetting = GetApplySettingFunc(useGlobal);
+        var setter = GetApplySettingFunc(useGlobal);
         var localName = string.IsNullOrEmpty(prefix) ? name : $"{prefix}.{name}";
 
         if (typeof(bool) == type)
         {
-            applySetting(config, localName, (bool)value ? "true" : "false");
+            ApplySetting(setter, config, localName, (bool)value ? "true" : "false");
         }
         else if (typeof(double) == type)
         {
-            applySetting(config, localName, ((double)value).ToString("0.##", CultureInfo.InvariantCulture));
+            ApplySetting(setter, config, localName, ((double)value).ToString("0.##", CultureInfo.InvariantCulture));
         }
 #pragma warning disable REFL040
         else if (typeof(Dictionary<string, string>).IsAssignableFrom(type))
@@ -269,15 +329,15 @@ internal abstract class ProcessorBase(WkHtmlToXConfiguration configuration)
                 }
 
                 // https://github.com/wkhtmltopdf/wkhtmltopdf/blob/c754e38b074a75a51327df36c4a53f8962020510/src/lib/reflect.hh#L192
-                applySetting(config, $"{localName}.append", arg3: null);
-                applySetting(config, $"{localName}[{index.ToString(CultureInfo.InvariantCulture)}]", $"{pair.Key}\n{pair.Value}");
+                ApplySetting(setter, config, $"{localName}.append", text: null);
+                ApplySetting(setter, config, $"{localName}[{index.ToString(CultureInfo.InvariantCulture)}]", $"{pair.Key}\n{pair.Value}");
 
                 index++;
             }
         }
         else
         {
-            applySetting(config, localName, value.ToString());
+            ApplySetting(setter, config, localName, value.ToString());
         }
     }
 
@@ -313,4 +373,89 @@ internal abstract class ProcessorBase(WkHtmlToXConfiguration configuration)
     protected internal abstract void SetFinishedCallback(
         IntPtr converter,
         IntCallback callback);
+
+    private static void ApplySetting(
+        Func<IntPtr, string, string?, int> setter,
+        IntPtr pointer,
+        string key,
+        string? text)
+    {
+        if (setter.Invoke(pointer, key, text) != 1)
+        {
+            // Never include setting values (which can contain credentials or HTML).
+            throw new ArgumentException($"The native renderer rejected setting '{key}'.");
+        }
+    }
+
+    private static (ConversionFailureKind kind, Exception? failure) WriteOutput(
+        IWkHtmlToXModule module,
+        IntPtr converter,
+        Func<int, Stream> createStreamFunc,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            module.GetOutput(converter, createStreamFunc);
+            return (kind: ConversionFailureKind.None, failure: null);
+        }
+        catch (OutputWriteException exception)
+        {
+            var kind = exception.InnerException is OperationCanceledException && cancellationToken.IsCancellationRequested
+                ? ConversionFailureKind.Cancellation
+                : ConversionFailureKind.OutputWriteError;
+            return (kind, failure: exception.InnerException);
+        }
+    }
+
+    private (ConversionFailureKind kind, Exception? failure) DestroyConverter(
+        IWkHtmlToXModule module,
+        IntPtr converter,
+        ConversionFailureKind kind,
+        Exception? failure)
+    {
+        try
+        {
+            if (converter != IntPtr.Zero)
+            {
+                module.DestroyConverter(converter);
+            }
+
+            return (kind, failure);
+        }
+        catch (Exception exception)
+        {
+            return (kind: ConversionFailureKind.NativeRuntimeError, failure: failure is null ? exception : new AggregateException(failure, exception));
+        }
+        finally
+        {
+            // Native code can still invoke callbacks during destruction.
+            ReleaseRegisteredCallbacks();
+            ProcessingDocument = null;
+        }
+    }
+
+    private void CaptureCallback(Action callback)
+    {
+        try
+        {
+            callback.Invoke();
+        }
+        catch (Exception exception)
+        {
+            // Never unwind an application exception through a reverse-P/Invoke frame.
+            _callbackFailure ??= exception;
+        }
+    }
+
+    private void RecordWarning(string message)
+    {
+        if (_warnings.Count < 32)
+        {
+#if NET8_0_OR_GREATER
+            _warnings.Add(message.Length <= 1024 ? message : message[..1024]);
+#else
+            _warnings.Add(message.Length <= 1024 ? message : message.Substring(0, 1024));
+#endif
+        }
+    }
 }

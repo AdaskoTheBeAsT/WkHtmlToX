@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Utils;
 
@@ -18,6 +20,12 @@ internal sealed class ImageProcessor
     public IWkHtmlToImageModule ImageModule { get; }
 
     public bool Convert(IHtmlToImageDocument? document, Func<int, Stream> createStreamFunc)
+        => ConvertWithResult(document, createStreamFunc, CancellationToken.None).ToLegacyResult();
+
+    public ConversionResult ConvertWithResult(
+        IHtmlToImageDocument? document,
+        Func<int, Stream> createStreamFunc,
+        CancellationToken cancellationToken)
     {
 #if !NET8_0_OR_GREATER
 #pragma warning disable RCS1256 // Invalid argument null check
@@ -49,9 +57,12 @@ internal sealed class ImageProcessor
         ArgumentNullException.ThrowIfNull(createStreamFunc);
 #endif
 
-        ProcessingDocument = document;
-
-        return ConvertCore(document, createStreamFunc);
+        return ExecuteConversion(
+            document,
+            () => CreateConverter(document).converterPtr,
+            ImageModule,
+            createStreamFunc,
+            cancellationToken);
     }
 
     internal (IntPtr converterPtr, IntPtr globalSettingsPtr) CreateConverter(
@@ -77,9 +88,9 @@ internal sealed class ImageProcessor
 
             return (converter, globalSettings);
         }
-        catch
+        catch (Exception exception)
         {
-            CleanupFailedCreateConverter(converter, globalSettings);
+            CleanupFailedCreateConverter(converter, globalSettings, exception);
             throw;
         }
     }
@@ -132,52 +143,18 @@ internal sealed class ImageProcessor
         }
     }
 
-    private bool ConvertCore(IHtmlToImageDocument document, Func<int, Stream> createStreamFunc)
+    private void CleanupFailedCreateConverter(IntPtr converter, IntPtr globalSettings, Exception originalFailure)
     {
-        var converterPtr = IntPtr.Zero;
-        try
-        {
-#pragma warning disable S1481 // Unused local variables should be removed
-            // ReSharper disable once UnusedVariable
-            var (createdConverterPtr, globalSettingsPtr) = CreateConverter(document);
-#pragma warning restore S1481 // Unused local variables should be removed
-            converterPtr = createdConverterPtr;
-
-            RegisterEvents(converterPtr);
-
-            var converted = ImageModule.Convert(converterPtr);
-
-            if (converted)
-            {
-                ImageModule.GetOutput(converterPtr, createStreamFunc);
-            }
-
-            return converted;
-        }
-        finally
-        {
-            if (converterPtr != IntPtr.Zero)
-            {
-                ImageModule.DestroyConverter(converterPtr);
-            }
-
-            ReleaseRegisteredCallbacks();
-
-            // it seems destroying converter also destroys global settings
-            ////ImageModule.DestroyGlobalSetting(globalSettingsPtr);
-            ProcessingDocument = null;
-        }
-    }
-
-    private void CleanupFailedCreateConverter(IntPtr converter, IntPtr globalSettings)
-    {
+        var failures = new List<Exception>();
         if (converter != IntPtr.Zero)
         {
-            ImageModule.DestroyConverter(converter);
+            NativeCleanup.Attempt(() => ImageModule.DestroyConverter(converter), failures);
         }
         else if (globalSettings != IntPtr.Zero)
         {
-            ImageModule.DestroyGlobalSetting(globalSettings);
+            NativeCleanup.Attempt(() => ImageModule.DestroyGlobalSetting(globalSettings), failures);
         }
+
+        NativeCleanup.ThrowIfFailed(failures, originalFailure);
     }
 }

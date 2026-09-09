@@ -1,9 +1,9 @@
+#pragma warning disable CS0618 // Intentional legacy compatibility implementation or regression coverage.
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.Interop.Execution;
-using AdaskoTheBeAsT.WkHtmlToX.Documents;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AdaskoTheBeAsT.WkHtmlToX.WorkItems;
 using AwesomeAssertions;
@@ -82,12 +82,12 @@ public sealed class EngineTest
         // Arrange
         _workerMock
             .Setup(w => w.ExecuteAsync(
-                It.IsAny<Func<WkHtmlToXSession, CancellationToken, bool>>(),
+                It.IsAny<Func<WkHtmlToXSession, CancellationToken, ConversionResult>>(),
                 It.IsAny<ExecutionRequestOptions?>(),
                 It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(true));
+            .Returns(Task.FromResult(new ConversionResult(ConversionFailureKind.None)));
 
-        var item = new PdfConvertWorkItem(new HtmlToPdfDocument(), _ => Stream.Null);
+        var item = new PdfConvertWorkItem(NativeRuntimeTestFixture.PdfDocument(), _ => Stream.Null);
 
         // Act
         _sut.AddConvertWorkItem(item, CancellationToken.None);
@@ -101,7 +101,7 @@ public sealed class EngineTest
             result.Should().BeTrue();
             _workerMock.Verify(
                 w => w.ExecuteAsync(
-                    It.IsAny<Func<WkHtmlToXSession, CancellationToken, bool>>(),
+                    It.IsAny<Func<WkHtmlToXSession, CancellationToken, ConversionResult>>(),
                     It.IsAny<ExecutionRequestOptions?>(),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
@@ -114,12 +114,12 @@ public sealed class EngineTest
         // Arrange
         _workerMock
             .Setup(w => w.ExecuteAsync(
-                It.IsAny<Func<WkHtmlToXSession, CancellationToken, bool>>(),
+                It.IsAny<Func<WkHtmlToXSession, CancellationToken, ConversionResult>>(),
                 It.IsAny<ExecutionRequestOptions?>(),
                 It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(true));
+            .Returns(Task.FromResult(new ConversionResult(ConversionFailureKind.None)));
 
-        var item = new ImageConvertWorkItem(new HtmlToImageDocument(), _ => Stream.Null);
+        var item = new ImageConvertWorkItem(NativeRuntimeTestFixture.ImageDocument(), _ => Stream.Null);
 
         // Act
         _sut.AddConvertWorkItem(item, CancellationToken.None);
@@ -137,12 +137,12 @@ public sealed class EngineTest
         // Arrange
         _workerMock
             .Setup(w => w.ExecuteAsync(
-                It.IsAny<Func<WkHtmlToXSession, CancellationToken, bool>>(),
+                It.IsAny<Func<WkHtmlToXSession, CancellationToken, ConversionResult>>(),
                 It.IsAny<ExecutionRequestOptions?>(),
                 It.IsAny<CancellationToken>()))
-            .Returns(Task.FromException<bool>(new InvalidOperationException("boom")));
+            .Returns(Task.FromException<ConversionResult>(new InvalidOperationException("boom")));
 
-        var item = new PdfConvertWorkItem(new HtmlToPdfDocument(), _ => Stream.Null);
+        var item = new PdfConvertWorkItem(NativeRuntimeTestFixture.PdfDocument(), _ => Stream.Null);
 
         // Act
         _sut.AddConvertWorkItem(item, CancellationToken.None);
@@ -158,22 +158,16 @@ public sealed class EngineTest
     public Task AddConvertWorkItemShouldForwardCancellationAsync()
     {
         // Arrange
-        var tcs = new TaskCompletionSource<bool>();
-#pragma warning disable xUnit1051
-#if NET8_0_OR_GREATER
+        var tcs = new TaskCompletionSource<ConversionResult>();
         tcs.TrySetCanceled(TestContext.Current.CancellationToken);
-#else
-        tcs.TrySetCanceled();
-#endif
-#pragma warning restore xUnit1051
         _workerMock
             .Setup(w => w.ExecuteAsync(
-                It.IsAny<Func<WkHtmlToXSession, CancellationToken, bool>>(),
+                It.IsAny<Func<WkHtmlToXSession, CancellationToken, ConversionResult>>(),
                 It.IsAny<ExecutionRequestOptions?>(),
                 It.IsAny<CancellationToken>()))
             .Returns(tcs.Task);
 
-        var item = new PdfConvertWorkItem(new HtmlToPdfDocument(), _ => Stream.Null);
+        var item = new PdfConvertWorkItem(NativeRuntimeTestFixture.PdfDocument(), _ => Stream.Null);
 
         // Act
 #pragma warning disable xUnit1051
@@ -208,7 +202,7 @@ public sealed class EngineTest
     {
         // Arrange
         var mock = new Mock<IExecutionWorker<WkHtmlToXSession>>(MockBehavior.Strict);
-        mock.Setup(w => w.Dispose());
+        mock.Setup(w => w.DisposeAsync()).Returns(default(ValueTask));
 #pragma warning disable IDISP017 // explicit Dispose verification
         var engine = new WkHtmlToXEngine(mock.Object, ownsWorker: true);
 
@@ -217,6 +211,8 @@ public sealed class EngineTest
 #pragma warning restore IDISP017
 
         // Assert
-        mock.Verify(w => w.Dispose(), Times.Once);
+        mock.Verify(w => w.DisposeAsync(), Times.Once);
     }
 }
+
+#pragma warning restore CS0618

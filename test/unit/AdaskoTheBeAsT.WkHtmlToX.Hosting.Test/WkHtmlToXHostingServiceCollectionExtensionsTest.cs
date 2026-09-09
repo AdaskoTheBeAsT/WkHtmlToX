@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AdaskoTheBeAsT.Interop.Execution;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
@@ -7,6 +9,7 @@ using AwesomeAssertions;
 using AwesomeAssertions.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Moq;
 using Xunit;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Hosting.Test;
@@ -54,7 +57,7 @@ public sealed class WkHtmlToXHostingServiceCollectionExtensionsTest
         // Assert
         using var provider = services.BuildServiceProvider();
         var hostedServices = provider.GetServices<IHostedService>().ToList();
-        hostedServices.Should().NotBeEmpty();
+        hostedServices.Should().ContainSingle().Which.Should().BeOfType<WkHtmlToXHostedService>();
     }
 
     [Fact]
@@ -70,7 +73,9 @@ public sealed class WkHtmlToXHostingServiceCollectionExtensionsTest
         // Assert
         using var provider = services.BuildServiceProvider();
         var resolved = provider.GetRequiredService<WkHtmlToXConfiguration>();
-        resolved.Should().BeSameAs(configuration);
+        resolved.Should().NotBeSameAs(configuration);
+        resolved.PlatformId.Should().Be(configuration.PlatformId);
+        resolved.RequestOptions.Should().NotBeSameAs(configuration.RequestOptions);
     }
 
     [Fact]
@@ -153,5 +158,31 @@ public sealed class WkHtmlToXHostingServiceCollectionExtensionsTest
 
         // Assert
         result.Should().BeSameAs(services);
+    }
+
+    [Fact]
+    public async Task HostedLifecycleShouldDriveEngineAndForwardWaitTokensAsync()
+    {
+        var engine = new Mock<IWkHtmlToXAsyncEngine>(MockBehavior.Strict);
+        var token = TestContext.Current.CancellationToken;
+        engine.Setup(e => e.InitializeAsync(token)).Returns(Task.CompletedTask);
+        engine.Setup(e => e.ShutdownAsync(token)).Returns(Task.CompletedTask);
+        var hosted = new WkHtmlToXHostedService(engine.Object);
+        await hosted.StartAsync(token);
+        await hosted.StopAsync(token);
+        engine.Verify(e => e.InitializeAsync(token), Times.Once);
+        engine.Verify(e => e.ShutdownAsync(token), Times.Once);
+    }
+
+    [Fact]
+    public async Task ExpiredHostTokenShouldStillReachEngineShutdownAsync()
+    {
+        var engine = new Mock<IWkHtmlToXAsyncEngine>(MockBehavior.Strict);
+        var token = new CancellationToken(canceled: true);
+        engine.Setup(e => e.ShutdownAsync(token)).Returns(Task.FromCanceled(token));
+        var hosted = new WkHtmlToXHostedService(engine.Object);
+        Func<Task> action = () => hosted.StopAsync(token);
+        await action.Should().ThrowAsync<OperationCanceledException>();
+        engine.Verify(e => e.ShutdownAsync(token), Times.Once);
     }
 }

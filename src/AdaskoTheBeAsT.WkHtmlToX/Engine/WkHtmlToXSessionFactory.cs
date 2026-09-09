@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using AdaskoTheBeAsT.Interop.Execution;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
@@ -10,18 +11,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.Engine;
 internal sealed class WkHtmlToXSessionFactory
     : IExecutionSessionFactory<WkHtmlToXSession>
 {
-#if NET9_0_OR_GREATER
-    private static readonly Lock SyncRoot = new();
-#else
-    private static readonly object SyncRoot = new();
-#endif
-
-    private static int _activeSessionCount;
-
     private readonly WkHtmlToXConfiguration _configuration;
     private readonly ILibraryLoaderFactory _libraryLoaderFactory;
     private readonly Func<IPdfProcessor> _pdfProcessorFactory;
     private readonly Func<IImageProcessor> _imageProcessorFactory;
+    private readonly NativeRuntimeOwnership _ownership;
+    private Thread? _thread;
+    private WkHtmlToXSession? _session;
 
     public WkHtmlToXSessionFactory(
         WkHtmlToXConfiguration configuration,
@@ -38,37 +34,66 @@ internal sealed class WkHtmlToXSessionFactory
         WkHtmlToXConfiguration configuration,
         ILibraryLoaderFactory libraryLoaderFactory,
         Func<IPdfProcessor> pdfProcessorFactory,
-        Func<IImageProcessor> imageProcessorFactory)
+        Func<IImageProcessor> imageProcessorFactory,
+        NativeRuntimeOwnership? ownership = null)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _libraryLoaderFactory = libraryLoaderFactory ?? throw new ArgumentNullException(nameof(libraryLoaderFactory));
         _pdfProcessorFactory = pdfProcessorFactory ?? throw new ArgumentNullException(nameof(pdfProcessorFactory));
         _imageProcessorFactory = imageProcessorFactory ?? throw new ArgumentNullException(nameof(imageProcessorFactory));
+        _ownership = ownership ?? NativeRuntimeOwnership.Shared;
     }
+
+    internal bool IsCurrentThread => ReferenceEquals(Volatile.Read(ref _thread), Thread.CurrentThread);
 
     public WkHtmlToXSession CreateSession(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        ReserveOwnership();
+        var thread = Interlocked.CompareExchange(ref _thread, Thread.CurrentThread, comparand: null);
+        if ((thread is not null && !ReferenceEquals(thread, Thread.CurrentThread)) || _session is not null)
+        {
+            throw new InvalidOperationException("The native session must have one dedicated execution thread.");
+        }
 
-#pragma warning disable IDISP003 // Dispose previous before re-assigning.
         var loader = _libraryLoaderFactory.Create(_configuration);
-#pragma warning restore IDISP003 // Dispose previous before re-assigning.
         IPdfProcessor? pdfProcessor = null;
-        IImageProcessor? imageProcessor = null;
-
+        var pdfInitialized = false;
         try
         {
             loader.Load();
-
             pdfProcessor = _pdfProcessorFactory();
-            imageProcessor = _imageProcessorFactory();
-            InitializeNativeRuntime(pdfProcessor, imageProcessor);
+            var imageProcessor = _imageProcessorFactory();
+            if (InitializeModule(pdfProcessor.PdfModule) != 1)
+            {
+                throw new PdfModuleInitializationException("Pdf module not loaded");
+            }
 
-            return new WkHtmlToXSession(loader, pdfProcessor, imageProcessor);
+            pdfInitialized = true;
+            if (InitializeModule(imageProcessor.ImageModule) != 1)
+            {
+                throw new ImageModuleInitializationException("Image module not loaded");
+            }
+
+            _session = new WkHtmlToXSession(loader, pdfProcessor, imageProcessor);
+            return _session;
         }
-        catch
+        catch (Exception exception)
         {
-            TryIgnore(loader.Dispose);
+            var failures = new List<Exception>();
+            if (pdfInitialized)
+            {
+                NativeCleanup.Attempt(() => Terminate(pdfProcessor!.PdfModule), failures);
+            }
+
+            NativeCleanup.Attempt(loader.Dispose, failures);
+            if (failures.Count > 0)
+            {
+                _ownership.Poison();
+                failures.Insert(0, exception);
+                throw new AggregateException("Native initialization and rollback failed.", failures);
+            }
+
             throw;
         }
     }
@@ -83,76 +108,47 @@ internal sealed class WkHtmlToXSessionFactory
             throw new ArgumentNullException(nameof(session));
         }
 #endif
-
-        TryIgnore(() => ReleaseNativeRuntime(session));
-        TryIgnore(session.Loader.Dispose);
-    }
-
-    private static void InitializeNativeRuntime(
-        IPdfProcessor pdfProcessor,
-        IImageProcessor imageProcessor)
-    {
-        lock (SyncRoot)
+        if (!IsCurrentThread || !ReferenceEquals(_session, session))
         {
-            if (_activeSessionCount > 0)
-            {
-                _activeSessionCount++;
-                return;
-            }
+            throw new InvalidOperationException("Only the owning thread can dispose the active native session.");
+        }
 
-            if (pdfProcessor.PdfModule.Initialize(0) != 1)
-            {
-                throw new PdfModuleInitializationException("Pdf module not loaded");
-            }
-
-            try
-            {
-                if (imageProcessor.ImageModule.Initialize(0) != 1)
-                {
-                    throw new ImageModuleInitializationException("Image module not loaded");
-                }
-
-                _activeSessionCount = 1;
-            }
-            catch
-            {
-                TryIgnore(() => pdfProcessor.PdfModule.Terminate());
-                throw;
-            }
+        _session = null;
+        var failures = new List<Exception>();
+        NativeCleanup.Attempt(() => Terminate(session.ImageProcessor.ImageModule), failures);
+        NativeCleanup.Attempt(() => Terminate(session.PdfProcessor.PdfModule), failures);
+        NativeCleanup.Attempt(session.Loader.Dispose, failures);
+        if (failures.Count > 0)
+        {
+            _ownership.Poison();
+            throw new AggregateException("Native teardown failed. The process cannot safely initialize another native runtime.", failures);
         }
     }
 
-    private static void ReleaseNativeRuntime(WkHtmlToXSession session)
+    internal void ReserveOwnership() => _ownership.Acquire(this);
+
+    // Called only after the worker's actual exit, never between recycled sessions.
+    internal void ReleaseOwnership() => _ownership.Release(this);
+
+    private static void Terminate(IWkHtmlToXModule module)
     {
-        lock (SyncRoot)
+        if (module.Terminate() != 1)
         {
-            if (_activeSessionCount == 0)
-            {
-                return;
-            }
-
-            _activeSessionCount--;
-            if (_activeSessionCount > 0)
-            {
-                return;
-            }
-
-            TryIgnore(() => session.ImageProcessor.ImageModule.Terminate());
-            TryIgnore(() => session.PdfProcessor.PdfModule.Terminate());
+            throw new InvalidOperationException("A native module rejected termination.");
         }
     }
 
-    private static void TryIgnore(Action action)
+    private int InitializeModule(IWkHtmlToXModule module)
     {
         try
         {
-#pragma warning disable CC0031 // Check for null before calling a delegate
-            action();
-#pragma warning restore CC0031
+            return module.Initialize(0);
         }
-        catch (Exception)
+        catch
         {
-            GC.KeepAlive(action);
+            // A thrown native initialization call may have changed process-global state.
+            _ownership.Poison();
+            throw;
         }
     }
 }

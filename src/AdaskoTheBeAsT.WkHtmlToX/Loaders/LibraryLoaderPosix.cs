@@ -1,42 +1,20 @@
-using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using AdaskoTheBeAsT.Interop.Unmanaged;
 using AdaskoTheBeAsT.WkHtmlToX.Exceptions;
 
 namespace AdaskoTheBeAsT.WkHtmlToX.Loaders;
 
 [ExcludeFromCodeCoverage]
-#pragma warning disable CA2213 // Field is disposed via Release()/Dispose(bool)
 internal abstract class LibraryLoaderPosix
     : LibraryLoaderBase
 {
-    private UnmanagedLibrary? _library;
-
     public override void Load()
     {
-        if (_library is not null)
-        {
-            return;
-        }
-
+        _ = GetProcessorArchitecture();
         var libraryName = GetLibraryName();
-        var runtimeIdentifier = GetRuntimeIdentifier();
-
-        var rootDirectory = GetCurrentDir();
-
-        // Search a few different locations for our native assembly
-        var paths = new[]
-        {
-            // This is where native libraries in our nupkg should end up
-            GetRuntimeLibraryPath(rootDirectory, runtimeIdentifier, libraryName),
-
-            // The build output folder
-            GetCurrentDirectoryLibraryPath(rootDirectory, libraryName),
-            Path.Combine("/usr/local/lib", libraryName),
-            Path.Combine("/usr/lib", libraryName),
-        };
+        var runtimeIdentifier = ExplicitPath is null ? GetRuntimeIdentifier() : string.Empty;
+        var paths = GetPaths(runtimeIdentifier, libraryName);
 
         foreach (var path in paths)
         {
@@ -52,9 +30,7 @@ internal abstract class LibraryLoaderPosix
 
             try
             {
-#pragma warning disable IDISP003 // Dispose previous before re-assigning.
-                _library = new UnmanagedLibrary(path);
-#pragma warning restore IDISP003
+                NativeLibraryBinding.Load(path);
                 return;
             }
             catch (Win32Exception ex)
@@ -68,23 +44,7 @@ internal abstract class LibraryLoaderPosix
 
     public override void Release()
     {
-        var libraryToDispose = _library;
-        if (libraryToDispose is null)
-        {
-            return;
-        }
-
-        try
-        {
-            libraryToDispose.Dispose();
-#pragma warning disable IDISP003 // Dispose previous before re-assigning.
-            _library = null;
-#pragma warning restore IDISP003
-        }
-        catch (Exception ex)
-        {
-            throw new DllUnloadFailedException($"dlclose failed: {ex.Message}", ex);
-        }
+        // Native code remains bound for the process lifetime; sessions still terminate.
     }
 
     protected override void Dispose(bool disposing)
@@ -99,4 +59,3 @@ internal abstract class LibraryLoaderPosix
 
     protected abstract string GetRuntimeIdentifier();
 }
-#pragma warning restore CA2213

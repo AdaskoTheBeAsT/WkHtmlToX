@@ -1,6 +1,6 @@
 # 0029 - Adopt `AdaskoTheBeAsT.Interop.Unmanaged` for native loading (Phase 1)
 
-- Status: Proposed. Supersedes [ADR 0005](0005-linux-native-loader.md)
+- Status: Accepted. Supersedes [ADR 0005](0005-linux-native-loader.md)
 - Date: 2026-04-21
 - Traceability: `docs/plan.md` Section 2.3 / 3 Phase 1; uncommitted
   deletions of `Loaders/SafeLibraryHandle.cs`,

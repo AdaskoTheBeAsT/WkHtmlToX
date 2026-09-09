@@ -25,7 +25,7 @@ public sealed class ImageConverterStepDefinitions
     private ImageConverter? _sut;
     private WkHtmlToXEngine? _ownedEngine;
     private string? _filePath;
-    private string? _outputFilePath;
+    private long _outputLength;
     private HtmlToImageDocument? _htmlToImageDocument;
 
     public ImageConverterStepDefinitions()
@@ -59,7 +59,6 @@ public sealed class ImageConverterStepDefinitions
     public void GivenIHaveSampleHtmlToConvert(string fileName)
     {
         _filePath = Path.Combine("./HtmlSamples", fileName);
-        _outputFilePath = Path.Combine("./HtmlSamples", $"{Guid.NewGuid()}.png");
     }
 
     [Given("I created HtmlToImageDocument")]
@@ -72,7 +71,6 @@ public sealed class ImageConverterStepDefinitions
                 Format = "png",
                 Quality = "94",
                 In = _filePath,
-                Out = _outputFilePath,
             },
         };
     }
@@ -80,36 +78,23 @@ public sealed class ImageConverterStepDefinitions
     [When("I convert html to image (.*) times")]
     public async Task WhenIConvertHtmlToImageTimesAsync(int count)
     {
+        var converter = _sut ?? throw new InvalidOperationException("The converter has not been initialized.");
+        var document = _htmlToImageDocument ?? throw new InvalidOperationException("The image document has not been created.");
         for (var i = 0; i < count; i++)
         {
-#pragma warning disable RCS1212 // Remove redundant assignment.
-            Stream? stream = null;
-#pragma warning disable S8969 // Null-forgiving operators should not be redundant
-            await _sut!.ConvertAsync(
-                    _htmlToImageDocument!,
-                    length =>
-                    {
-                        stream = _recyclableMemoryStreamManager.GetStream(
-                            Guid.NewGuid(),
-                            "wkhtmltox",
-                            length);
-                        return stream;
-                    },
+#if NET8_0_OR_GREATER
+            await using var stream = _recyclableMemoryStreamManager.GetStream();
+#else
+            using var stream = _recyclableMemoryStreamManager.GetStream();
+#endif
+#pragma warning disable IDISP011 // The engine borrows the destination until the awaited task completes.
+            await converter.ConvertAsync(
+                    document,
+                    _ => stream,
                     CancellationToken.None)
                 .ConfigureAwait(false);
-#pragma warning restore S8969 // Null-forgiving operators should not be redundant
-#pragma warning restore RCS1212 // Remove redundant assignment.
-
-#if NET8_0_OR_GREATER
-#pragma warning disable S2583 // Conditionally executed code should be reachable
-            if (stream != null)
-            {
-                await stream.DisposeAsync().ConfigureAwait(false);
-            }
-#pragma warning restore S2583 // Conditionally executed code should be reachable
-#else
-            stream?.Dispose();
-#endif
+#pragma warning restore IDISP011
+            _outputLength = stream.Length;
         }
     }
 
@@ -120,29 +105,28 @@ public sealed class ImageConverterStepDefinitions
         {
             _phaseChangedEvents.Should().NotBeEmpty();
             _phaseChangedEvents.Should().OnlyContain(
-                eventArgs => ReferenceEquals(eventArgs.Document, _htmlToImageDocument)
+                eventArgs => ReferenceEquals(eventArgs.Document, _finishedEvents[0].Document)
                     && eventArgs.PhaseCount > 0
                     && eventArgs.CurrentPhase >= 0);
             _phaseChangedEvents.Should().Contain(eventArgs => !string.IsNullOrWhiteSpace(eventArgs.Description));
 
             _progressChangedEvents.Should().NotBeEmpty();
             _progressChangedEvents.Should().OnlyContain(
-                eventArgs => ReferenceEquals(eventArgs.Document, _htmlToImageDocument));
+                eventArgs => ReferenceEquals(eventArgs.Document, _finishedEvents[0].Document));
             _progressChangedEvents.Should().Contain(eventArgs => !string.IsNullOrWhiteSpace(eventArgs.Description));
 
             _finishedEvents.Should().ContainSingle();
-            _finishedEvents[0].Document.Should().BeSameAs(_htmlToImageDocument);
+            _finishedEvents[0].Document.Should().NotBeSameAs(_htmlToImageDocument);
+            _finishedEvents[0].Document.Should().BeEquivalentTo(_htmlToImageDocument);
             _finishedEvents[0].Success.Should().BeTrue();
         }
     }
 
     [Then("proper image should be created")]
-#pragma warning disable MA0038 // Make method static
     public void ThenProperImageShouldBeCreated()
     {
-        // noop
+        _outputLength.Should().BePositive();
     }
-#pragma warning restore MA0038 // Make method static
 
     [AfterScenario]
     public void AfterScenario()

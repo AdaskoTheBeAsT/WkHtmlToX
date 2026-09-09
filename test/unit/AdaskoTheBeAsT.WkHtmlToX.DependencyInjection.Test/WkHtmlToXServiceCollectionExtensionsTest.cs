@@ -53,7 +53,9 @@ public sealed class WkHtmlToXServiceCollectionExtensionsTest
         // Assert
         using var provider = services.BuildServiceProvider();
         var resolved = provider.GetRequiredService<WkHtmlToXConfiguration>();
-        resolved.Should().BeSameAs(configuration);
+        resolved.Should().NotBeSameAs(configuration);
+        resolved.PlatformId.Should().Be(configuration.PlatformId);
+        resolved.RequestOptions.Should().NotBeSameAs(configuration.RequestOptions);
     }
 
     [Fact]

@@ -1,6 +1,6 @@
 # 0034 - Add native private-bytes memory probes
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-04-21
 - Traceability: uncommitted new files
   `test/memory/AdaskoTheBeAsT.WkHtmlToX.MemoryTest/NativePrivateBytesMemoryTest.cs`,

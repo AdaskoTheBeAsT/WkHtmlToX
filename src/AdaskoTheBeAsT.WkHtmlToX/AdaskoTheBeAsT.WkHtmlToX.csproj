@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net10.0;net9.0;net8.0;net481;net48;net472;net471;net47;net462</TargetFrameworks>
+    <TargetFrameworks>net10.0;net9.0;net8.0;net481;net48;net472</TargetFrameworks>
     <ProjectGuid>D4842FD1-D8B6-432C-98AB-EBF7E839A3D0</ProjectGuid>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -29,8 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AdaskoTheBeAsT.Interop.Unmanaged" Version="[3.0.0,)" />
-    <PackageReference Include="AdaskoTheBeAsT.Interop.Execution" Version="[1.0.0,)" />
+    <PackageReference Include="AdaskoTheBeAsT.Interop.Unmanaged" Version="[3.0.0,4.0.0)" />
+    <PackageReference Include="AdaskoTheBeAsT.Interop.Execution" Version="[2.0.0,3.0.0)" />
   </ItemGroup>
 
   <ItemGroup>

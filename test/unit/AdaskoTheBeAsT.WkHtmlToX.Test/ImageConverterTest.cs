@@ -1,3 +1,4 @@
+#pragma warning disable CS0618 // Intentional legacy compatibility implementation or regression coverage.
 using System;
 using System.IO;
 using System.Threading;
@@ -92,3 +93,5 @@ public class ImageConverterTest
         }
     }
 }
+
+#pragma warning restore CS0618
