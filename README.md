@@ -306,6 +306,8 @@ results. The public constructor and existing shutdown overloads remain compatibl
   their own request token is canceled.
 - Configure the default policy with `WorkerOptions.ShutdownMode`, or use
   `ShutdownAsync(ExecutionShutdownMode.CancelPending, cancellationToken)` explicitly.
+  This explicit overload uses the Interop enum and requires
+  `using AdaskoTheBeAsT.Interop.Execution;`.
   The first shutdown/disposal call selects the policy; later calls only join it.
 - Shutdown and host-stop tokens limit **waiting**, not cleanup ownership. Even
   an already-canceled token starts shutdown. After a canceled/timed-out wait,

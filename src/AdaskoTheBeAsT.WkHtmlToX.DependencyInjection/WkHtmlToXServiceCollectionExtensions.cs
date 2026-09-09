@@ -52,11 +52,14 @@ public static class WkHtmlToXServiceCollectionExtensions
 #endif
 
         var snapshot = configuration.Snapshot();
+
+        // Keep deferred worker configuration isolated from the mutable DI singleton.
+        var workerOptions = snapshot.WorkerOptions.Snapshot();
         RegisterCoreServices(services, snapshot);
 
         services.AddExecutionWorker<WkHtmlToXSession>(options =>
         {
-            snapshot.WorkerOptions.ApplyTo(options);
+            workerOptions.ApplyTo(options);
             configureWorker?.Invoke(options);
         });
 
@@ -67,9 +70,9 @@ public static class WkHtmlToXServiceCollectionExtensions
 
     internal static void RegisterCoreServices(
         IServiceCollection services,
-        WkHtmlToXConfiguration configuration)
+        WkHtmlToXConfiguration snapshot)
     {
-        services.TryAddSingleton(configuration.Snapshot());
+        services.TryAddSingleton(snapshot);
         services.TryAddSingleton<ILibraryLoaderFactory, LibraryLoaderFactory>();
         services.TryAddSingleton<IExecutionSessionFactory<WkHtmlToXSession>>(sp =>
             new WkHtmlToXSessionFactory(

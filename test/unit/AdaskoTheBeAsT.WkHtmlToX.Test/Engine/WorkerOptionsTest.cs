@@ -56,12 +56,12 @@ public sealed class WorkerOptionsTest
     }
 
     [Theory]
-    [InlineData(-1, -1, 0)]
-    [InlineData(0, -2, 0)]
-    [InlineData(0, 2147483648L, 0)]
-    [InlineData(0, -1, -1)]
-    [InlineData(0, -1, 2)]
-    public void InvalidPolicyShouldFailBeforeReservingNativeOwnership(int interval, long timeout, int mode)
+    [InlineData(-1, -1, 0, nameof(WkHtmlToXWorkerOptions.MaxOperationsPerSession))]
+    [InlineData(0, -2, 0, nameof(WkHtmlToXWorkerOptions.DisposeTimeout))]
+    [InlineData(0, 2147483648L, 0, nameof(WkHtmlToXWorkerOptions.DisposeTimeout))]
+    [InlineData(0, -1, -1, nameof(WkHtmlToXWorkerOptions.ShutdownMode))]
+    [InlineData(0, -1, 2, nameof(WkHtmlToXWorkerOptions.ShutdownMode))]
+    public void InvalidPolicyShouldFailBeforeReservingNativeOwnership(int interval, long timeout, int mode, string parameterName)
     {
         var configuration = new WkHtmlToXConfiguration
         {
@@ -76,7 +76,7 @@ public sealed class WorkerOptionsTest
         {
             using var invalid = new WkHtmlToXEngine(configuration);
         };
-        create.Should().Throw<ArgumentException>();
+        create.Should().Throw<ArgumentOutOfRangeException>().WithParameterName(parameterName);
         using var valid = new WkHtmlToXEngine(new WkHtmlToXConfiguration());
         valid.IsFaulted.Should().BeFalse();
     }

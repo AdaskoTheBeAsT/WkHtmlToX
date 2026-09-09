@@ -204,6 +204,12 @@ public sealed class WkHtmlToXHostingServiceCollectionExtensionsTest
         services.AddWkHtmlToXHostedService(configuration);
         configuration.WorkerOptions = new WkHtmlToXWorkerOptions();
         using var provider = services.BuildServiceProvider();
+        var resolved = provider.GetRequiredService<WkHtmlToXConfiguration>();
+        resolved.WorkerOptions.Name.Should().Be("hosted-renderer");
+        resolved.WorkerOptions.MaxOperationsPerSession.Should().Be(500);
+        resolved.WorkerOptions.DisposeTimeout.Should().Be(TimeSpan.FromSeconds(5));
+        resolved.WorkerOptions.ShutdownMode.Should().Be(WkHtmlToXShutdownMode.CancelPending);
+        resolved.WorkerOptions = new WkHtmlToXWorkerOptions();
         var options = provider.GetRequiredService<IOptionsMonitor<ExecutionWorkerOptions>>()
             .Get(typeof(WkHtmlToXSession).FullName);
         options.Name.Should().Be("hosted-renderer");

@@ -25,13 +25,32 @@ public sealed class WkHtmlToXWorkerOptions
     internal WkHtmlToXWorkerOptions Snapshot()
     {
         var snapshot = (WkHtmlToXWorkerOptions)MemberwiseClone();
-        if (snapshot.MaxOperationsPerSession < 0
-            || (snapshot.DisposeTimeout < TimeSpan.Zero && snapshot.DisposeTimeout != Timeout.InfiniteTimeSpan)
-            || snapshot.DisposeTimeout.TotalMilliseconds > int.MaxValue
-            || (snapshot.ShutdownMode != WkHtmlToXShutdownMode.Drain && snapshot.ShutdownMode != WkHtmlToXShutdownMode.CancelPending))
+#pragma warning disable S3928 // Snapshot validates option properties, so report their names rather than a method parameter.
+        if (snapshot.MaxOperationsPerSession < 0)
         {
-            throw new ArgumentException("Worker options require a nonnegative recycling interval, a valid disposal timeout, and a supported shutdown mode.");
+            throw new ArgumentOutOfRangeException(
+                nameof(MaxOperationsPerSession),
+                snapshot.MaxOperationsPerSession,
+                "The recycling interval must be greater than or equal to zero. Zero disables periodic recycling.");
         }
+
+        if ((snapshot.DisposeTimeout < TimeSpan.Zero && snapshot.DisposeTimeout != Timeout.InfiniteTimeSpan)
+            || snapshot.DisposeTimeout.TotalMilliseconds > int.MaxValue)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(DisposeTimeout),
+                snapshot.DisposeTimeout,
+                "The disposal timeout must be between zero and int.MaxValue milliseconds, inclusive, or Timeout.InfiniteTimeSpan.");
+        }
+
+        if (snapshot.ShutdownMode != WkHtmlToXShutdownMode.Drain && snapshot.ShutdownMode != WkHtmlToXShutdownMode.CancelPending)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(ShutdownMode),
+                snapshot.ShutdownMode,
+                "The shutdown mode must be Drain or CancelPending.");
+        }
+#pragma warning restore S3928
 
         return snapshot;
     }
