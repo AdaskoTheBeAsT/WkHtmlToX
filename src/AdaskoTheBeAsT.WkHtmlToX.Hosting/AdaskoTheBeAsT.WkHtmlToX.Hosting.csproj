@@ -29,19 +29,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AdaskoTheBeAsT.Interop.Execution" Version="[2.0.0,3.0.0)" />
-    <PackageReference Include="AdaskoTheBeAsT.Interop.Execution.DependencyInjection" Version="[2.0.0,3.0.0)" />
-    <PackageReference Include="AdaskoTheBeAsT.Interop.Execution.Hosting" Version="[2.0.0,3.0.0)" />
+    <PackageReference Include="AdaskoTheBeAsT.Interop.Execution" Version="[2.1.0,3.0.0)" />
+    <PackageReference Include="AdaskoTheBeAsT.Interop.Execution.DependencyInjection" Version="[2.1.0,3.0.0)" />
+    <PackageReference Include="AdaskoTheBeAsT.Interop.Execution.Hosting" Version="[2.1.0,3.0.0)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.11,11.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[10.0.11,11.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.12,11.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[10.0.12,11.0.0)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[9.0.19,10.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[9.0.19,10.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[9.0.20,10.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[9.0.20,10.0.0)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
@@ -50,8 +50,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net481' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net472' OR '$(TargetFramework)' == 'net471' OR '$(TargetFramework)' == 'net47' OR '$(TargetFramework)' == 'net462'">
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.11,11.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[10.0.11,11.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.12,11.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[10.0.12,11.0.0)" />
   </ItemGroup>
 
   <ItemGroup>

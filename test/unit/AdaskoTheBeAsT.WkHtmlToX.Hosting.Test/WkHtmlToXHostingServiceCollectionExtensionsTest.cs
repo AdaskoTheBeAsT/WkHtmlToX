@@ -9,6 +9,7 @@ using AwesomeAssertions;
 using AwesomeAssertions.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
@@ -184,5 +185,37 @@ public sealed class WkHtmlToXHostingServiceCollectionExtensionsTest
         Func<Task> action = () => hosted.StopAsync(token);
         await action.Should().ThrowAsync<OperationCanceledException>();
         engine.Verify(e => e.ShutdownAsync(token), Times.Once);
+    }
+
+    [Fact]
+    public void HostedRegistrationShouldSnapshotWrapperWorkerPolicy()
+    {
+        var services = new ServiceCollection();
+        var configuration = new WkHtmlToXConfiguration
+        {
+            WorkerOptions = new WkHtmlToXWorkerOptions
+            {
+                Name = "hosted-renderer",
+                MaxOperationsPerSession = 500,
+                DisposeTimeout = TimeSpan.FromSeconds(5),
+                ShutdownMode = WkHtmlToXShutdownMode.CancelPending,
+            },
+        };
+        services.AddWkHtmlToXHostedService(configuration);
+        configuration.WorkerOptions = new WkHtmlToXWorkerOptions();
+        using var provider = services.BuildServiceProvider();
+        var resolved = provider.GetRequiredService<WkHtmlToXConfiguration>();
+        resolved.WorkerOptions.Name.Should().Be("hosted-renderer");
+        resolved.WorkerOptions.MaxOperationsPerSession.Should().Be(500);
+        resolved.WorkerOptions.DisposeTimeout.Should().Be(TimeSpan.FromSeconds(5));
+        resolved.WorkerOptions.ShutdownMode.Should().Be(WkHtmlToXShutdownMode.CancelPending);
+        resolved.WorkerOptions = new WkHtmlToXWorkerOptions();
+        var options = provider.GetRequiredService<IOptionsMonitor<ExecutionWorkerOptions>>()
+            .Get(typeof(WkHtmlToXSession).FullName);
+        options.Name.Should().Be("hosted-renderer");
+        options.MaxOperationsPerSession.Should().Be(500);
+        options.DisposeTimeout.Should().Be(TimeSpan.FromSeconds(5));
+        options.ShutdownMode.Should().Be(ExecutionShutdownMode.CancelPending);
+        options.UseStaThread.Should().BeTrue();
     }
 }

@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <PackageReference Include="AdaskoTheBeAsT.Interop.Unmanaged" Version="[3.0.0,4.0.0)" />
-    <PackageReference Include="AdaskoTheBeAsT.Interop.Execution" Version="[2.0.0,3.0.0)" />
+    <PackageReference Include="AdaskoTheBeAsT.Interop.Execution" Version="[2.1.0,3.0.0)" />
   </ItemGroup>
 
   <ItemGroup>

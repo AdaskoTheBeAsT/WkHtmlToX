@@ -52,3 +52,4 @@ ADRs use a lightweight [MADR](https://adr.github.io/madr/) layout.
 | 0036 | 2026-09-07 | [Bounded request ownership and native binding](0036-request-ownership-and-native-binding.md) | Accepted |
 | 0037 | 2026-09-07 | [Aggregate input budget](0037-aggregate-input-budget.md) | Accepted |
 | 0038 | 2026-09-07 | [Pipeline-aware shutdown](0038-pipeline-aware-shutdown.md) | Accepted |
+| 0039 | 2026-09-09 | [Wrapper-owned worker options](0039-wrapper-owned-worker-options.md) | Accepted |

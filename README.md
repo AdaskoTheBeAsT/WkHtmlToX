@@ -67,6 +67,12 @@ public static class ConsoleExample
     {
         var configuration = new WkHtmlToXConfiguration
         {
+            WorkerOptions = new WkHtmlToXWorkerOptions
+            {
+                MaxOperationsPerSession = 500,
+                DisposeTimeout = TimeSpan.FromSeconds(30),
+                ShutdownMode = WkHtmlToXShutdownMode.Drain,
+            },
             RequestOptions = new WkHtmlToXRequestOptions
             {
                 MaxConcurrentRequests = 16,
@@ -129,8 +135,10 @@ public static class HostedExample
     {
         using var host = new HostBuilder()
             .ConfigureServices(services => services.AddWkHtmlToXHostedService(
-                new WkHtmlToXConfiguration(),
-                worker => worker.MaxOperationsPerSession = 500))
+                new WkHtmlToXConfiguration
+                {
+                    WorkerOptions = new WkHtmlToXWorkerOptions { MaxOperationsPerSession = 500 },
+                }))
             .Build();
         await host.StartAsync(cancellationToken);
         var engine = host.Services.GetRequiredService<IWkHtmlToXAsyncEngine>();
@@ -166,7 +174,6 @@ Do not dispose an injected engine per request.
 ```csharp
 using System.Threading;
 using System.Threading.Tasks;
-using AdaskoTheBeAsT.Interop.Execution;
 using AdaskoTheBeAsT.WkHtmlToX.DependencyInjection;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using Microsoft.Extensions.DependencyInjection;
@@ -182,7 +189,7 @@ public static class DiExample
         await engine.InitializeAsync(cancellationToken);
         // At application shutdown. Drain is the default; CancelPending skips
         // requests not yet in native execution, without aborting active work.
-        await engine.ShutdownAsync(ExecutionShutdownMode.Drain, cancellationToken);
+        await engine.ShutdownAsync(cancellationToken);
     }
 }
 ```
@@ -257,8 +264,30 @@ wkhtmltox, caller-held objects, UTF-16/settings strings, temporary marshalling
 copies/pools, remote resources, images, files, or network traffic. Native output is
 size-checked after rendering, before managed allocation. Budget native memory
 separately and use supervised processes for hostile or memory-intensive input.
-The optional worker `QueueCapacity` only bounds the native queue; the wrapper's
-request limit also covers input and delivery.
+The optional advanced Interop `QueueCapacity` only bounds the native queue; the
+wrapper's request limit also covers input and delivery.
+
+### Worker configuration
+
+Use `WkHtmlToXConfiguration.WorkerOptions` for standalone, DI, and hosted engines.
+It uses WkHtmlToX-owned types, without requiring an Interop namespace:
+
+| Option | Default | Contract |
+| --- | --- | --- |
+| `Name` | `WkHtmlToX Engine Worker` | Diagnostics name, never document data or credentials |
+| `MaxOperationsPerSession` | 0 | Nonnegative periodic recycling interval; 0 disables it |
+| `DisposeTimeout` | Infinite | Whole-pipeline synchronous disposal wait, from zero through `int.MaxValue` milliseconds, or `Timeout.InfiniteTimeSpan` |
+| `ShutdownMode` | `WkHtmlToXShutdownMode.Drain` | Default pipeline policy; `CancelPending` skips requests before native start |
+
+These values are validated and copied before acquiring native ownership or
+registering services. Later mutations do not reconfigure the worker. The native
+worker uses STA on Windows; this does not supply a Qt message pump.
+
+The existing DI/hosting `configureWorker` delegate remains available for advanced
+Interop settings such as diagnostics or native queue capacity. It runs **after**
+the wrapper settings and may override them. Prefer `RequestOptions` for admission
+limits because those cover the whole pipeline and return structured overload
+results. The public constructor and existing shutdown overloads remain compatible.
 
 ## Cancellation, shutdown, and health
 
@@ -275,14 +304,16 @@ request limit also covers input and delivery.
   may wait for the active native delegate to exit before becoming canceled.
   Already-started conversions and their output delivery finish normally unless
   their own request token is canceled.
-- Configure the default policy with `worker.ShutdownMode` in DI/hosting, or use
+- Configure the default policy with `WorkerOptions.ShutdownMode`, or use
   `ShutdownAsync(ExecutionShutdownMode.CancelPending, cancellationToken)` explicitly.
+  This explicit overload uses the Interop enum and requires
+  `using AdaskoTheBeAsT.Interop.Execution;`.
   The first shutdown/disposal call selects the policy; later calls only join it.
 - Shutdown and host-stop tokens limit **waiting**, not cleanup ownership. Even
   an already-canceled token starts shutdown. After a canceled/timed-out wait,
   retain conversion tasks and borrowed streams, then join shutdown again.
 - `DisposeAsync` joins actual pipeline completion. Synchronous disposal uses
-  `worker.DisposeTimeout` (infinite by default) for the whole pipeline and can
+  `WorkerOptions.DisposeTimeout` (infinite by default) for the whole pipeline and can
   return early. Later container/worker disposal cannot bypass that pipeline.
   Do not unload native code or block on shutdown from a stream method/factory
   belonging to an active request.
@@ -353,7 +384,7 @@ then follow these steps:
 
 1. **Use supported TFMs and dependencies.** Retarget older applications to at
    least .NET Framework 4.7.2 or .NET 8. Interop.Execution dependencies are
-   constrained to `[2.0.0,3.0.0)` and Interop.Unmanaged to `[3.0.0,4.0.0)`.
+   constrained to `[2.1.0,3.0.0)` and Interop.Unmanaged to `[3.0.0,4.0.0)`.
 2. **Keep one engine per process.** Reuse the DI singleton across PDF and image
    facades. A second engine now throws, including while the first is recycling
    or still shutting down. Failed native teardown requires a process restart.
@@ -388,7 +419,9 @@ then follow these steps:
    not the native worker. No temporary files are created.
 9. **Remove `RecycleSessionOnFailure` from worker-option examples.** It is not an
    `ExecutionWorkerOptions` property. This wrapper classifies recovery internally;
-   `MaxOperationsPerSession` remains the periodic-recycling option.
+   `WorkerOptions.MaxOperationsPerSession` is the periodic-recycling option.
+   Configure `WorkerOptions` for the same policy in standalone and hosted engines;
+   existing advanced Interop configuration delegates still work and take precedence.
 10. **Review native deployment.** Configure a trusted absolute path when needed,
     deploy the correct architecture, and stop relying on ambient OS search paths,
     `Assembly.Location`, or unloading/replacing the native DLL during runtime.
@@ -412,6 +445,10 @@ and its constructor takes `(document, progress, description)`.
 - The SDK and test runner are selected by `global.json`. Run a targeted suite
   with `dotnet run --project <test.csproj> --framework net10.0 -- --progress off`.
   This invokes the xUnit v3 Microsoft.Testing.Platform runner directly.
+  After dependency upgrades, a .NET Framework `FileLoadException` can indicate
+  stale generated binding redirects. Rebuild the affected test target with
+  `dotnet build <test.csproj> --framework net481 --no-restore -t:Rebuild`
+  (substitute the affected framework), then rerun it.
 - `scripts/verify-packages.ps1` packs all three libraries, extracts **every C# code
   block in this README**, compiles them against the local packages in a fresh
   consumer, and runs the examples on Windows x64. It also checks a single-file

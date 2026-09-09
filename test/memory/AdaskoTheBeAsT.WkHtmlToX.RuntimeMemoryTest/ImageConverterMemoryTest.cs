@@ -41,7 +41,7 @@ public sealed class ImageConverterMemoryTest
 
         try
         {
-            using var engine = CreateInitializedEngine(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
+            await using var engine = CreateInitializedEngine(new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
             {
                 PhaseChangedAction = _ => phaseChangedCallCount++,
                 ProgressChangedAction = _ => progressChangedCallCount++,

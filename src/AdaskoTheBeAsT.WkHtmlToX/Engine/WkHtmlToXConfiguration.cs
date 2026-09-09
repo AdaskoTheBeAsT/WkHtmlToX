@@ -30,6 +30,9 @@ public sealed class WkHtmlToXConfiguration
 
     public WkHtmlToXRequestOptions RequestOptions { get; set; } = new();
 
+    /// <summary>Gets or sets worker policy for both standalone and DI/hosted engines.</summary>
+    public WkHtmlToXWorkerOptions WorkerOptions { get; set; } = new();
+
     public Action<ErrorEventArgs>? ErrorAction { get; set; }
 
     public Action<FinishedEventArgs>? FinishedAction { get; set; }
@@ -40,8 +43,14 @@ public sealed class WkHtmlToXConfiguration
 
     public Action<WarningEventArgs>? WarningAction { get; set; }
 
-    internal WkHtmlToXConfiguration Snapshot() =>
-        new(PlatformId, RuntimeIdentifier)
+    internal WkHtmlToXConfiguration Snapshot()
+    {
+        if (RequestOptions is null || WorkerOptions is null)
+        {
+            throw new ArgumentException("RequestOptions and WorkerOptions must not be null.");
+        }
+
+        return new(PlatformId, RuntimeIdentifier)
         {
             ErrorAction = ErrorAction,
             FinishedAction = FinishedAction,
@@ -50,7 +59,9 @@ public sealed class WkHtmlToXConfiguration
             WarningAction = WarningAction,
             NativeLibraryPath = NativeLibraryPath,
             RequestOptions = RequestOptions.Snapshot(),
+            WorkerOptions = WorkerOptions.Snapshot(),
         };
+    }
 
     private static int GetPlatformId()
     {

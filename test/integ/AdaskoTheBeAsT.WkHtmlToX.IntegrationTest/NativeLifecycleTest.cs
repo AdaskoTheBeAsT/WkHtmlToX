@@ -24,6 +24,7 @@ public sealed class NativeLifecycleTest
         var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null)
         {
             ProgressChangedAction = _ => threads.Add(Environment.CurrentManagedThreadId),
+            WorkerOptions = new WkHtmlToXWorkerOptions { MaxOperationsPerSession = 1 },
         };
         using var host = new HostBuilder()
             .ConfigureServices(services => services.AddWkHtmlToXHostedService(

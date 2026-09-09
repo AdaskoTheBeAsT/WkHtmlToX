@@ -19,8 +19,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.DependencyInjection;
 /// </summary>
 public static class WkHtmlToXServiceCollectionExtensions
 {
-    internal const string DefaultWorkerName = "WkHtmlToX Engine Worker";
-
     /// <summary>
     /// Registers the engine and underlying worker as singletons.
     /// <see cref="IPdfConverter"/> and <see cref="IImageConverter"/> are transient
@@ -28,7 +26,7 @@ public static class WkHtmlToXServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The service collection to mutate.</param>
     /// <param name="configuration">WkHtmlToX runtime configuration.</param>
-    /// <param name="configureWorker">Optional worker options configuration delegate.</param>
+    /// <param name="configureWorker">Optional advanced Interop configuration, applied after the snapshotted configuration.WorkerOptions.</param>
     /// <returns>The same <paramref name="services"/> for chaining.</returns>
     /// <exception cref="ArgumentNullException">
     /// <paramref name="services"/> or <paramref name="configuration"/> is <see langword="null"/>.
@@ -53,12 +51,15 @@ public static class WkHtmlToXServiceCollectionExtensions
         }
 #endif
 
-        RegisterCoreServices(services, configuration);
+        var snapshot = configuration.Snapshot();
+
+        // Keep deferred worker configuration isolated from the mutable DI singleton.
+        var workerOptions = snapshot.WorkerOptions.Snapshot();
+        RegisterCoreServices(services, snapshot);
 
         services.AddExecutionWorker<WkHtmlToXSession>(options =>
         {
-            options.Name = DefaultWorkerName;
-            options.UseStaThread = true;
+            workerOptions.ApplyTo(options);
             configureWorker?.Invoke(options);
         });
 
@@ -69,9 +70,9 @@ public static class WkHtmlToXServiceCollectionExtensions
 
     internal static void RegisterCoreServices(
         IServiceCollection services,
-        WkHtmlToXConfiguration configuration)
+        WkHtmlToXConfiguration snapshot)
     {
-        services.TryAddSingleton(configuration.Snapshot());
+        services.TryAddSingleton(snapshot);
         services.TryAddSingleton<ILibraryLoaderFactory, LibraryLoaderFactory>();
         services.TryAddSingleton<IExecutionSessionFactory<WkHtmlToXSession>>(sp =>
             new WkHtmlToXSessionFactory(
