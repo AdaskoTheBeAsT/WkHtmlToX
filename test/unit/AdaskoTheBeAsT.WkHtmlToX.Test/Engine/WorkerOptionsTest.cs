@@ -127,14 +127,19 @@ public sealed class WorkerOptionsTest
         var fixture = new NativeRuntimeTestFixture();
         await using var worker = new WkHtmlToXWorker(fixture.Factory, new ExecutionWorkerOptions());
         var token = TestContext.Current.CancellationToken;
+        Task? reentryAssertion = null;
         await worker.ExecuteValueAsync(
             (_, _) =>
             {
                 fixture.Factory.IsCurrentThread.Should().BeTrue();
-                Action reenter = () => _ = worker.ExecuteValueAsync(static (_, _) => { });
-                reenter.Should().Throw<InvalidOperationException>();
+                Func<Task> reenter = () => worker.ExecuteValueAsync(static (_, _) => { }, cancellationToken: token).AsTask();
+                reentryAssertion = reenter.Should().ThrowAsync<InvalidOperationException>();
             },
             cancellationToken: token);
+
+        // Do not wait for the nested dispatch on the owning thread.
+        Assert.NotNull(reentryAssertion);
+        await reentryAssertion;
 
         var isOwner = await worker.ExecuteValueAsync(
             (_, _) => fixture.Factory.IsCurrentThread,
