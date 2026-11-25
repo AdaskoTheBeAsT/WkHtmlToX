@@ -138,7 +138,7 @@ public sealed class WorkerOptionsTest
             cancellationToken: token);
 
         // Do not wait for the nested dispatch on the owning thread.
-        Assert.NotNull(reentryAssertion);
+        reentryAssertion.Should().NotBeNull();
         await reentryAssertion;
 
         var isOwner = await worker.ExecuteValueAsync(
