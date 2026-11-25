@@ -16,6 +16,7 @@
   <Project Path="../src/AdaskoTheBeAsT.WkHtmlToX/AdaskoTheBeAsT.WkHtmlToX.csproj" />
   <Project Path="AdaskoTheBeAsT.WkHtmlToX.BusinessLogic/AdaskoTheBeAsT.WkHtmlToX.BusinessLogic.csproj" />
   <Project Path="AdaskoTheBeAsT.WkHtmlToX.ConsoleApp/AdaskoTheBeAsT.WkHtmlToX.ConsoleApp.csproj" />
+  <Project Path="AdaskoTheBeAsT.WkHtmlToX.NanoApi/AdaskoTheBeAsT.WkHtmlToX.NanoApi.csproj" />
   <Project Path="AdaskoTheBeAsT.WkHtmlToX.WebApi/AdaskoTheBeAsT.WkHtmlToX.WebApi.csproj" />
   <Project Path="AdaskoTheBeAsT.WkHtmlToX.WebApiFull/AdaskoTheBeAsT.WkHtmlToX.WebApiFull.csproj" Id="d527b4e6-a785-46d9-b2ff-1bec3f50d219" />
   <Project Path="AdaskoTheBeAsT.WkHtmlToX.WebApiFull2/AdaskoTheBeAsT.WkHtmlToX.WebApiFull2.csproj" Id="2fecdf68-d611-4256-a27c-b85e5d8e7812" />

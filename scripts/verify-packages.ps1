@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string[]] $Frameworks = @('net10.0', 'net9.0', 'net8.0', 'net481', 'net48', 'net472'),
+    [string[]] $Frameworks = @('net11.0', 'net10.0', 'net481', 'net48', 'net472'),
     [switch] $SkipSingleFile
 )
 
@@ -42,6 +42,9 @@ foreach ($name in $names) {
     $package = Join-Path $packages "$name.$version.nupkg"
     $archive = [System.IO.Compression.ZipFile]::OpenRead($package)
     try {
+        if ($archive.Entries.FullName -match '^lib/net[89]\.0/') {
+            throw "$package still contains a .NET 8 or .NET 9 asset."
+        }
         foreach ($framework in $Frameworks) {
             if ($null -eq $archive.GetEntry("lib/$framework/$name.dll") -or
                 $null -eq $archive.GetEntry("lib/$framework/$name.xml")) {
@@ -97,9 +100,9 @@ $tfms = $Frameworks -join ';'
     <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.DependencyInjection" Version="[$version]" />
     <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.Hosting" Version="[$version]" />
     <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.native.win.x64" Version="[0.12.6]" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="[10.0.12]" Condition="'`$(TargetFramework)' != 'net8.0' and '`$(TargetFramework)' != 'net9.0'" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="[9.0.20]" Condition="'`$(TargetFramework)' == 'net9.0'" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="[8.0.1]" Condition="'`$(TargetFramework)' == 'net8.0'" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="[10.0.15]" Condition="'`$(TargetFramework)' == 'net10.0'" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="[11.0.0]" Condition="'`$(TargetFramework)' == 'net11.0'" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="[11.0.0]" Condition="'`$(TargetFramework)' == 'net481' or '`$(TargetFramework)' == 'net48' or '`$(TargetFramework)' == 'net472'" />
   </ItemGroup>
 </Project>
 "@ | Set-Content (Join-Path $consumer 'Consumer.csproj')

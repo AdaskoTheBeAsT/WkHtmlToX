@@ -342,14 +342,17 @@ restrictions. They are not implemented by this in-process package.
 
 ## Native deployment and supported targets
 
-Managed targets: `net472`, `net48`, `net481`, `net8.0`, `net9.0`, `net10.0`.
-There is no `netstandard2.0` or `net462` asset in this release.
+Managed targets: `net472`, `net48`, `net481`, `net10.0`, and `net11.0`.
+This release drops .NET 8 and .NET 9. Applications on those runtimes must
+upgrade to .NET 10 or later to use this release. There is no `netstandard2.0`
+or `net462` asset. All targets use Interop.Execution 3.1 and Interop.Unmanaged 5.1.
 
 | Native environment | Status |
 | --- | --- |
 | Windows x64 | Real-native unit/integration and packaged-consumer validation target |
 | Windows x86 | Loader retained; not validated in the current release checks |
-| Linux x64/x86 | Loader retained; distribution/system dependencies require deployment validation |
+| Linux x64 | See the Ubuntu container sample below; other distributions require deployment validation |
+| Linux x86 | Loader retained; not validated in the current release checks |
 | macOS x64 | Loader retained; not validated in the current release checks |
 | ARM/ARM64 process | Rejected; bitness alone does not identify a compatible binary |
 | .NET Framework outside Windows | Not supported |
@@ -365,7 +368,7 @@ with the process architecture. Without it, loaders look under
 directory. They do not search the current working directory or `/usr/lib`.
 Missing explicit paths do not fall back silently.
 
-On .NET 8+, the assembly's DllImport resolver routes all wkhtmltox imports to the
+On .NET 10+, the assembly's DllImport resolver routes all wkhtmltox imports to the
 selected handle. On .NET Framework, Windows preloading requires `wkhtmltox.dll`
 and rejects a module already loaded outside this wrapper. The selected library
 remains loaded for the process lifetime; changing the path requires a restart.
@@ -376,6 +379,62 @@ the application or supply `NativeLibraryPath`; automatic extraction paths are
 not inferred. Trimming and Native AOT are not supported (settings use reflection).
 Do not load multiple copies of this wrapper or wkhtmltox through different
 assembly load contexts/AppDomains to circumvent ownership checks.
+
+### Windows Nano Server sample
+
+The [.NET 11 minimal API](samples/AdaskoTheBeAsT.WkHtmlToX.NanoApi) runs on the
+x64 Nano Server LTSC 2025 image, revision `v2.2.1`. It renders PDFs in the API
+process with wkhtmltox 0.12.6. Server Core is used only in the SDK build stage,
+not at runtime. The API runs as `ContainerUser` and does not publish a host
+port. Use a Windows Docker engine and run these commands from the repository root:
+
+```powershell
+$env:DOCKER_BUILDKIT = '0'
+$compose = 'samples/AdaskoTheBeAsT.WkHtmlToX.NanoApi/compose.yaml'
+docker --context desktop-windows compose --parallel 1 -p wkhtmltox-nano -f $compose build
+docker --context desktop-windows compose -p wkhtmltox-nano -f $compose up -d --remove-orphans
+$container = docker --context desktop-windows compose -p wkhtmltox-nano -f $compose ps -q api
+$containerIp = docker --context desktop-windows inspect $container --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'
+curl.exe --fail "http://${containerIp}:8080/health"
+curl.exe --fail "http://${containerIp}:8080/pdf" --output wkhtmltox.pdf
+docker --context desktop-windows compose -p wkhtmltox-nano -f $compose down
+```
+
+`--remove-orphans` removes the old `renderer` container when upgrading the
+same Compose project. `/health` reports readiness after native initialization;
+`/pdf` renders only fixed, trusted HTML and does not accept HTML or URLs from callers.
+
+The Dockerfile enables the Nano image's headless font shim and copies
+`winspool.drv` from the SDK stage beside `wkhtmltox.dll`. The sample can use
+Nano's built-in Lucida Console without installing additional fonts. Nano Server
+`v2.2.1` fixes the second-conversion hang from `v2.1.0`, so the sample reuses the
+native session without per-PDF recycling. Do not rely on identical layout to
+Server Core.
+For parallel rendering, run separate processes or containers rather than
+copying the module per worker.
+
+### Linux container sample
+
+The same .NET 11 API also runs in a single Ubuntu Linux x64 container. It
+renders in process with the upstream [wkhtmltox 0.12.6.1-2 build for Jammy](https://github.com/wkhtmltopdf/packaging/releases/tag/0.12.6.1-2),
+which uses OpenSSL 3. The [Ubuntu 20.04 native NuGet package](https://www.nuget.org/packages/AdaskoTheBeAsT.WkHtmlToX.native.ubuntu.20.04-x64/0.12.6)
+requires OpenSSL 1.1, which the container does not ship. No display server or
+separate renderer service is needed.
+
+From the repository root, use a Linux Docker engine with BuildKit:
+
+```sh
+docker build --platform linux/amd64 -f samples/AdaskoTheBeAsT.WkHtmlToX.NanoApi/Dockerfile.linux -t wkhtmltox-nano-api:linux .
+docker run --rm -d --name wkhtmltox-linux -p 127.0.0.1:8080:8080 wkhtmltox-nano-api:linux
+curl --fail http://127.0.0.1:8080/health
+curl --fail http://127.0.0.1:8080/pdf --output wkhtmltox.pdf
+docker stop wkhtmltox-linux
+```
+
+On Windows with Docker Desktop, switch to Linux containers or add
+`--context desktop-linux` after `docker`, and use `curl.exe` in PowerShell.
+`/health` reports readiness after native initialization. As on Windows, `/pdf`
+renders only fixed, trusted HTML.
 
 ## Migration to 13.0.0
 
@@ -443,7 +502,7 @@ and its constructor takes `(document, progress, description)`.
   Update lock files deliberately with dependency changes, then verify with
   `dotnet restore AdaskoTheBeAsT.WkHtmlToX.slnx --locked-mode`.
 - The SDK and test runner are selected by `global.json`. Run a targeted suite
-  with `dotnet run --project <test.csproj> --framework net10.0 -- --progress off`.
+  with `dotnet run --project <test.csproj> --framework net11.0 -- --progress off`.
   This invokes the xUnit v3 Microsoft.Testing.Platform runner directly.
   After dependency upgrades, a .NET Framework `FileLoadException` can indicate
   stale generated binding redirects. Rebuild the affected test target with
@@ -454,7 +513,7 @@ and its constructor takes `(document, progress, description)`.
   consumer, and runs the examples on Windows x64. It also checks a single-file
   .NET 10 consumer. It never publishes packages.
   If local executable scanning prevents that check, `-SkipSingleFile` explicitly
-  skips it while retaining all six normal and explicit-native-path consumer checks.
+  skips it while retaining all normal and explicit-native-path consumer checks.
   The skip is reported and does not establish single-file runtime support.
 - [Architecture decisions](docs/adr/README.md) record implementation status.
   [astra_plan.md](astra_plan.md) records validation results and remaining limits.

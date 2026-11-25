@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using AdaskoTheBeAsT.Interop.Execution;
 using AdaskoTheBeAsT.Interop.Execution.DependencyInjection;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
@@ -57,11 +58,22 @@ public static class WkHtmlToXServiceCollectionExtensions
         var workerOptions = snapshot.WorkerOptions.Snapshot();
         RegisterCoreServices(services, snapshot);
 
+        var hasWorker = services.Any(static descriptor => descriptor.ServiceType == typeof(IExecutionWorker<WkHtmlToXSession>));
         services.AddExecutionWorker<WkHtmlToXSession>(options =>
         {
             workerOptions.ApplyTo(options);
             configureWorker?.Invoke(options);
         });
+
+        if (!hasWorker)
+        {
+            // Let Interop register its named options first. It skips them when a worker is already registered.
+            services.Replace(ServiceDescriptor.Singleton<IExecutionWorker<WkHtmlToXSession>>(sp =>
+                new WkHtmlToXWorker(
+                    sp.GetRequiredService<IExecutionSessionFactory<WkHtmlToXSession>>(),
+                    sp.GetRequiredService<IOptionsMonitor<ExecutionWorkerOptions>>()
+                        .Get(typeof(WkHtmlToXSession).FullName))));
+        }
 
         RegisterEngineAndConverters(services);
 
@@ -78,11 +90,6 @@ public static class WkHtmlToXServiceCollectionExtensions
             new WkHtmlToXSessionFactory(
                 sp.GetRequiredService<WkHtmlToXConfiguration>().Snapshot(),
                 sp.GetRequiredService<ILibraryLoaderFactory>()));
-        services.TryAddSingleton<IExecutionWorker<WkHtmlToXSession>>(sp =>
-            new WkHtmlToXWorker(
-                sp.GetRequiredService<IExecutionSessionFactory<WkHtmlToXSession>>(),
-                sp.GetRequiredService<IOptionsMonitor<ExecutionWorkerOptions>>()
-                    .Get(typeof(WkHtmlToXSession).FullName)));
     }
 
     internal static void RegisterEngineAndConverters(IServiceCollection services)

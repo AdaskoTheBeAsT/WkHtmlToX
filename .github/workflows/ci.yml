@@ -24,15 +24,14 @@ jobs:
   #       with:
   #         global-json-file: global.json
   #         dotnet-version: |
-  #           8.0.x
-  #           9.0.x
   #           10.0.x
+  #           11.0.x
   #     - name: Validate packed libraries and README consumers
   #       shell: pwsh
   #       run: ./scripts/verify-packages.ps1
 
   build:
-    uses: AdaskoTheBeAsT/github-actions/.github/workflows/dotnet-build-sonarqube-nuget.yml@v1
+    uses: AdaskoTheBeAsT/github-actions/.github/workflows/dotnet-build-sonarqube-nuget.yml@v2
     with:
       dotnet_versions: ${{ vars.DOTNET_VERSIONS }}
       runs_on: ${{ vars.RUNS_ON }}
@@ -46,4 +45,17 @@ jobs:
       use_global_json: ${{ vars.USE_GLOBAL_JSON == 'true' }}
     secrets:
       sonar_token: ${{ secrets.SONAR_TOKEN }}
-      nuget_api_key: ${{ secrets.NUGET_API_KEY }}
+
+  publish:
+    needs: build
+    if: needs.build.outputs.is_lightweight_tag == 'true'
+    runs-on: ${{ vars.RUNS_ON || 'ubuntu-latest' }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Publish NuGet packages
+        uses: AdaskoTheBeAsT/github-actions/.github/actions/dotnet/publish-nuget-packages@v2
+        with:
+          artifact_name: ${{ needs.build.outputs.nuget_artifact_name }}
+          nuget_user: ${{ secrets.NUGET_USER }}

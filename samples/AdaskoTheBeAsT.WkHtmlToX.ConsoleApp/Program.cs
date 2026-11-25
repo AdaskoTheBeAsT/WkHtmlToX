@@ -16,15 +16,13 @@ namespace AdaskoTheBeAsT.WkHtmlToX.ConsoleApp
         {
             var htmlToPdfGenerator = new HtmlToPdfDocumentGenerator(new SmallHtmlGenerator());
             var configuration = new WkHtmlToXConfiguration((int)Environment.OSVersion.Platform, runtimeIdentifier: null);
-            using (var engine = new WkHtmlToXEngine(configuration))
+            var engine = new WkHtmlToXEngine(configuration);
+            await using (engine.ConfigureAwait(false))
             {
-                engine.Initialize();
+                await engine.InitializeAsync(CancellationToken.None).ConfigureAwait(false);
                 var doc = htmlToPdfGenerator.Generate();
 
-                if (!Directory.Exists("files"))
-                {
-                    Directory.CreateDirectory("files");
-                }
+                Directory.CreateDirectory("Files");
 
                 var converter = new PdfConverter(engine);
 #pragma warning disable SEC0112 // Path Tampering Unvalidated File Path
@@ -45,8 +43,6 @@ namespace AdaskoTheBeAsT.WkHtmlToX.ConsoleApp
 #pragma warning restore IDISP011
                 Console.WriteLine(converted);
             }
-
-            Console.ReadKey();
         }
     }
 }

@@ -24,6 +24,7 @@ Major-release hardening of the in-process renderer. See the
   native setting rejection, and package-consumer regression checks.
 - Locked CI restores and compilation of every README C# example against freshly
   packed libraries, including a Windows x64 single-file consumer check.
+- .NET 11 library targets and a Windows Nano Server sample that renders a PDF.
 
 ### Fixed
 
@@ -48,7 +49,7 @@ Major-release hardening of the in-process renderer. See the
   for lacking inline HTML.
 - Native loading and static P/Invoke could select different libraries. Modern
   runtimes now resolve imports against the selected, process-lifetime handle.
-- Updated to corrected Interop.Execution 2.x contracts for completion ownership,
+- Updated to current Interop.Execution contracts for completion ownership,
   disposal joining, terminal faults, non-blocking startup, and diagnostics.
 - Aggregate input capacity is reserved before payload copying and held through
   delivery. Input, output, and native worker teardown now share one shutdown;
@@ -56,7 +57,8 @@ Major-release hardening of the in-process renderer. See the
 
 ### Changed
 
-- Supported managed assets are net472/net48/net481/net8.0/net9.0/net10.0.
+- Supported managed assets are net472/net48/net481/net10.0/net11.0. Dropped
+  .NET 8 and .NET 9.
 - Ambiguous input forms, null PDF objects, unsupported settings subclasses,
   stdin, native file/stdout output, invalid enums, and non-finite numeric settings
   are rejected before native work.

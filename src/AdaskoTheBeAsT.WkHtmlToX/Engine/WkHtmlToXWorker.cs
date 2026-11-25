@@ -80,6 +80,24 @@ internal sealed class WkHtmlToXWorker : IExecutionWorker<WkHtmlToXSession>
         return _worker.ExecuteAsync(action, options, cancellationToken);
     }
 
+    public ValueTask ExecuteValueAsync(
+        Action<WkHtmlToXSession, CancellationToken> action,
+        ExecutionRequestOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        ThrowIfReentrant();
+        return _worker.ExecuteValueAsync(action, options, cancellationToken);
+    }
+
+    public ValueTask<TResult> ExecuteValueAsync<TResult>(
+        Func<WkHtmlToXSession, CancellationToken, TResult> action,
+        ExecutionRequestOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        ThrowIfReentrant();
+        return _worker.ExecuteValueAsync(action, options, cancellationToken);
+    }
+
     public void Dispose()
     {
         ThrowIfReentrant();
