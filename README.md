@@ -8,7 +8,7 @@ native execution thread for HTML-to-PDF and HTML-to-image conversion.
 
 ## Why this major release is better
 
-Version **13.0.0 (unreleased)** makes ownership and failure handling explicit:
+Version **13.0.0** makes ownership and failure handling explicit:
 
 - A second native engine fails fast instead of allowing concurrent access to
   process-global Qt state.
@@ -237,13 +237,13 @@ public static class DiExample
 
 Default limits (`WkHtmlToXConfiguration.RequestOptions`):
 
-| Option | Default | Scope |
-| --- | ---: | --- |
-| `MaxConcurrentRequests` | 32 | All admitted requests, including input and slow output |
-| `MaxInputBytes` | 32 MiB | Sum of inline HTML bytes across one PDF request |
-| `MaxBufferedInputBytes` | 128 MiB | Inline input reservations across the engine |
-| `MaxOutputBytes` | 64 MiB | One detached managed output |
-| `MaxBufferedOutputBytes` | 128 MiB | Detached output across the engine |
+| Option                   | Default | Scope                                                  |
+| ------------------------ | ------: | ------------------------------------------------------ |
+| `MaxConcurrentRequests`  |      32 | All admitted requests, including input and slow output |
+| `MaxInputBytes`          |  32 MiB | Sum of inline HTML bytes across one PDF request        |
+| `MaxBufferedInputBytes`  | 128 MiB | Inline input reservations across the engine            |
+| `MaxOutputBytes`         |  64 MiB | One detached managed output                            |
+| `MaxBufferedOutputBytes` | 128 MiB | Detached output across the engine                      |
 
 Admission rejects immediately with `Overloaded`; there is no extra unbounded
 backlog of requests waiting for a slot. Per-request input limit violations return
@@ -272,12 +272,12 @@ wrapper's request limit also covers input and delivery.
 Use `WkHtmlToXConfiguration.WorkerOptions` for standalone, DI, and hosted engines.
 It uses WkHtmlToX-owned types, without requiring an Interop namespace:
 
-| Option | Default | Contract |
-| --- | --- | --- |
-| `Name` | `WkHtmlToX Engine Worker` | Diagnostics name, never document data or credentials |
-| `MaxOperationsPerSession` | 0 | Nonnegative periodic recycling interval; 0 disables it |
-| `DisposeTimeout` | Infinite | Whole-pipeline synchronous disposal wait, from zero through `int.MaxValue` milliseconds, or `Timeout.InfiniteTimeSpan` |
-| `ShutdownMode` | `WkHtmlToXShutdownMode.Drain` | Default pipeline policy; `CancelPending` skips requests before native start |
+| Option                    | Default                       | Contract                                                                                                               |
+| ------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `Name`                    | `WkHtmlToX Engine Worker`     | Diagnostics name, never document data or credentials                                                                   |
+| `MaxOperationsPerSession` | 0                             | Nonnegative periodic recycling interval; 0 disables it                                                                 |
+| `DisposeTimeout`          | Infinite                      | Whole-pipeline synchronous disposal wait, from zero through `int.MaxValue` milliseconds, or `Timeout.InfiniteTimeSpan` |
+| `ShutdownMode`            | `WkHtmlToXShutdownMode.Drain` | Default pipeline policy; `CancelPending` skips requests before native start                                            |
 
 These values are validated and copied before acquiring native ownership or
 registering services. Later mutations do not reconfigure the worker. The native
@@ -347,15 +347,15 @@ This release drops .NET 8 and .NET 9. Applications on those runtimes must
 upgrade to .NET 10 or later to use this release. There is no `netstandard2.0`
 or `net462` asset. All targets use Interop.Execution 3.1 and Interop.Unmanaged 5.1.
 
-| Native environment | Status |
-| --- | --- |
-| Windows x64 | Real-native unit/integration and packaged-consumer validation target |
-| Windows x86 | Loader retained; not validated in the current release checks |
-| Linux x64 | See the Ubuntu container sample below; other distributions require deployment validation |
-| Linux x86 | Loader retained; not validated in the current release checks |
-| macOS x64 | Loader retained; not validated in the current release checks |
-| ARM/ARM64 process | Rejected; bitness alone does not identify a compatible binary |
-| .NET Framework outside Windows | Not supported |
+| Native environment             | Status                                                                                   |
+| ------------------------------ | ---------------------------------------------------------------------------------------- |
+| Windows x64                    | Real-native unit/integration and packaged-consumer validation target                     |
+| Windows x86                    | Loader retained; not validated in the current release checks                             |
+| Linux x64                      | See the Ubuntu container sample below; other distributions require deployment validation |
+| Linux x86                      | Loader retained; not validated in the current release checks                             |
+| macOS x64                      | Loader retained; not validated in the current release checks                             |
+| ARM/ARM64 process              | Rejected; bitness alone does not identify a compatible binary                            |
+| .NET Framework outside Windows | Not supported                                                                            |
 
 Use the parameterless configuration for OS detection. Linux needs either a
 legacy `WkHtmlToXRuntimeIdentifier` matching its native package or an explicit
