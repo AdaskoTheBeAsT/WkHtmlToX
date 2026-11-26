@@ -50,8 +50,8 @@ internal sealed class WkHtmlToXSessionFactory
     {
         cancellationToken.ThrowIfCancellationRequested();
         ReserveOwnership();
-        var thread = Interlocked.CompareExchange(ref _thread, Thread.CurrentThread, comparand: null);
-        if ((thread is not null && !ReferenceEquals(thread, Thread.CurrentThread)) || _session is not null)
+        BindCurrentThread();
+        if (_session is not null)
         {
             throw new InvalidOperationException("The native session must have one dedicated execution thread.");
         }
@@ -126,6 +126,15 @@ internal sealed class WkHtmlToXSessionFactory
     }
 
     internal void ReserveOwnership() => _ownership.Acquire(this);
+
+    internal void BindCurrentThread()
+    {
+        var thread = Interlocked.CompareExchange(ref _thread, Thread.CurrentThread, comparand: null);
+        if (thread is not null && !ReferenceEquals(thread, Thread.CurrentThread))
+        {
+            throw new InvalidOperationException("The native session must have one dedicated execution thread.");
+        }
+    }
 
     // Called only after the worker's actual exit, never between recycled sessions.
     internal void ReleaseOwnership() => _ownership.Release(this);

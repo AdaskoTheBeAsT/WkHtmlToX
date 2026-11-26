@@ -148,6 +148,39 @@ public sealed class WorkerOptionsTest
     }
 
     [Fact]
+    public async Task StartupHooksShouldRejectReentryBeforeNativeInitializationAsync()
+    {
+        var fixture = new NativeRuntimeTestFixture();
+        var token = TestContext.Current.CancellationToken;
+        WkHtmlToXEngine engine = null!;
+        var checkedHooks = 0;
+        Action checkReentry = () =>
+        {
+            Action reenter = () => _ = engine.InitializeAsync(token);
+            reenter.Should().Throw<InvalidOperationException>();
+            checkedHooks++;
+        };
+        var options = new ExecutionWorkerOptions
+        {
+            BeforeThreadStart = checkReentry,
+            OnWorkerThreadStart = checkReentry,
+            CreateWorkerThreadScope = () =>
+            {
+                checkReentry();
+                return null;
+            },
+        };
+
+        await using var worker = new WkHtmlToXWorker(fixture.Factory, options);
+        engine = new WkHtmlToXEngine(worker, ownsWorker: true);
+        await using var engineScope = engine;
+        await engine.InitializeAsync(token);
+        checkedHooks.Should().Be(3);
+        engine.IsFaulted.Should().BeFalse();
+        options.OnWorkerThreadStart.Should().BeSameAs(checkReentry);
+    }
+
+    [Fact]
     public async Task StandaloneEngineShouldUseSnapshottedShutdownPolicyAsync()
     {
         var configuration = new WkHtmlToXConfiguration

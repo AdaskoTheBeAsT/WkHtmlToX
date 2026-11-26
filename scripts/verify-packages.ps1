@@ -25,7 +25,8 @@ function Invoke-DotNet {
 }
 
 # Never publish these validation artifacts or change the repository release version.
-$version = '13.0.0-validation'
+$buildProps = [xml](Get-Content -LiteralPath (Join-Path $repo 'Directory.Build.props') -Raw)
+$version = "$($buildProps.SelectSingleNode('/Project/PropertyGroup/Version').InnerText)-validation"
 $names = @(
     'AdaskoTheBeAsT.WkHtmlToX',
     'AdaskoTheBeAsT.WkHtmlToX.DependencyInjection',
@@ -37,12 +38,12 @@ foreach ($name in $names) {
         'pack', (Join-Path $repo "src/$name/$name.csproj"),
         '--no-restore', '-c', 'Release', "-p:Version=$version",
         '-p:GeneratePackageOnBuild=false', '-p:ContinuousIntegrationBuild=true',
-        '-p:HUSKY=0', '--output', $packages
+        '-p:ErrorLog=', '-p:HUSKY=0', '--output', $packages
     )
     $package = Join-Path $packages "$name.$version.nupkg"
     $archive = [System.IO.Compression.ZipFile]::OpenRead($package)
     try {
-        if ($archive.Entries.FullName -match '^lib/net[89]\.0/') {
+        if ($archive.Entries.FullName -match '^(?:(?:runtimes/[^/]+/)?lib|ref)/net[89]\.0(?:-[^/]+)?/') {
             throw "$package still contains a .NET 8 or .NET 9 asset."
         }
         foreach ($framework in $Frameworks) {

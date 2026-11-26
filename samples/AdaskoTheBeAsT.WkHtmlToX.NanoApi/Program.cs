@@ -28,7 +28,7 @@ internal static class Program
                 MaxOperationsPerSession = builder.Configuration.GetValue<int>("MaxOperationsPerSession"),
             },
         });
-        builder.Services.AddHealthChecks();
+        builder.Services.AddHealthChecks().AddCheck<RendererHealthCheck>("wkhtmltox");
 
         var app = builder.Build();
         app.MapHealthChecks("/health");

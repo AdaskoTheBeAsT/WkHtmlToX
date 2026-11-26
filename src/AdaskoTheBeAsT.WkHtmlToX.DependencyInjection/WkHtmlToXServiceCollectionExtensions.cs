@@ -58,26 +58,32 @@ public static class WkHtmlToXServiceCollectionExtensions
         var workerOptions = snapshot.WorkerOptions.Snapshot();
         RegisterCoreServices(services, snapshot);
 
+        var optionsName = typeof(WkHtmlToXSession).FullName!;
         var hasWorker = services.Any(static descriptor => descriptor.ServiceType == typeof(IExecutionWorker<WkHtmlToXSession>));
-        services.AddExecutionWorker<WkHtmlToXSession>(options =>
+        if (hasWorker)
         {
-            workerOptions.ApplyTo(options);
-            configureWorker?.Invoke(options);
-        });
-
-        if (!hasWorker)
+            // Interop skips named configuration once a worker is registered.
+            services.Configure<ExecutionWorkerOptions>(optionsName, ConfigureWorker);
+            services.AddExecutionWorker<WkHtmlToXSession>();
+        }
+        else
         {
-            // Let Interop register its named options first. It skips them when a worker is already registered.
+            services.AddExecutionWorker<WkHtmlToXSession>(ConfigureWorker);
             services.Replace(ServiceDescriptor.Singleton<IExecutionWorker<WkHtmlToXSession>>(sp =>
                 new WkHtmlToXWorker(
                     sp.GetRequiredService<IExecutionSessionFactory<WkHtmlToXSession>>(),
-                    sp.GetRequiredService<IOptionsMonitor<ExecutionWorkerOptions>>()
-                        .Get(typeof(WkHtmlToXSession).FullName))));
+                    sp.GetRequiredService<IOptionsMonitor<ExecutionWorkerOptions>>().Get(optionsName))));
         }
 
         RegisterEngineAndConverters(services);
 
         return services;
+
+        void ConfigureWorker(ExecutionWorkerOptions options)
+        {
+            workerOptions.ApplyTo(options);
+            configureWorker?.Invoke(options);
+        }
     }
 
     internal static void RegisterCoreServices(
