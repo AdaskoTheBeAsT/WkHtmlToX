@@ -1,0 +1,53 @@
+# syntax=docker/dockerfile:1
+FROM mcr.microsoft.com/dotnet/sdk:11.0-resolute AS native
+
+ARG TARGETARCH
+RUN test "$TARGETARCH" = amd64 || { \
+    echo "NanoApi's Linux native renderer requires --platform linux/amd64." >&2; \
+    exit 1; \
+    }
+
+# The Ubuntu 20.04 NuGet package needs OpenSSL 1.1. Use the upstream patched Qt build for OpenSSL 3.
+ADD --checksum=sha256:ee88d74834bdec650f7432c7d3ef1c981e42ae7a762a75a01f7f5da59abc18d5 \
+    https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb \
+    /tmp/wkhtmltox.deb
+RUN dpkg-deb -x /tmp/wkhtmltox.deb /tmp/wkhtmltox
+
+FROM mcr.microsoft.com/dotnet/sdk:11.0-resolute AS build
+
+WORKDIR /src
+COPY Directory.Build.props Directory.Build.targets DeterministicBuild.targets AdaskoTheBeAsT.ruleset stylecop.json SecurityCodeScan.config.yml .editorconfig global.json LICENSE README.md ./
+COPY src/AdaskoTheBeAsT.WkHtmlToX/AdaskoTheBeAsT.WkHtmlToX.csproj src/AdaskoTheBeAsT.WkHtmlToX/
+COPY src/AdaskoTheBeAsT.WkHtmlToX.DependencyInjection/AdaskoTheBeAsT.WkHtmlToX.DependencyInjection.csproj src/AdaskoTheBeAsT.WkHtmlToX.DependencyInjection/
+COPY src/AdaskoTheBeAsT.WkHtmlToX.Hosting/AdaskoTheBeAsT.WkHtmlToX.Hosting.csproj src/AdaskoTheBeAsT.WkHtmlToX.Hosting/
+COPY samples/AdaskoTheBeAsT.WkHtmlToX.NanoApi/AdaskoTheBeAsT.WkHtmlToX.NanoApi.csproj samples/AdaskoTheBeAsT.WkHtmlToX.NanoApi/
+RUN dotnet restore samples/AdaskoTheBeAsT.WkHtmlToX.NanoApi/AdaskoTheBeAsT.WkHtmlToX.NanoApi.csproj \
+    -r linux-x64 \
+    -p:UseAppHost=false
+
+COPY src/ src/
+COPY samples/AdaskoTheBeAsT.WkHtmlToX.NanoApi/ samples/AdaskoTheBeAsT.WkHtmlToX.NanoApi/
+RUN dotnet publish samples/AdaskoTheBeAsT.WkHtmlToX.NanoApi/AdaskoTheBeAsT.WkHtmlToX.NanoApi.csproj \
+    -c Release \
+    -r linux-x64 \
+    --no-restore \
+    --self-contained false \
+    -p:UseAppHost=false \
+    -p:ErrorLog= \
+    -o /out
+
+FROM mcr.microsoft.com/dotnet/aspnet:11.0-resolute
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        fontconfig fonts-dejavu-core libfreetype6 libjpeg-turbo8 libpng16-16t64 libx11-6 libxrender1 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY --from=build /out/ ./
+COPY --from=native /tmp/wkhtmltox/usr/local/lib/libwkhtmltox.so.0.12.6 /app/native/
+ENV NativeLibraryPath=/app/native/libwkhtmltox.so.0.12.6 \
+    ASPNETCORE_HTTP_PORTS=8080
+USER $APP_UID
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "AdaskoTheBeAsT.WkHtmlToX.NanoApi.dll"]

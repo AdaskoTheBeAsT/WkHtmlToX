@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AdaskoTheBeAsT.WkHtmlToX.native.win.x64" Version="0.12.6" Condition="'$(RuntimeIdentifier)' == 'win-x64'" />
+    <ProjectReference Include="..\..\src\AdaskoTheBeAsT.WkHtmlToX.Hosting\AdaskoTheBeAsT.WkHtmlToX.Hosting.csproj" />
+  </ItemGroup>
+
+</Project>

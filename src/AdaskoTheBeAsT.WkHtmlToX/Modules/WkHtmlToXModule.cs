@@ -153,7 +153,7 @@ internal abstract class WkHtmlToXModule
 #if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(createStreamFunc);
 #endif
-        var totalLength = GetOutputImpl(converter, out IntPtr data);
+        var totalLength = GetOutputImpl(converter, out var data);
         if (totalLength < 0 || (totalLength > 0 && data == IntPtr.Zero))
         {
             throw new InvalidOperationException("The native renderer returned an invalid output buffer.");

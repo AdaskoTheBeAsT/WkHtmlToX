@@ -1,6 +1,23 @@
 # Changelog
 
-## 13.0.0 (unreleased)
+## 14.0.0
+
+See [migration from 13.0.0](README.md#migration-to-1400).
+
+### Added
+
+- .NET 11 library targets and PDF-rendering container samples for Windows Nano
+  Server and Ubuntu Linux.
+
+### Changed
+
+- Supported managed assets are net472/net48/net481/net10.0/net11.0. Dropped
+  .NET 8 and .NET 9.
+- Interop.Execution and its integration packages require `[3.1.0,4.0.0)`;
+  Interop.Unmanaged requires `[5.1.0,6.0.0)`.
+- NuGet publishing from lightweight release tags uses Trusted Publishing (OIDC).
+
+## 13.0.0
 
 Major-release hardening of the in-process renderer. See the
 [migration guide](README.md#migration-to-1300) before upgrading.

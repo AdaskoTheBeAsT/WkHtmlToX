@@ -168,7 +168,7 @@ public class PechkinPaperSize
     public static PechkinPaperSize FromPaperKind(
         PaperKind paperKind)
     {
-        var result = Dictionary.TryGetValue(paperKind, out PechkinPaperSize? pechkinPaperSize);
+        var result = Dictionary.TryGetValue(paperKind, out var pechkinPaperSize);
         if (!result)
         {
             throw new ArgumentOutOfRangeException(

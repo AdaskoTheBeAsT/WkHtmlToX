@@ -53,3 +53,4 @@ ADRs use a lightweight [MADR](https://adr.github.io/madr/) layout.
 | 0037 | 2026-09-07 | [Aggregate input budget](0037-aggregate-input-budget.md) | Accepted |
 | 0038 | 2026-09-07 | [Pipeline-aware shutdown](0038-pipeline-aware-shutdown.md) | Accepted |
 | 0039 | 2026-09-09 | [Wrapper-owned worker options](0039-wrapper-owned-worker-options.md) | Accepted |
+| 0040 | 2026-11-25 | [Add .NET 11 and drop .NET 8 and .NET 9](0040-target-net11.md) | Accepted |

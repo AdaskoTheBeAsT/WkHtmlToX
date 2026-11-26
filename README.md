@@ -1,33 +1,46 @@
 # WkHtmlToX
 
-A C# wrapper for [wkhtmltopdf](https://wkhtmltopdf.org), with one dedicated
-native execution thread for HTML-to-PDF and HTML-to-image conversion.
+📄 Convert HTML to PDF or images from C# with [wkhtmltopdf](https://wkhtmltopdf.org).
+WkHtmlToX runs the native renderer on one dedicated thread.
 
 [![NuGet](https://img.shields.io/nuget/v/AdaskoTheBeAsT.WkHtmlToX)](https://www.nuget.org/packages/AdaskoTheBeAsT.WkHtmlToX)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX&metric=alert_status)](https://sonarcloud.io/dashboard?id=AdaskoTheBeAsT_AdaskoTheBeAsT.WkHtmlToX)
 
-## Why this major release is better
+[📦 Install](#installation) · [💻 Render your first PDF](#console-example) ·
+[🔌 Use with a .NET host](#generic-host) · [🐳 Deploy a native renderer](#native-deployment-and-supported-targets) ·
+[⬆️ Upgrade](#migration-to-1400)
 
-Version **13.0.0 (unreleased)** makes ownership and failure handling explicit:
+## Release highlights
 
-- A second native engine fails fast instead of allowing concurrent access to
-  process-global Qt state.
-- Application callback exceptions cannot escape into native code. Results
-  distinguish invalid input, rendering, stream I/O, callback, and native failures.
-- Submitted settings, dictionaries, paper sizes, and byte arrays are snapshotted.
-  Later changes cannot silently alter a queued conversion.
-- Slow input reads and destination writes no longer occupy the native thread.
-  Request admission and aggregate managed input/output buffering have explicit limits.
-- Shutdown coordinates the entire pipeline, not just the native queue. Host
-  deadlines stop waiting without prematurely releasing streams or native ownership.
-- Rejected native settings are reported rather than silently ignored.
-- Async lifecycle and health APIs use the corrected Interop.Execution 2.x
-  worker. Cleanup failures are observable; incomplete native teardown requires
-  a process restart.
-- Native loading uses one pinned library binding, not an unload/reload promise
-  that conflicts with cached P/Invoke addresses.
+### 🚀 What's new in 14.0.0
 
-See the [migration guide](#migration-to-1300) and [CHANGELOG](CHANGELOG.md).
+- ✨ **New target:** .NET 11 joins .NET 10 and .NET Framework 4.7.2, 4.8, and 4.8.1.
+- ⚠️ **Breaking change:** .NET 8 and .NET 9 package assets are gone. Retarget to
+  .NET 10 or later before upgrading.
+- 🐳 **Container samples:** Run the same .NET 11 PDF API on
+  [Windows Nano Server x64](#windows-nano-server-sample) or
+  [Ubuntu Linux x64](#linux-container-sample). Both render in process and expose
+  `/health` and `/pdf`.
+- 🔧 **Interop update:** Interop.Execution moves to 3.1 or later in the 3.x
+  series, and Interop.Unmanaged to 5.1 or later in the 5.x series. Advanced worker
+  startup hooks now reject calls back into the engine instead of risking a startup hang.
+
+See the [14.0.0 upgrade checklist](#migration-to-1400) and the [changelog](CHANGELOG.md).
+
+### 🛡️ 13.0.0: Safer in-process rendering
+
+- **One native owner:** A second engine fails fast instead of sharing
+  process-global Qt state. The selected native binary stays loaded for the
+  process lifetime; incomplete native teardown requires a restart.
+- **Predictable conversions:** Queued requests use snapshots of settings and
+  byte arrays. Rejected settings are reported, and async results distinguish
+  invalid input, rendering, stream I/O, callback, and native failures.
+  Application callback exceptions cannot escape into native code.
+- **Bounded requests and shutdown:** Stream I/O runs off the native thread.
+  Admission and managed buffering have explicit limits. Host deadlines stop
+  waiting without releasing streams or native ownership early.
+
+Upgrading from 12.x or earlier? Also read the [13.0.0 migration notes](#migration-to-1300).
 No throughput improvement is claimed without benchmarks.
 
 ## Installation
@@ -41,10 +54,13 @@ dotnet add package AdaskoTheBeAsT.WkHtmlToX.DependencyInjection
 dotnet add package AdaskoTheBeAsT.WkHtmlToX.Hosting
 ```
 
-Keep the three managed packages on the same release. The core package does not
-include a renderer binary. Never render untrusted HTML in your application
-process: [upstream explicitly warns against it](https://wkhtmltopdf.org/status.html).
-A child process is useful for crash containment but is not itself a security sandbox.
+📦 These commands install published packages. Keep the managed packages you use on
+the same release. Install or deploy a native renderer separately; the core
+package does not include one.
+
+> 🔒 **Trusted HTML only.** Never render untrusted HTML in your application
+> process. [wkhtmltopdf explicitly warns against it](https://wkhtmltopdf.org/status.html).
+> A child process helps contain crashes but is not a security sandbox.
 
 ## Console example
 
@@ -237,13 +253,13 @@ public static class DiExample
 
 Default limits (`WkHtmlToXConfiguration.RequestOptions`):
 
-| Option | Default | Scope |
-| --- | ---: | --- |
-| `MaxConcurrentRequests` | 32 | All admitted requests, including input and slow output |
-| `MaxInputBytes` | 32 MiB | Sum of inline HTML bytes across one PDF request |
-| `MaxBufferedInputBytes` | 128 MiB | Inline input reservations across the engine |
-| `MaxOutputBytes` | 64 MiB | One detached managed output |
-| `MaxBufferedOutputBytes` | 128 MiB | Detached output across the engine |
+| Option                   | Default | Scope                                                  |
+| ------------------------ | ------: | ------------------------------------------------------ |
+| `MaxConcurrentRequests`  |      32 | All admitted requests, including input and slow output |
+| `MaxInputBytes`          |  32 MiB | Sum of inline HTML bytes across one PDF request        |
+| `MaxBufferedInputBytes`  | 128 MiB | Inline input reservations across the engine            |
+| `MaxOutputBytes`         |  64 MiB | One detached managed output                            |
+| `MaxBufferedOutputBytes` | 128 MiB | Detached output across the engine                      |
 
 Admission rejects immediately with `Overloaded`; there is no extra unbounded
 backlog of requests waiting for a slot. Per-request input limit violations return
@@ -272,12 +288,12 @@ wrapper's request limit also covers input and delivery.
 Use `WkHtmlToXConfiguration.WorkerOptions` for standalone, DI, and hosted engines.
 It uses WkHtmlToX-owned types, without requiring an Interop namespace:
 
-| Option | Default | Contract |
-| --- | --- | --- |
-| `Name` | `WkHtmlToX Engine Worker` | Diagnostics name, never document data or credentials |
-| `MaxOperationsPerSession` | 0 | Nonnegative periodic recycling interval; 0 disables it |
-| `DisposeTimeout` | Infinite | Whole-pipeline synchronous disposal wait, from zero through `int.MaxValue` milliseconds, or `Timeout.InfiniteTimeSpan` |
-| `ShutdownMode` | `WkHtmlToXShutdownMode.Drain` | Default pipeline policy; `CancelPending` skips requests before native start |
+| Option                    | Default                       | Contract                                                                                                               |
+| ------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `Name`                    | `WkHtmlToX Engine Worker`     | Diagnostics name, never document data or credentials                                                                   |
+| `MaxOperationsPerSession` | 0                             | Nonnegative periodic recycling interval; 0 disables it                                                                 |
+| `DisposeTimeout`          | Infinite                      | Whole-pipeline synchronous disposal wait, from zero through `int.MaxValue` milliseconds, or `Timeout.InfiniteTimeSpan` |
+| `ShutdownMode`            | `WkHtmlToXShutdownMode.Drain` | Default pipeline policy; `CancelPending` skips requests before native start                                            |
 
 These values are validated and copied before acquiring native ownership or
 registering services. Later mutations do not reconfigure the worker. The native
@@ -342,17 +358,21 @@ restrictions. They are not implemented by this in-process package.
 
 ## Native deployment and supported targets
 
-Managed targets: `net472`, `net48`, `net481`, `net8.0`, `net9.0`, `net10.0`.
-There is no `netstandard2.0` or `net462` asset in this release.
+Managed targets: `net472`, `net48`, `net481`, `net10.0`, and `net11.0`.
+Version 14.0.0 drops .NET 8 and .NET 9. Applications on those runtimes must
+upgrade to .NET 10 or later to use this release. There is no `netstandard2.0`
+or `net462` asset. All targets require at least Interop.Execution 3.1 and
+Interop.Unmanaged 5.1. See the [upgrade checklist](#migration-to-1400) for exact ranges.
 
-| Native environment | Status |
-| --- | --- |
-| Windows x64 | Real-native unit/integration and packaged-consumer validation target |
-| Windows x86 | Loader retained; not validated in the current release checks |
-| Linux x64/x86 | Loader retained; distribution/system dependencies require deployment validation |
-| macOS x64 | Loader retained; not validated in the current release checks |
-| ARM/ARM64 process | Rejected; bitness alone does not identify a compatible binary |
-| .NET Framework outside Windows | Not supported |
+| Native environment             | Status                                                                                   |
+| ------------------------------ | ---------------------------------------------------------------------------------------- |
+| Windows x64                    | Real-native unit/integration and packaged-consumer validation target                     |
+| Windows x86                    | Loader retained; not validated in the current release checks                             |
+| Linux x64                      | See the Ubuntu container sample below; other distributions require deployment validation |
+| Linux x86                      | Loader retained; not validated in the current release checks                             |
+| macOS x64                      | Loader retained; not validated in the current release checks                             |
+| ARM/ARM64 process              | Rejected; bitness alone does not identify a compatible binary                            |
+| .NET Framework outside Windows | Not supported                                                                            |
 
 Use the parameterless configuration for OS detection. Linux needs either a
 legacy `WkHtmlToXRuntimeIdentifier` matching its native package or an explicit
@@ -365,7 +385,7 @@ with the process architecture. Without it, loaders look under
 directory. They do not search the current working directory or `/usr/lib`.
 Missing explicit paths do not fall back silently.
 
-On .NET 8+, the assembly's DllImport resolver routes all wkhtmltox imports to the
+On .NET 10+, the assembly's DllImport resolver routes all wkhtmltox imports to the
 selected handle. On .NET Framework, Windows preloading requires `wkhtmltox.dll`
 and rejects a module already loaded outside this wrapper. The selected library
 remains loaded for the process lifetime; changing the path requires a restart.
@@ -377,10 +397,91 @@ not inferred. Trimming and Native AOT are not supported (settings use reflection
 Do not load multiple copies of this wrapper or wkhtmltox through different
 assembly load contexts/AppDomains to circumvent ownership checks.
 
+### Windows Nano Server sample
+
+The [.NET 11 minimal API](samples/AdaskoTheBeAsT.WkHtmlToX.NanoApi) runs on the
+x64 Nano Server LTSC 2025 image, revision `v2.2.1`. It renders PDFs in the API
+process with wkhtmltox 0.12.6. Server Core is used only in the SDK build stage,
+not at runtime. The API runs as `ContainerUser` and does not publish a host
+port. Run these commands from the repository root using Docker Desktop's Windows
+engine. If you use a standalone Windows engine, substitute its context name for
+`desktop-windows`.
+
+```powershell
+$compose = 'samples/AdaskoTheBeAsT.WkHtmlToX.NanoApi/compose.yaml'
+$previousBuildKit = $env:DOCKER_BUILDKIT
+try {
+    $env:DOCKER_BUILDKIT = '0'
+    docker --context desktop-windows compose --parallel 1 -p wkhtmltox-nano -f $compose build
+} finally {
+    $env:DOCKER_BUILDKIT = $previousBuildKit
+}
+docker --context desktop-windows compose -p wkhtmltox-nano -f $compose up -d --remove-orphans
+$container = docker --context desktop-windows compose -p wkhtmltox-nano -f $compose ps -q api
+$containerIp = docker --context desktop-windows inspect $container --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'
+curl.exe --fail --retry 30 --retry-connrefused --retry-max-time 30 --max-time 3 "http://${containerIp}:8080/health"
+if ($LASTEXITCODE -eq 0) {
+    curl.exe --fail "http://${containerIp}:8080/pdf" --output wkhtmltox.pdf
+}
+docker --context desktop-windows compose -p wkhtmltox-nano -f $compose down
+```
+
+`--remove-orphans` removes the old `renderer` container when upgrading the
+same Compose project. `/health` reports readiness after native initialization
+and returns HTTP 503 if the renderer faults. `/pdf` renders only fixed, trusted
+HTML and does not accept HTML or URLs from callers.
+
+The Dockerfile enables the Nano image's headless font shim and copies
+`winspool.drv` from the SDK stage beside `wkhtmltox.dll`. The sample can use
+Nano's built-in Lucida Console without installing additional fonts. Nano Server
+`v2.2.1` fixes the second-conversion hang from `v2.1.0`, so the sample reuses the
+native session without per-PDF recycling. Do not rely on identical layout to
+Server Core.
+For parallel rendering, run separate processes or containers rather than
+copying the module per worker.
+
+### Linux container sample
+
+The same .NET 11 API also runs in a single Ubuntu Linux x64 container. It
+renders in process with the upstream [wkhtmltox 0.12.6.1-2 build for Jammy](https://github.com/wkhtmltopdf/packaging/releases/tag/0.12.6.1-2),
+which uses OpenSSL 3. The [Ubuntu 20.04 native NuGet package](https://www.nuget.org/packages/AdaskoTheBeAsT.WkHtmlToX.native.ubuntu.20.04-x64/0.12.6)
+requires OpenSSL 1.1, which the container does not ship. No display server or
+separate renderer service is needed.
+
+From the repository root, use a Linux Docker engine with BuildKit:
+
+```sh
+docker build --platform linux/amd64 -f samples/AdaskoTheBeAsT.WkHtmlToX.NanoApi/Dockerfile.linux -t wkhtmltox-nano-api:linux .
+docker run --rm -d --name wkhtmltox-linux -p 127.0.0.1:8080:8080 wkhtmltox-nano-api:linux
+curl --fail --retry 30 --retry-connrefused --retry-max-time 30 --max-time 3 http://127.0.0.1:8080/health &&
+    curl --fail http://127.0.0.1:8080/pdf --output wkhtmltox.pdf
+docker stop wkhtmltox-linux
+```
+
+On Windows with Docker Desktop, switch to Linux containers or add
+`--context desktop-linux` after `docker`, and use `curl.exe` in PowerShell.
+`/health` and `/pdf` behave the same as on Windows.
+
+## Migration to 14.0.0
+
+1. 📦 **Upgrade the managed packages together.** Keep the core, DI, and Hosting
+   packages you use on the same version.
+2. 🎯 **Check your target framework.** Retarget .NET 8 and .NET 9 applications to
+   .NET 10 or later. The .NET Framework 4.7.2, 4.8, and 4.8.1 assets remain available.
+3. 🔧 **Update direct dependency pins.** Interop.Execution and its integration packages
+   require `[3.1.0,4.0.0)`; Interop.Unmanaged requires `[5.1.0,6.0.0)`.
+   If you pin Microsoft.Extensions DI or Hosting abstractions, use
+   `[10.0.15,11.0.0)` on .NET 10 and `[11.0.0,12.0.0)` on .NET 11 or .NET Framework.
+4. 🧵 **Review advanced worker startup hooks.** Do not call back into the engine
+   to initialize it, convert documents, or start shutdown. The engine rejects
+   these calls instead of blocking startup.
+
+If you are upgrading from 12.x or earlier, also apply the 13.0.0 changes below.
+
 ## Migration to 13.0.0
 
-This is a **major release**. Upgrade the core, DI, and Hosting packages together,
-then follow these steps:
+These steps describe the changes introduced in 13.0.0. When upgrading directly
+to 14.0.0, use the targets and dependency ranges above instead of step 1.
 
 1. **Use supported TFMs and dependencies.** Retarget older applications to at
    least .NET Framework 4.7.2 or .NET 8. Interop.Execution dependencies are
@@ -393,11 +494,11 @@ then follow these steps:
    The public `new WkHtmlToXEngine(configuration)` constructor still exists.
    Native sessions, loaders, and worker injection constructors are internal.
 4. **Stop constructing work items.** `AddConvertWorkItem`, public work-item
-   classes, visitor interfaces, and caller-writable completion sources are
-   obsolete migration shims, planned for removal in the next major release.
-   They still work with deprecation warnings. The visitor API is not a supported
-   plugin mechanism. `PdfConverter`/`ImageConverter` and their `Task<bool>` APIs
-   remain available and use the direct async engine when possible.
+   classes, visitor interfaces, and caller-writable completion sources were
+   deprecated in 13.0.0 and remain obsolete migration shims in 14.0.0.
+   The visitor API is not a supported plugin mechanism. `PdfConverter` and
+   `ImageConverter` keep their `Task<bool>` APIs and use the direct async engine
+   when possible.
 5. **Handle structured results.** `false` from native conversion becomes
    `ConversionError`, with HTTP status and warnings. Use `Overloaded` and
    `ResourceLimit` for explicit overload handling; do not blindly retry forever.
@@ -442,8 +543,8 @@ and its constructor takes `(document, progress, description)`.
 - `packages.lock.json` records exact restore graphs; CI uses locked restore.
   Update lock files deliberately with dependency changes, then verify with
   `dotnet restore AdaskoTheBeAsT.WkHtmlToX.slnx --locked-mode`.
-- The SDK and test runner are selected by `global.json`. Run a targeted suite
-  with `dotnet run --project <test.csproj> --framework net10.0 -- --progress off`.
+- 🧪 `global.json` selects the .NET 11 SDK and test runner. Run a targeted suite
+  with `dotnet run --project <test.csproj> --framework net11.0 -- --progress off`.
   This invokes the xUnit v3 Microsoft.Testing.Platform runner directly.
   After dependency upgrades, a .NET Framework `FileLoadException` can indicate
   stale generated binding redirects. Rebuild the affected test target with
@@ -454,7 +555,7 @@ and its constructor takes `(document, progress, description)`.
   consumer, and runs the examples on Windows x64. It also checks a single-file
   .NET 10 consumer. It never publishes packages.
   If local executable scanning prevents that check, `-SkipSingleFile` explicitly
-  skips it while retaining all six normal and explicit-native-path consumer checks.
+  skips it while retaining all normal and explicit-native-path consumer checks.
   The skip is reported and does not establish single-file runtime support.
 - [Architecture decisions](docs/adr/README.md) record implementation status.
   [astra_plan.md](astra_plan.md) records validation results and remaining limits.

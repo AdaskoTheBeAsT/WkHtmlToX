@@ -1,0 +1,10 @@
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: samples/AdaskoTheBeAsT.WkHtmlToX.NanoApi/Dockerfile
+      target: nano
+
+networks:
+  default:
+    driver: nat

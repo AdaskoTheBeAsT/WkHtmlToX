@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using AdaskoTheBeAsT.Interop.Execution;
 using AdaskoTheBeAsT.Interop.Execution.DependencyInjection;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
@@ -57,15 +58,32 @@ public static class WkHtmlToXServiceCollectionExtensions
         var workerOptions = snapshot.WorkerOptions.Snapshot();
         RegisterCoreServices(services, snapshot);
 
-        services.AddExecutionWorker<WkHtmlToXSession>(options =>
+        var optionsName = typeof(WkHtmlToXSession).FullName!;
+        var hasWorker = services.Any(static descriptor => descriptor.ServiceType == typeof(IExecutionWorker<WkHtmlToXSession>));
+        if (hasWorker)
         {
-            workerOptions.ApplyTo(options);
-            configureWorker?.Invoke(options);
-        });
+            // Interop skips named configuration once a worker is registered.
+            services.Configure<ExecutionWorkerOptions>(optionsName, ConfigureWorker);
+            services.AddExecutionWorker<WkHtmlToXSession>();
+        }
+        else
+        {
+            services.AddExecutionWorker<WkHtmlToXSession>(ConfigureWorker);
+            services.Replace(ServiceDescriptor.Singleton<IExecutionWorker<WkHtmlToXSession>>(sp =>
+                new WkHtmlToXWorker(
+                    sp.GetRequiredService<IExecutionSessionFactory<WkHtmlToXSession>>(),
+                    sp.GetRequiredService<IOptionsMonitor<ExecutionWorkerOptions>>().Get(optionsName))));
+        }
 
         RegisterEngineAndConverters(services);
 
         return services;
+
+        void ConfigureWorker(ExecutionWorkerOptions options)
+        {
+            workerOptions.ApplyTo(options);
+            configureWorker?.Invoke(options);
+        }
     }
 
     internal static void RegisterCoreServices(
@@ -78,11 +96,6 @@ public static class WkHtmlToXServiceCollectionExtensions
             new WkHtmlToXSessionFactory(
                 sp.GetRequiredService<WkHtmlToXConfiguration>().Snapshot(),
                 sp.GetRequiredService<ILibraryLoaderFactory>()));
-        services.TryAddSingleton<IExecutionWorker<WkHtmlToXSession>>(sp =>
-            new WkHtmlToXWorker(
-                sp.GetRequiredService<IExecutionSessionFactory<WkHtmlToXSession>>(),
-                sp.GetRequiredService<IOptionsMonitor<ExecutionWorkerOptions>>()
-                    .Get(typeof(WkHtmlToXSession).FullName)));
     }
 
     internal static void RegisterEngineAndConverters(IServiceCollection services)

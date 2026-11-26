@@ -9,6 +9,7 @@ internal sealed class WkHtmlToXWorker : IExecutionWorker<WkHtmlToXSession>
 {
     private readonly ExecutionWorker<WkHtmlToXSession> _worker;
     private readonly WkHtmlToXSessionFactory? _nativeFactory;
+    private Thread? _startupCaller;
     private WkHtmlToXEngine? _engine;
 
     internal WkHtmlToXWorker(
@@ -21,7 +22,7 @@ internal sealed class WkHtmlToXWorker : IExecutionWorker<WkHtmlToXSession>
         _nativeFactory?.ReserveOwnership();
         try
         {
-            _worker = new ExecutionWorker<WkHtmlToXSession>(sessionFactory, options);
+            _worker = new ExecutionWorker<WkHtmlToXSession>(sessionFactory, GuardStartupHooks(options));
         }
         catch
         {
@@ -80,6 +81,24 @@ internal sealed class WkHtmlToXWorker : IExecutionWorker<WkHtmlToXSession>
         return _worker.ExecuteAsync(action, options, cancellationToken);
     }
 
+    public ValueTask ExecuteValueAsync(
+        Action<WkHtmlToXSession, CancellationToken> action,
+        ExecutionRequestOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        ThrowIfReentrant();
+        return _worker.ExecuteValueAsync(action, options, cancellationToken);
+    }
+
+    public ValueTask<TResult> ExecuteValueAsync<TResult>(
+        Func<WkHtmlToXSession, CancellationToken, TResult> action,
+        ExecutionRequestOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        ThrowIfReentrant();
+        return _worker.ExecuteValueAsync(action, options, cancellationToken);
+    }
+
     public void Dispose()
     {
         ThrowIfReentrant();
@@ -112,9 +131,49 @@ internal sealed class WkHtmlToXWorker : IExecutionWorker<WkHtmlToXSession>
 
     internal void ThrowIfReentrant()
     {
-        if (_nativeFactory?.IsCurrentThread == true)
+        if (_nativeFactory?.IsCurrentThread == true || ReferenceEquals(Volatile.Read(ref _startupCaller), Thread.CurrentThread))
         {
-            throw new InvalidOperationException("Native callbacks and stream operations must not reenter the engine or its lifecycle.");
+            throw new InvalidOperationException("Worker startup hooks, native callbacks, and stream operations must not reenter the engine or its lifecycle.");
+        }
+    }
+
+    private ExecutionWorkerOptions GuardStartupHooks(ExecutionWorkerOptions options)
+    {
+        var beforeThreadStart = options.BeforeThreadStart;
+        var onWorkerThreadStart = options.OnWorkerThreadStart;
+
+        // The options monitor can share its value. Wrap hooks on a separate instance.
+        return new ExecutionWorkerOptions
+        {
+            Name = options.Name,
+            UseStaThread = options.UseStaThread,
+            MaxOperationsPerSession = options.MaxOperationsPerSession,
+            DisposeTimeout = options.DisposeTimeout,
+            Diagnostics = options.Diagnostics,
+            QueueCapacity = options.QueueCapacity,
+            ShutdownMode = options.ShutdownMode,
+            MaxStackSize = options.MaxStackSize,
+            BeforeThreadStart = beforeThreadStart is null ? null : () => RunBeforeThreadStart(beforeThreadStart),
+            OnWorkerThreadStart = () =>
+            {
+                // Recognize the owning thread before user hooks or native session creation.
+                _nativeFactory?.BindCurrentThread();
+                onWorkerThreadStart?.Invoke();
+            },
+            CreateWorkerThreadScope = options.CreateWorkerThreadScope,
+        };
+
+        void RunBeforeThreadStart(Action? hook)
+        {
+            Volatile.Write(ref _startupCaller, Thread.CurrentThread);
+            try
+            {
+                hook?.Invoke();
+            }
+            finally
+            {
+                Volatile.Write(ref _startupCaller, null);
+            }
         }
     }
 }

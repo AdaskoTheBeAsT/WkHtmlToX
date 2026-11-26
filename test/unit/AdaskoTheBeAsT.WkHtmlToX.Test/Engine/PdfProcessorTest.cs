@@ -24,11 +24,12 @@ public partial class PdfProcessorTest
     }
 
 #pragma warning disable MA0005
-    public static TheoryData<HtmlContentSource> GetTestData() => [
-            HtmlContentSource.String,
-            HtmlContentSource.ByteArray,
-            HtmlContentSource.Stream,
-        ];
+    public static TheoryData<HtmlContentSource> GetTestData() =>
+    [
+        HtmlContentSource.String,
+        HtmlContentSource.ByteArray,
+        HtmlContentSource.Stream,
+    ];
 #pragma warning restore MA0005
 
     [Fact]

@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.Interop.Execution;
 using AdaskoTheBeAsT.WkHtmlToX.Abstractions;
+using AdaskoTheBeAsT.WkHtmlToX.DependencyInjection;
 using AdaskoTheBeAsT.WkHtmlToX.Engine;
 using AwesomeAssertions;
 using AwesomeAssertions.Execution;
@@ -119,14 +120,19 @@ public sealed class WkHtmlToXHostingServiceCollectionExtensionsTest
         worker.Should().NotBeNull();
     }
 
-    [Fact]
-    public void AddWkHtmlToXHostedServiceShouldApplyConfigureWorkerDelegate()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void AddWkHtmlToXHostedServiceShouldApplyConfigureWorkerDelegate(bool registerDiFirst)
     {
         // Arrange
         var services = new ServiceCollection();
         var configuration = new WkHtmlToXConfiguration(platformId: 0, runtimeIdentifier: null);
         const string customName = "custom-hosted-worker";
-        var invoked = false;
+        if (registerDiFirst)
+        {
+            services.AddWkHtmlToX(configuration);
+        }
 
         // Act
         services.AddWkHtmlToXHostedService(
@@ -134,7 +140,7 @@ public sealed class WkHtmlToXHostingServiceCollectionExtensionsTest
             options =>
             {
                 options.Name = customName;
-                invoked = true;
+                options.ShutdownMode = ExecutionShutdownMode.CancelPending;
             });
 
         // Assert
@@ -142,8 +148,10 @@ public sealed class WkHtmlToXHostingServiceCollectionExtensionsTest
         var worker = provider.GetRequiredService<IExecutionWorker<WkHtmlToXSession>>();
         using (new AssertionScope())
         {
-            worker.Should().NotBeNull();
-            invoked.Should().BeTrue();
+            worker.Name.Should().Be(customName);
+            worker.Should().BeOfType<WkHtmlToXWorker>()
+                .Which.ShutdownMode.Should().Be(ExecutionShutdownMode.CancelPending);
+            provider.GetServices<IExecutionWorker<WkHtmlToXSession>>().Should().ContainSingle();
         }
     }
 

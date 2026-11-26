@@ -122,6 +122,65 @@ public sealed class WorkerOptionsTest
     }
 
     [Fact]
+    public async Task ValueDispatchShouldUseOwningThreadAndRejectReentryAsync()
+    {
+        var fixture = new NativeRuntimeTestFixture();
+        await using var worker = new WkHtmlToXWorker(fixture.Factory, new ExecutionWorkerOptions());
+        var token = TestContext.Current.CancellationToken;
+        Task? reentryAssertion = null;
+        await worker.ExecuteValueAsync(
+            (_, _) =>
+            {
+                fixture.Factory.IsCurrentThread.Should().BeTrue();
+                Func<Task> reenter = () => worker.ExecuteValueAsync(static (_, _) => { }, cancellationToken: token).AsTask();
+                reentryAssertion = reenter.Should().ThrowAsync<InvalidOperationException>();
+            },
+            cancellationToken: token);
+
+        // Do not wait for the nested dispatch on the owning thread.
+        reentryAssertion.Should().NotBeNull();
+        await reentryAssertion;
+
+        var isOwner = await worker.ExecuteValueAsync(
+            (_, _) => fixture.Factory.IsCurrentThread,
+            cancellationToken: token);
+        isOwner.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task StartupHooksShouldRejectReentryBeforeNativeInitializationAsync()
+    {
+        var fixture = new NativeRuntimeTestFixture();
+        var token = TestContext.Current.CancellationToken;
+        WkHtmlToXEngine engine = null!;
+        var checkedHooks = 0;
+        Action checkReentry = () =>
+        {
+            Action reenter = () => _ = engine.InitializeAsync(token);
+            reenter.Should().Throw<InvalidOperationException>();
+            checkedHooks++;
+        };
+        var options = new ExecutionWorkerOptions
+        {
+            BeforeThreadStart = checkReentry,
+            OnWorkerThreadStart = checkReentry,
+            CreateWorkerThreadScope = () =>
+            {
+                checkReentry();
+                return null;
+            },
+        };
+
+        await using var worker = new WkHtmlToXWorker(fixture.Factory, options);
+        engine = new WkHtmlToXEngine(worker, ownsWorker: true);
+        await using var engineScope = engine;
+        await engine.InitializeAsync(token);
+        checkedHooks.Should().Be(3);
+        engine.IsFaulted.Should().BeFalse();
+        options.OnWorkerThreadStart.Should().BeSameAs(checkReentry);
+    }
+
+    [Fact]
     public async Task StandaloneEngineShouldUseSnapshottedShutdownPolicyAsync()
     {
         var configuration = new WkHtmlToXConfiguration
